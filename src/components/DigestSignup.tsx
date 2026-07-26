@@ -1,5 +1,4 @@
 import { useState, type FormEvent } from 'react'
-import { motion } from 'framer-motion'
 
 export type DigestSignupProps = {
   industry?: string
@@ -63,13 +62,7 @@ export function DigestSignup({
   }
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 10 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.35 }}
-      className="mt-14 border-t border-border pt-12"
-    >
+    <section className="mt-14 border-t border-border pt-12">
       <p className="text-xs uppercase tracking-wider text-muted font-mono mb-2">Next</p>
       <h2 className="font-serif text-2xl sm:text-3xl text-ink tracking-tight">
         dear
@@ -138,6 +131,6 @@ export function DigestSignup({
       {status === 'idle' && (
         <p className="mt-3 text-xs text-muted">Powered by dear[CC] The Letter.</p>
       )}
-    </motion.section>
+    </section>
   )
 }

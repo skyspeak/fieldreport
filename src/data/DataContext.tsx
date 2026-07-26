@@ -16,6 +16,7 @@ import type {
   StatesFile,
 } from '../types'
 import { assetUrl } from '../lib/assetUrl'
+import { isRealMajor, majorDisplayName } from '../lib/majorName'
 
 interface DataContextValue {
   majors: Major[]
@@ -33,7 +34,9 @@ interface DataContextValue {
 const DataContext = createContext<DataContextValue | null>(null)
 
 async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url)
+  const res = await fetch(url, {
+    cache: import.meta.env.DEV ? 'no-cache' : 'force-cache',
+  })
   if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`)
   return res.json() as Promise<T>
 }
@@ -59,7 +62,14 @@ export function DataProvider({ children }: { children: ReactNode }) {
           fetchJson<EloundouFile>(assetUrl('data/eloundou.json')),
         ])
         if (cancelled) return
-        setMajors(m)
+        setMajors(
+          m
+            .filter((major) => isRealMajor(major.cip))
+            .map((major) => ({
+              ...major,
+              name: majorDisplayName(major.name),
+            })),
+        )
         setOccupations(o)
         setCrosswalk(c)
         setEloundouFile(e)

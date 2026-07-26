@@ -1,17 +1,21 @@
 import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { motion } from 'framer-motion'
 import { useData } from '../data/DataContext'
 import { DigestSignup } from '../components/DigestSignup'
+import { DocumentMeta } from '../components/DocumentMeta'
+import { InfoTip } from '../components/InfoTip'
 import { ShareSheet } from '../components/ShareSheet'
 import { formatNumber, formatRatio, formatSalary, formatShare } from '../lib/format'
 import {
   AI_BAND_COPY,
   COMPETITION_COPY,
+  ELOUNDOU_ALPHA_COPY,
   ELOUNDOU_BAND_COLORS,
   ELOUNDOU_COPY,
+  ELOUNDOU_GAMMA_COPY,
   aiBandFromScore,
 } from '../lib/labels'
+import { isRealMajor, majorDisplayName } from '../lib/majorName'
 import type {
   CompetitionLevel,
   EloundouScore,
@@ -19,6 +23,10 @@ import type {
   SortDirection,
   SortField,
 } from '../types'
+
+function isCatchAllOccupation(occ: Occupation): boolean {
+  return /,\s*All Other$/i.test(occ.title)
+}
 
 export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
   const { cipCode = '' } = useParams()
@@ -29,13 +37,13 @@ export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) 
   const [sortField, setSortField] = useState<SortField>('entrySalary')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
 
-  const major = useMemo(
-    () => majors.find((m) => m.cip === cipCode),
-    [majors, cipCode],
-  )
+  const major = useMemo(() => {
+    if (!isRealMajor(cipCode)) return undefined
+    return majors.find((m) => m.cip === cipCode)
+  }, [majors, cipCode])
 
   const { relevant, other } = useMemo(() => {
-    const entry = crosswalk[cipCode]
+    const entry = major ? crosswalk[cipCode] : undefined
     if (!entry) return { relevant: [] as Occupation[], other: [] as Occupation[] }
 
     const primarySet = new Set(entry.primary)
@@ -57,7 +65,7 @@ export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) 
       relevant: sorted.filter((o) => primarySet.has(o.soc)),
       other: sorted.filter((o) => !primarySet.has(o.soc)),
     }
-  }, [cipCode, crosswalk, occupationsBySoc, sortField, sortDirection, eloundouBySoc])
+  }, [major, cipCode, crosswalk, occupationsBySoc, sortField, sortDirection, eloundouBySoc])
 
   function onSort(field: SortField) {
     if (field === sortField) {
@@ -83,21 +91,35 @@ export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) 
   if (!major) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-12">
+        <DocumentMeta title="Major not found" />
         <Link to={home} className="text-sm text-muted hover:text-ink mb-6 inline-block">
           ← Back
         </Link>
         <h1 className="font-serif text-3xl text-ink">Major not found</h1>
-        <p className="text-muted mt-2">
-          Try searching for another field of study in the header.
+        <p className="text-muted mt-2 max-w-lg leading-relaxed">
+          That link doesn’t match a U.S. field of study in our catalog. Try searching for
+          another major in the header.
         </p>
+        <Link
+          to={home}
+          className="mt-6 inline-flex rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-bright transition-colors"
+        >
+          Search majors
+        </Link>
       </div>
     )
   }
 
+  const displayName = majorDisplayName(major.name)
   const all = [...relevant, ...other]
+  const mapFrom = `?from=${encodeURIComponent(major.cip)}`
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10 sm:py-12">
+      <DocumentMeta
+        title={displayName}
+        description={`BLS salaries, openings, AI Risk, and Eloundou β for careers linked to ${displayName}.`}
+      />
       <Link to={home} className="text-sm text-muted hover:text-ink mb-6 inline-block">
         ← Back
       </Link>
@@ -108,7 +130,7 @@ export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) 
             {major.category} · CIP {major.cip}
           </p>
           <h1 className="font-serif text-2xl sm:text-4xl text-ink tracking-tight text-balance">
-            {major.name.replace(/\.$/, '')}
+            {displayName}
           </h1>
           <p className="text-muted mt-3 max-w-xl text-sm sm:text-base">
             Occupations linked to this major, with BLS entry wages, openings, competition, AI
@@ -117,7 +139,7 @@ export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) 
         </div>
         <div className="shrink-0 w-full sm:w-auto sm:pt-6">
           <ShareSheet
-            title={major.name.replace(/\.$/, '')}
+            title={displayName}
             summary="BLS salaries, openings, AI Risk, and Eloundou β for careers linked to this major — from dear[CC] Field report."
           />
         </div>
@@ -163,6 +185,7 @@ export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) 
               sortField={sortField}
               onSort={onSort}
               mapBase={mapBase}
+              mapFrom={mapFrom}
               eloundouBySoc={eloundouBySoc}
             />
           )}
@@ -174,6 +197,7 @@ export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) 
                 sortField={sortField}
                 onSort={onSort}
                 mapBase={mapBase}
+                mapFrom={mapFrom}
                 eloundouBySoc={eloundouBySoc}
               />
             </div>
@@ -181,8 +205,8 @@ export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) 
 
           <DigestSignup
             industry={major.category}
-            role={`Student exploring ${major.name.replace(/\.$/, '')}`}
-            focusAreas={[major.name.replace(/\.$/, ''), major.category, 'AI literacy']}
+            role={`Student exploring ${displayName}`}
+            focusAreas={[displayName, major.category, 'AI literacy']}
             sourceRef={`cip:${major.cip}`}
           />
         </>
@@ -221,6 +245,7 @@ function OccupationTable({
   sortField,
   onSort,
   mapBase,
+  mapFrom,
   eloundouBySoc,
 }: {
   title: string
@@ -228,26 +253,25 @@ function OccupationTable({
   sortField: SortField
   onSort: (f: SortField) => void
   mapBase: string
+  mapFrom: string
   eloundouBySoc: Map<string, EloundouScore>
 }) {
   return (
     <section>
       <h2 className="font-serif text-xl text-ink mb-4">{title}</h2>
 
-      {/* Mobile cards */}
       <div className="md:hidden space-y-3">
-        {occupations.map((occ, i) => (
+        {occupations.map((occ) => (
           <OccCard
             key={occ.soc}
             occ={occ}
-            index={i}
             mapBase={mapBase}
+            mapFrom={mapFrom}
             eloundou={eloundouBySoc.get(occ.soc)}
           />
         ))}
       </div>
 
-      {/* Desktop table */}
       <div className="hidden md:block overflow-x-auto rounded-xl border border-border bg-white">
         <table className="w-full min-w-[860px] text-left text-sm">
           <thead className="bg-surface text-muted text-xs uppercase tracking-wider">
@@ -262,22 +286,43 @@ function OccupationTable({
               <Th field="graduatesPerOpening" current={sortField} onSort={onSort}>
                 Competition
               </Th>
-              <Th field="karpathyExposure" current={sortField} onSort={onSort}>
-                AI Risk
-              </Th>
-              <Th field="eloundouBeta" current={sortField} onSort={onSort}>
-                Eloundou β
-              </Th>
+              <th className="px-4 py-3 font-medium">
+                <span className="inline-flex items-center">
+                  <button
+                    type="button"
+                    onClick={() => onSort('karpathyExposure')}
+                    className={`hover:text-ink transition-colors ${
+                      sortField === 'karpathyExposure' ? 'text-primary' : ''
+                    }`}
+                  >
+                    AI Risk
+                  </button>
+                </span>
+              </th>
+              <th className="px-4 py-3 font-medium">
+                <span className="inline-flex items-center">
+                  <button
+                    type="button"
+                    onClick={() => onSort('eloundouBeta')}
+                    className={`hover:text-ink transition-colors ${
+                      sortField === 'eloundouBeta' ? 'text-primary' : ''
+                    }`}
+                  >
+                    Eloundou β
+                  </button>
+                  <InfoTip label="Eloundou β">{ELOUNDOU_COPY}</InfoTip>
+                </span>
+              </th>
               <th className="px-4 py-3 font-medium" />
             </tr>
           </thead>
           <tbody>
-            {occupations.map((occ, i) => (
+            {occupations.map((occ) => (
               <OccRow
                 key={occ.soc}
                 occ={occ}
-                index={i}
                 mapBase={mapBase}
+                mapFrom={mapFrom}
                 eloundou={eloundouBySoc.get(occ.soc)}
               />
             ))}
@@ -316,25 +361,20 @@ function Th({
 
 function OccRow({
   occ,
-  index,
   mapBase,
+  mapFrom,
   eloundou,
 }: {
   occ: Occupation
-  index: number
   mapBase: string
+  mapFrom: string
   eloundou?: EloundouScore
 }) {
   const competition = occ.competitionLevel as CompetitionLevel | null
   const compMeta = competition ? COMPETITION_COPY[competition] : null
 
   return (
-    <motion.tr
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, delay: Math.min(index * 0.03, 0.2) }}
-      className="border-t border-border hover:bg-surface/80 group"
-    >
+    <tr className="border-t border-border hover:bg-surface/80 group">
       <td className="px-4 py-4">
         <div className="font-medium text-ink">{occ.title}</div>
         <div className="text-xs text-muted font-mono mt-0.5">SOC {occ.soc}</div>
@@ -350,13 +390,16 @@ function OccRow({
       </td>
       <td className="px-4 py-4">
         {compMeta ? (
-          <div title={compMeta.blurb}>
-            <span style={{ color: compMeta.color }} className="font-medium">
-              {compMeta.label}
-            </span>
-            <div className="text-xs text-muted font-mono mt-0.5">
-              {formatRatio(occ.graduatesPerOpening)} grads/opening
+          <div className="flex items-start gap-0.5">
+            <div>
+              <span style={{ color: compMeta.color }} className="font-medium">
+                {compMeta.label}
+              </span>
+              <div className="text-xs text-muted font-mono mt-0.5">
+                {formatRatio(occ.graduatesPerOpening)} grads/opening
+              </div>
             </div>
+            <InfoTip label="competition">{compMeta.blurb}</InfoTip>
           </div>
         ) : (
           <span className="text-muted">—</span>
@@ -370,44 +413,39 @@ function OccRow({
       </td>
       <td className="px-4 py-4 text-right">
         <Link
-          to={`${mapBase}/${occ.soc}`}
+          to={`${mapBase}/${occ.soc}${mapFrom}`}
           className="text-primary hover:text-primary-bright text-xs font-medium"
         >
           Map →
         </Link>
       </td>
-    </motion.tr>
+    </tr>
   )
 }
 
 function OccCard({
   occ,
-  index,
   mapBase,
+  mapFrom,
   eloundou,
 }: {
   occ: Occupation
-  index: number
   mapBase: string
+  mapFrom: string
   eloundou?: EloundouScore
 }) {
   const competition = occ.competitionLevel as CompetitionLevel | null
   const compMeta = competition ? COMPETITION_COPY[competition] : null
 
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, delay: Math.min(index * 0.03, 0.2) }}
-      className="rounded-xl border border-border bg-white p-4"
-    >
+    <article className="rounded-xl border border-border bg-white p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="font-medium text-ink leading-snug">{occ.title}</h3>
           <p className="text-xs text-muted font-mono mt-0.5">SOC {occ.soc}</p>
         </div>
         <Link
-          to={`${mapBase}/${occ.soc}`}
+          to={`${mapBase}/${occ.soc}${mapFrom}`}
           className="shrink-0 text-primary text-sm font-medium py-1"
         >
           Map →
@@ -427,7 +465,10 @@ function OccCard({
           <dd className="font-mono text-ink mt-0.5">{formatNumber(occ.openPositions)}</dd>
         </div>
         <div>
-          <dt className="text-xs text-muted">Competition</dt>
+          <dt className="text-xs text-muted inline-flex items-center">
+            Competition
+            {compMeta && <InfoTip label="competition">{compMeta.blurb}</InfoTip>}
+          </dt>
           <dd className="mt-0.5">
             {compMeta ? (
               <>
@@ -450,13 +491,16 @@ function OccCard({
           </dd>
         </div>
         <div>
-          <dt className="text-xs text-muted">Eloundou β</dt>
+          <dt className="text-xs text-muted inline-flex items-center">
+            Eloundou β
+            <InfoTip label="Eloundou β">{ELOUNDOU_COPY}</InfoTip>
+          </dt>
           <dd className="mt-0.5">
             <EloundouCell score={eloundou} />
           </dd>
         </div>
       </dl>
-    </motion.article>
+    </article>
   )
 }
 
@@ -468,39 +512,46 @@ function KarpathyCell({ occ }: { occ: Occupation }) {
     'Band-level explanation; no per-title rationale available.'
 
   return (
-    <div title={aiBlurb}>
-      <span className="font-mono text-ink">
-        {occ.karpathyExposure != null ? `${occ.karpathyExposure}/10` : '—'}
-      </span>
-      <div className="text-xs text-muted mt-0.5">{band}</div>
+    <div className="flex items-start gap-0.5">
+      <div>
+        <span className="font-mono text-ink">
+          {occ.karpathyExposure != null ? `${occ.karpathyExposure}/10` : '—'}
+        </span>
+        <div className="text-xs text-muted mt-0.5">{band}</div>
+      </div>
+      <InfoTip label="AI risk">{aiBlurb}</InfoTip>
     </div>
   )
 }
 
 function EloundouCell({ score }: { score?: EloundouScore }) {
   if (!score || score.gptBeta == null) {
-    return <span className="text-muted" title="No Eloundou match for this SOC">—</span>
+    return <span className="text-muted">—</span>
   }
-  const tip = [
-    ELOUNDOU_COPY,
-    `α ${formatShare(score.gptAlpha)} · β ${formatShare(score.gptBeta)} · γ ${formatShare(score.gptGamma)}`,
-    score.humanBeta != null ? `Human β ${formatShare(score.humanBeta)}` : null,
-    `Averaged from ${score.onetCount} O*NET code(s)`,
-  ]
-    .filter(Boolean)
-    .join('\n')
 
   return (
-    <div title={tip}>
-      <span className="font-mono text-ink">{formatShare(score.gptBeta)}</span>
-      <div
-        className="text-xs mt-0.5 font-medium"
-        style={{ color: score.band ? ELOUNDOU_BAND_COLORS[score.band] : undefined }}
-      >
-        {score.band ?? '—'}
+    <div>
+      <div className="flex items-start gap-0.5">
+        <div>
+          <span className="font-mono text-ink">{formatShare(score.gptBeta)}</span>
+          <div
+            className="text-xs mt-0.5 font-medium"
+            style={{ color: score.band ? ELOUNDOU_BAND_COLORS[score.band] : undefined }}
+          >
+            {score.band ?? '—'}
+          </div>
+        </div>
+        <InfoTip label="Eloundou β">{ELOUNDOU_COPY}</InfoTip>
       </div>
-      <div className="text-[10px] text-muted font-mono mt-0.5">
-        α {formatShare(score.gptAlpha)} · γ {formatShare(score.gptGamma)}
+      <div className="text-[10px] text-muted font-mono mt-1 flex flex-wrap items-center gap-x-1">
+        <span>α {formatShare(score.gptAlpha)}</span>
+        <span>·</span>
+        <span>γ {formatShare(score.gptGamma)}</span>
+        <InfoTip label="α and γ">
+          <p className="mb-2">{ELOUNDOU_ALPHA_COPY}</p>
+          <p>{ELOUNDOU_GAMMA_COPY}</p>
+          <p className="mt-2 text-muted">β (shown above) blends both measures.</p>
+        </InfoTip>
       </div>
     </div>
   )
@@ -513,6 +564,10 @@ function compareOcc(
   direction: SortDirection,
   eloundouBySoc: Map<string, EloundouScore>,
 ): number {
+  const aCatch = isCatchAllOccupation(a)
+  const bCatch = isCatchAllOccupation(b)
+  if (aCatch !== bCatch) return aCatch ? 1 : -1
+
   const av =
     field === 'eloundouBeta'
       ? (eloundouBySoc.get(a.soc)?.gptBeta ?? null)

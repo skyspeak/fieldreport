@@ -57,16 +57,8 @@ export function Layout({ children }: { children: ReactNode }) {
               Salaries & openings: BLS OEWS May 2024. Growth: 10-year BLS projections
               (2024–2034). Competition: IPEDS completions ÷ BLS openings. AI Risk:
               Karpathy/BLS OOH (LLM-scored 2025) + Frey &amp; Osborne (2013 baseline).
-              Eloundou β: Eloundou et al. (2023){' '}
-              <a
-                className="underline hover:text-ink"
-                href="https://github.com/openai/GPTs-are-GPTs"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                GPTs-are-GPTs
-              </a>{' '}
-              GPT-4 β = E1 + 0.5·E2, aggregated O*NET → SOC.
+              Eloundou β: Eloundou et al. (2023) share of tasks exposed to LLMs; α =
+              without tools, γ = with tools; β blends both.
             </p>
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-2 text-muted text-xs">

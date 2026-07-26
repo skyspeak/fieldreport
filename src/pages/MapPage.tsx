@@ -1,16 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { geoAlbersUsa, geoPath } from 'd3-geo'
 import { scaleSequential } from 'd3-scale'
 import { feature } from 'topojson-client'
 import type { Topology, GeometryCollection } from 'topojson-specification'
 import type { FeatureCollection, Geometry } from 'geojson'
-import { motion } from 'framer-motion'
 import { useData } from '../data/DataContext'
 import { DigestSignup } from '../components/DigestSignup'
+import { DocumentMeta } from '../components/DocumentMeta'
+import { InfoTip } from '../components/InfoTip'
 import { ShareSheet } from '../components/ShareSheet'
 import { formatNumber, formatSalary, formatShare } from '../lib/format'
+import { AI_BAND_COPY, ELOUNDOU_COPY, aiBandFromScore } from '../lib/labels'
 import { assetUrl } from '../lib/assetUrl'
+import { isRealMajor, majorDisplayName } from '../lib/majorName'
 import type { MapColorBy } from '../types'
 
 interface StateProps {
@@ -31,12 +34,23 @@ const FIPS_TO_ABBR: Record<string, string> = {
 
 export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
   const { socCode = '' } = useParams()
-  const { occupationsBySoc, eloundouBySoc, stateData, loading, loadStateData } = useData()
+  const [searchParams] = useSearchParams()
+  const { majors, occupationsBySoc, eloundouBySoc, stateData, loading, loadStateData } =
+    useData()
   const [colorBy, setColorBy] = useState<MapColorBy>('employment')
   const [selected, setSelected] = useState<string | null>(null)
   const [topo, setTopo] = useState<FeatureCollection<Geometry, StateProps> | null>(null)
   const [hover, setHover] = useState<string | null>(null)
   const home = routePrefix || '/'
+  const resultsBase = `${routePrefix}/results`
+
+  const fromCip = searchParams.get('from') ?? ''
+  const fromMajor =
+    fromCip && isRealMajor(fromCip) ? majors.find((m) => m.cip === fromCip) : undefined
+  const backToResults = fromMajor ? `${resultsBase}/${fromMajor.cip}` : home
+  const backLabel = fromMajor
+    ? `← Back to ${majorDisplayName(fromMajor.name)}`
+    : '← Back to search'
 
   const occupation = occupationsBySoc.get(socCode)
   const eloundou = eloundouBySoc.get(socCode)
@@ -133,18 +147,29 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
   if (!occupation) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-12">
-        <Link to={home} className="text-sm text-muted hover:text-ink mb-6 inline-block">
-          ← Back
+        <DocumentMeta title="Occupation not found" />
+        <Link to={backToResults} className="text-sm text-muted hover:text-ink mb-6 inline-block">
+          {backLabel}
         </Link>
         <h1 className="font-serif text-3xl text-ink">Occupation not found</h1>
       </div>
     )
   }
 
+  const aiBand = aiBandFromScore(occupation.karpathyExposure)
+  const aiTip =
+    occupation.karpathyRationale ||
+    AI_BAND_COPY[aiBand] ||
+    'AI Risk is a 0–10 exposure score for how much of this job LLMs can already do.'
+
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10 sm:py-12">
-      <Link to={home} className="text-sm text-muted hover:text-ink mb-6 inline-block">
-        ← Back to results
+      <DocumentMeta
+        title={occupation.title}
+        description={`State map for ${occupation.title} with BLS wages, AI Risk, and Eloundou β.`}
+      />
+      <Link to={backToResults} className="text-sm text-muted hover:text-ink mb-6 inline-block">
+        {backLabel}
       </Link>
 
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -156,8 +181,9 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
             {occupation.title}
           </h1>
           <p className="text-muted mt-3 max-w-xl text-sm sm:text-base">
-            Tap any state for a deep-dive. Color by employment, median salary, or jobs × AI
-            exposure (redder = more at risk).
+            Pick a state below for employment and salary. On larger screens, you can also
+            use the map. Color by employment, median salary, or jobs × AI exposure (redder =
+            more at risk).
           </p>
         </div>
         <div className="shrink-0 w-full sm:w-auto sm:pt-6">
@@ -178,10 +204,12 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
           value={
             occupation.karpathyExposure != null ? `${occupation.karpathyExposure}/10` : '—'
           }
+          tip={aiTip}
         />
         <Metric
           label="Eloundou β"
           value={eloundou?.gptBeta != null ? formatShare(eloundou.gptBeta) : '—'}
+          tip={ELOUNDOU_COPY}
         />
       </div>
 
@@ -198,7 +226,7 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
             key={key}
             type="button"
             onClick={() => setColorBy(key)}
-            className={`rounded-lg px-3 py-1.5 transition-colors ${
+            className={`rounded-lg px-3 py-1.5 transition-colors min-h-11 sm:min-h-0 ${
               colorBy === key
                 ? 'bg-primary text-white'
                 : 'text-muted hover:text-ink bg-white border border-border'
@@ -209,12 +237,62 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-[1fr_280px] gap-6">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-white border border-border rounded-xl p-3 sm:p-5 overflow-hidden"
+      <div className="lg:hidden mb-6">
+        <label htmlFor="state-select" className="sr-only">
+          Choose a state
+        </label>
+        <select
+          id="state-select"
+          className="w-full min-h-12 rounded-xl border border-border-bright bg-white px-4 py-3 text-base text-ink focus:outline-none focus:ring-2 focus:ring-primary mb-4"
+          value={selected ?? ''}
+          onChange={(e) => setSelected(e.target.value || null)}
         >
+          <option value="">Choose a state…</option>
+          {ranked.map((r) => (
+            <option key={r.abbr} value={r.abbr}>
+              {r.name}
+            </option>
+          ))}
+        </select>
+
+        <ul className="rounded-xl border border-border bg-white divide-y divide-border max-h-[min(24rem,50vh)] overflow-auto">
+          {ranked.map((r, i) => {
+            const isActive = selected === r.abbr
+            return (
+              <li key={r.abbr}>
+                <button
+                  type="button"
+                  onClick={() => setSelected(r.abbr)}
+                  className={`w-full text-left px-4 py-3.5 min-h-12 flex items-center justify-between gap-3 transition-colors ${
+                    isActive ? 'bg-primary/10' : 'hover:bg-surface'
+                  }`}
+                >
+                  <span className="min-w-0">
+                    <span className="text-xs font-mono text-muted mr-2">#{i + 1}</span>
+                    <span className="font-medium text-ink">{r.name}</span>
+                  </span>
+                  <span className="shrink-0 font-mono text-sm text-ink/80 tabular-nums">
+                    {colorBy === 'salary'
+                      ? formatSalary(r.salary)
+                      : colorBy === 'aiImpact'
+                        ? formatNumber(r.value)
+                        : formatNumber(r.employment)}
+                  </span>
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+
+        {active && (
+          <div className="mt-4 rounded-xl border border-border bg-white p-5">
+            <StateDetail active={active} rankedCount={ranked.length} colorBy={colorBy} />
+          </div>
+        )}
+      </div>
+
+      <div className="hidden lg:grid lg:grid-cols-[1fr_280px] gap-6">
+        <div className="bg-white border border-border rounded-xl p-3 sm:p-5 overflow-hidden">
           {!stateData || !topo ? (
             <p className="text-muted py-20 text-center">Loading map data...</p>
           ) : (
@@ -230,10 +308,21 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
                     fill={fill}
                     stroke={isActive ? '#141414' : '#ffffff'}
                     strokeWidth={isActive ? 2 : 0.75}
-                    className="cursor-pointer transition-[stroke-width]"
+                    className="cursor-pointer transition-[stroke-width] focus:outline-none focus-visible:stroke-ink"
+                    role="button"
+                    tabIndex={0}
+                    aria-label={p.name}
                     onMouseEnter={() => setHover(p.abbr)}
                     onMouseLeave={() => setHover(null)}
+                    onFocus={() => setHover(p.abbr)}
+                    onBlur={() => setHover(null)}
                     onClick={() => setSelected(p.abbr)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        setSelected(p.abbr)
+                      }
+                    }}
                   >
                     <title>{p.name}</title>
                   </path>
@@ -242,44 +331,14 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
             </svg>
           )}
           <Legend colorBy={colorBy} values={Object.values(values).filter((v) => v > 0)} />
-        </motion.div>
+        </div>
 
         <aside className="bg-white border border-border rounded-xl p-5 h-fit">
           {active ? (
-            <>
-              <h2 className="font-serif text-2xl text-ink">{active.name}</h2>
-              <p className="text-xs text-muted font-mono mt-1">
-                #{active.rank || '—'} of {ranked.length || '—'}
-              </p>
-              <dl className="mt-6 space-y-4 text-sm">
-                <div>
-                  <dt className="text-muted">Employment</dt>
-                  <dd className="font-mono text-lg text-ink mt-0.5">
-                    {formatNumber(active.employment)}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-muted">Median salary</dt>
-                  <dd className="font-mono text-lg text-ink mt-0.5">
-                    {formatSalary(active.salary)}
-                  </dd>
-                </div>
-                {colorBy === 'aiImpact' && (
-                  <div>
-                    <dt className="text-muted">AI impact</dt>
-                    <dd className="font-mono text-lg text-ink mt-0.5">
-                      {formatNumber(active.value)}
-                    </dd>
-                    <p className="text-xs text-muted mt-1">
-                      state employment × AI exposure / 10
-                    </p>
-                  </div>
-                )}
-              </dl>
-            </>
+            <StateDetail active={active} rankedCount={ranked.length} colorBy={colorBy} />
           ) : (
             <p className="text-muted text-sm leading-relaxed">
-              Tap a state to see employment and salary for{' '}
+              Click a state to see employment and salary for{' '}
               {occupation.title.toLowerCase()}.
             </p>
           )}
@@ -296,11 +355,68 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
   )
 }
 
-function Metric({ label, value }: { label: string; value: string }) {
+function StateDetail({
+  active,
+  rankedCount,
+  colorBy,
+}: {
+  active: {
+    name: string
+    employment: number
+    salary: number
+    value: number
+    rank: number
+  }
+  rankedCount: number
+  colorBy: MapColorBy
+}) {
+  return (
+    <>
+      <h2 className="font-serif text-2xl text-ink">{active.name}</h2>
+      <p className="text-xs text-muted font-mono mt-1">
+        #{active.rank || '—'} of {rankedCount || '—'}
+      </p>
+      <dl className="mt-6 space-y-4 text-sm">
+        <div>
+          <dt className="text-muted">Employment</dt>
+          <dd className="font-mono text-lg text-ink mt-0.5">
+            {formatNumber(active.employment)}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-muted">Median salary</dt>
+          <dd className="font-mono text-lg text-ink mt-0.5">
+            {formatSalary(active.salary)}
+          </dd>
+        </div>
+        {colorBy === 'aiImpact' && (
+          <div>
+            <dt className="text-muted">AI impact</dt>
+            <dd className="font-mono text-lg text-ink mt-0.5">
+              {formatNumber(active.value)}
+            </dd>
+            <p className="text-xs text-muted mt-1">state employment × AI exposure / 10</p>
+          </div>
+        )}
+      </dl>
+    </>
+  )
+}
+
+function Metric({
+  label,
+  value,
+  tip,
+}: {
+  label: string
+  value: string
+  tip?: string
+}) {
   return (
     <div className="bg-white border border-border rounded-xl px-3 sm:px-4 py-3 min-w-0 sm:min-w-[120px] flex-1 sm:flex-none">
-      <div className="text-[10px] sm:text-xs text-muted uppercase tracking-wider leading-tight">
+      <div className="text-[10px] sm:text-xs text-muted uppercase tracking-wider leading-tight inline-flex items-center">
         {label}
+        {tip && <InfoTip label={label}>{tip}</InfoTip>}
       </div>
       <div className="font-mono text-ink mt-1 text-sm sm:text-base tabular-nums break-all">
         {value}

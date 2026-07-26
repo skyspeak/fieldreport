@@ -48,7 +48,13 @@ export function aiBandFromScore(score: number | null | undefined): string {
 }
 
 export const ELOUNDOU_COPY =
-  'Eloundou et al. (2023) GPT-4 exposure β = E1 + 0.5·E2: share of occupation tasks exposed to LLMs, with partial credit for tool-augmented work. From OpenAI GPTs-are-GPTs.'
+  'LLM Risk (β) is the share of an occupation’s tasks exposed to large language models, from Eloundou et al. (2023) / OpenAI “GPTs are GPTs.” Higher = more of the job can be assisted or automated by today’s LLMs.'
+
+export const ELOUNDOU_ALPHA_COPY =
+  'α (alpha): share of tasks exposed to LLMs with no extra tools — what a model can do “out of the box.”'
+
+export const ELOUNDOU_GAMMA_COPY =
+  'γ (gamma): share of tasks exposed when LLMs are paired with additional software or tools. Always ≥ β.'
 
 export const ELOUNDOU_BAND_COLORS: Record<string, string> = {
   Low: '#059669',

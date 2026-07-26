@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
+import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Fuse from 'fuse.js'
-import { motion, AnimatePresence } from 'framer-motion'
 import type { Major } from '../types'
+import { majorDisplayName } from '../lib/majorName'
+import { searchMajors, toSearchable } from '../lib/majorSearch'
 
 interface MajorSearchProps {
   majors: Major[]
@@ -21,31 +21,25 @@ export function MajorSearch({
   placeholder = 'Search a major — e.g. Mechanical Engineering',
 }: MajorSearchProps) {
   const navigate = useNavigate()
+  const listId = useId()
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState(0)
   const rootRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const activeRef = useRef(0)
 
-  const fuse = useMemo(
-    () =>
-      new Fuse(majors, {
-        keys: [
-          { name: 'name', weight: 0.7 },
-          { name: 'category', weight: 0.2 },
-          { name: 'cip', weight: 0.1 },
-        ],
-        threshold: 0.35,
-        ignoreLocation: true,
-      }),
-    [majors],
+  const searchable = useMemo(() => toSearchable(majors), [majors])
+
+  const results = useMemo(
+    () => searchMajors(searchable, query, 10),
+    [searchable, query],
   )
 
-  const results = useMemo(() => {
-    const q = query.trim()
-    if (!q) return majors.slice(0, 8)
-    return fuse.search(q, { limit: 10 }).map((r) => r.item)
-  }, [fuse, majors, query])
+  const showList = open
+  const hasResults = results.length > 0
+  const emptyQuery = query.trim().length === 0
+  const showEmpty = showList && !hasResults && !emptyQuery
 
   useEffect(() => {
     if (autoFocus) inputRef.current?.focus()
@@ -61,32 +55,56 @@ export function MajorSearch({
 
   useEffect(() => {
     setActive(0)
+    activeRef.current = 0
   }, [query])
 
+  useEffect(() => {
+    activeRef.current = active
+  }, [active])
+
   function select(major: Major) {
-    setQuery(major.name)
-    setOpen(false)
+    // Navigate first so Enter never “closes with no effect”
     navigate(`${resultsBase}/${major.cip}`)
+    setQuery(majorDisplayName(major.name))
+    setOpen(false)
   }
 
-  function onKeyDown(e: KeyboardEvent) {
-    if (!open && (e.key === 'ArrowDown' || e.key === 'Enter')) {
-      setOpen(true)
-      return
-    }
+  function submitActive() {
+    const pick = results[activeRef.current] ?? results[0]
+    if (pick) select(pick)
+  }
+
+  function onSubmit(e: FormEvent) {
+    e.preventDefault()
+    if (results.length > 0) submitActive()
+    else setOpen(true)
+  }
+
+  function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'ArrowDown') {
       e.preventDefault()
-      setActive((i) => Math.min(i + 1, results.length - 1))
+      if (!open) {
+        setOpen(true)
+        return
+      }
+      if (!hasResults) return
+      setActive((i) => {
+        const next = Math.min(i + 1, results.length - 1)
+        activeRef.current = next
+        return next
+      })
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
-      setActive((i) => Math.max(i - 1, 0))
-    } else if (e.key === 'Enter') {
-      e.preventDefault()
-      const pick = results[active]
-      if (pick) select(pick)
+      if (!hasResults) return
+      setActive((i) => {
+        const next = Math.max(i - 1, 0)
+        activeRef.current = next
+        return next
+      })
     } else if (e.key === 'Escape') {
       setOpen(false)
     }
+    // Enter is handled by the form’s onSubmit — do not duplicate here
   }
 
   const pad =
@@ -94,13 +112,14 @@ export function MajorSearch({
       ? 'py-3.5 sm:py-4 text-base sm:text-lg pl-11 sm:pl-12 pr-4'
       : 'py-2.5 text-base sm:text-sm pl-10 pr-3'
   const iconLeft = size === 'lg' ? 'left-3.5 sm:left-4' : 'left-3'
+  const activeOptionId = hasResults ? `${listId}-opt-${active}` : undefined
 
   return (
     <div
       ref={rootRef}
       className={`relative w-full ${size === 'lg' ? 'max-w-2xl' : ''}`}
     >
-      <div className="relative">
+      <form onSubmit={onSubmit} className="relative">
         <svg
           className={`absolute ${iconLeft} top-1/2 -translate-y-1/2 text-muted pointer-events-none`}
           width={size === 'lg' ? 20 : 16}
@@ -109,13 +128,15 @@ export function MajorSearch({
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
+          aria-hidden
         >
           <circle cx="11" cy="11" r="7" />
           <path d="M20 20l-3.5-3.5" />
         </svg>
         <input
           ref={inputRef}
-          type="search"
+          type="text"
+          role="combobox"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value)
@@ -126,48 +147,59 @@ export function MajorSearch({
           placeholder={placeholder}
           className={`w-full rounded-xl bg-white border border-border-bright text-ink placeholder:text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm ${pad}`}
           aria-autocomplete="list"
-          aria-expanded={open}
-          aria-controls="major-results"
-          role="combobox"
+          aria-expanded={showList}
+          aria-controls={listId}
+          aria-activedescendant={activeOptionId}
           enterKeyHint="search"
           autoCapitalize="off"
           autoCorrect="off"
+          spellCheck={false}
+          autoComplete="off"
         />
-      </div>
+      </form>
 
-      <AnimatePresence>
-        {open && results.length > 0 && (
-          <motion.ul
-            id="major-results"
-            role="listbox"
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.15 }}
-            className="absolute z-40 mt-2 w-full max-h-[min(20rem,50vh)] overflow-auto rounded-xl border border-border-bright bg-white shadow-xl"
-          >
-            {results.map((major, i) => (
-              <li key={major.cip} role="option" aria-selected={i === active}>
+      {showList && (
+        <ul
+          id={listId}
+          role="listbox"
+          className="absolute z-40 mt-2 w-full max-h-[min(20rem,50vh)] overflow-auto rounded-xl border border-border-bright bg-white shadow-xl"
+        >
+          {hasResults ? (
+            results.map((major, i) => (
+              <li
+                key={major.cip}
+                id={`${listId}-opt-${i}`}
+                role="option"
+                aria-selected={i === active}
+              >
                 <button
                   type="button"
-                  onMouseEnter={() => setActive(i)}
+                  onMouseEnter={() => {
+                    setActive(i)
+                    activeRef.current = i
+                  }}
                   onClick={() => select(major)}
                   className={`w-full text-left px-4 py-3 transition-colors ${
                     i === active ? 'bg-primary/10 text-ink' : 'text-ink/80 hover:bg-surface'
                   }`}
                 >
                   <div className="font-medium text-sm sm:text-base leading-snug">
-                    {major.name.replace(/\.$/, '')}
+                    {major.displayName}
                   </div>
                   <div className="text-xs text-muted mt-0.5 font-mono">
                     {major.category} · CIP {major.cip}
                   </div>
                 </button>
               </li>
-            ))}
-          </motion.ul>
-        )}
-      </AnimatePresence>
+            ))
+          ) : showEmpty ? (
+            <li className="px-4 py-4 text-sm text-muted" role="presentation">
+              No majors match “{query.trim()}”. Try a broader term — e.g. Biology,
+              Nursing, or Economics.
+            </li>
+          ) : null}
+        </ul>
+      )}
     </div>
   )
 }
