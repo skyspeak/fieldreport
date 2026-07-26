@@ -109,8 +109,8 @@ export function MajorSearch({
 
   const pad =
     size === 'lg'
-      ? 'py-3.5 sm:py-4 text-base sm:text-lg pl-11 sm:pl-12 pr-4'
-      : 'py-2.5 text-base sm:text-sm pl-10 pr-3'
+      ? 'py-3.5 sm:py-4 text-base sm:text-lg pl-11 sm:pl-12 pr-4 min-h-12'
+      : 'py-3 sm:py-2.5 text-base sm:text-sm pl-10 pr-3 min-h-11 sm:min-h-0'
   const iconLeft = size === 'lg' ? 'left-3.5 sm:left-4' : 'left-3'
   const activeOptionId = hasResults ? `${listId}-opt-${active}` : undefined
 
@@ -158,7 +158,7 @@ export function MajorSearch({
         />
       </form>
 
-      {showList && (
+      {(showList && (hasResults || showEmpty)) && (
         <ul
           id={listId}
           role="listbox"
@@ -179,7 +179,7 @@ export function MajorSearch({
                     activeRef.current = i
                   }}
                   onClick={() => select(major)}
-                  className={`w-full text-left px-4 py-3 transition-colors ${
+                  className={`w-full text-left px-4 py-3.5 sm:py-3 min-h-12 sm:min-h-0 transition-colors ${
                     i === active ? 'bg-primary/10 text-ink' : 'text-ink/80 hover:bg-surface'
                   }`}
                 >

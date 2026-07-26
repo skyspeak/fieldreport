@@ -92,7 +92,10 @@ export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) 
     return (
       <div className="mx-auto max-w-7xl px-4 py-12">
         <DocumentMeta title="Major not found" />
-        <Link to={home} className="text-sm text-muted hover:text-ink mb-6 inline-block">
+        <Link
+          to={home}
+          className="text-sm text-muted hover:text-ink mb-4 sm:mb-6 inline-flex items-center min-h-11 py-2"
+        >
           ← Back
         </Link>
         <h1 className="font-serif text-3xl text-ink">Major not found</h1>
@@ -102,7 +105,7 @@ export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) 
         </p>
         <Link
           to={home}
-          className="mt-6 inline-flex rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-bright transition-colors"
+          className="mt-6 inline-flex w-full sm:w-auto justify-center rounded-xl bg-primary px-4 py-3 text-sm font-medium text-white hover:bg-primary-bright transition-colors min-h-11"
         >
           Search majors
         </Link>
@@ -120,11 +123,14 @@ export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) 
         title={displayName}
         description={`BLS salaries, openings, AI Risk, and Eloundou β for careers linked to ${displayName}.`}
       />
-      <Link to={home} className="text-sm text-muted hover:text-ink mb-6 inline-block">
+      <Link
+        to={home}
+        className="text-sm text-muted hover:text-ink mb-4 sm:mb-6 inline-flex items-center min-h-11 py-2"
+      >
         ← Back
       </Link>
 
-      <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="mb-8 sm:mb-10 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-xs uppercase tracking-wider text-muted font-mono mb-2 break-words">
             {major.category} · CIP {major.cip}
@@ -132,7 +138,7 @@ export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) 
           <h1 className="font-serif text-2xl sm:text-4xl text-ink tracking-tight text-balance">
             {displayName}
           </h1>
-          <p className="text-muted mt-3 max-w-xl text-sm sm:text-base">
+          <p className="text-muted mt-3 max-w-xl text-sm sm:text-base leading-relaxed">
             Occupations linked to this major, with BLS entry wages, openings, competition, AI
             Risk, and Eloundou β (LLM exposure).
           </p>
@@ -149,8 +155,8 @@ export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) 
         <p className="text-muted">No occupations found for this major.</p>
       ) : (
         <>
-          <div className="flex flex-wrap items-center gap-2 mb-4 text-sm overflow-x-auto pb-1 -mx-1 px-1">
-            <span className="text-muted">Sort:</span>
+          <div className="flex flex-nowrap sm:flex-wrap items-center gap-2 mb-4 text-sm overflow-x-auto overscroll-x-contain pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
+            <span className="text-muted shrink-0">Sort:</span>
             <SortChip
               active={sortField === 'entrySalary'}
               label="Entry Salary"
@@ -228,7 +234,7 @@ function SortChip({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
+      className={`shrink-0 rounded-lg px-3 py-2.5 sm:py-1.5 text-sm transition-colors min-h-11 sm:min-h-0 whitespace-nowrap ${
         active
           ? 'bg-primary text-white'
           : 'text-muted hover:text-ink bg-white border border-border'
@@ -446,25 +452,29 @@ function OccCard({
         </div>
         <Link
           to={`${mapBase}/${occ.soc}${mapFrom}`}
-          className="shrink-0 text-primary text-sm font-medium py-1"
+          className="shrink-0 inline-flex items-center rounded-lg border border-primary/30 px-3 py-2 text-primary text-sm font-medium min-h-11 hover:bg-primary/5"
         >
           Map →
         </Link>
       </div>
 
-      <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
-        <div>
+      <dl className="mt-4 grid grid-cols-2 gap-x-3 gap-y-4 text-sm">
+        <div className="min-w-0">
           <dt className="text-xs text-muted">Entry salary</dt>
-          <dd className="font-mono text-ink mt-0.5">{formatSalary(occ.entrySalary)}</dd>
+          <dd className="font-mono text-ink mt-0.5 break-words">
+            {formatSalary(occ.entrySalary)}
+          </dd>
           <p className="text-[11px] text-muted mt-0.5">
             median {formatSalary(occ.medianSalary)}
           </p>
         </div>
-        <div>
+        <div className="min-w-0">
           <dt className="text-xs text-muted">Openings</dt>
-          <dd className="font-mono text-ink mt-0.5">{formatNumber(occ.openPositions)}</dd>
+          <dd className="font-mono text-ink mt-0.5">
+            {formatNumber(occ.openPositions)}
+          </dd>
         </div>
-        <div>
+        <div className="min-w-0">
           <dt className="text-xs text-muted inline-flex items-center">
             Competition
             {compMeta && <InfoTip label="competition">{compMeta.blurb}</InfoTip>}
@@ -484,19 +494,26 @@ function OccCard({
             )}
           </dd>
         </div>
-        <div>
-          <dt className="text-xs text-muted">AI Risk</dt>
+        <div className="min-w-0">
+          <dt className="text-xs text-muted inline-flex items-center">
+            AI Risk
+            <InfoTip label="AI risk">
+              {occ.karpathyRationale ||
+                AI_BAND_COPY[aiBandFromScore(occ.karpathyExposure)] ||
+                'Band-level explanation; no per-title rationale available.'}
+            </InfoTip>
+          </dt>
           <dd className="mt-0.5">
-            <KarpathyCell occ={occ} />
+            <KarpathyCell occ={occ} tip={false} />
           </dd>
         </div>
-        <div>
+        <div className="min-w-0 col-span-2">
           <dt className="text-xs text-muted inline-flex items-center">
             Eloundou β
             <InfoTip label="Eloundou β">{ELOUNDOU_COPY}</InfoTip>
           </dt>
           <dd className="mt-0.5">
-            <EloundouCell score={eloundou} />
+            <EloundouCell score={eloundou} tip={false} />
           </dd>
         </div>
       </dl>
@@ -504,7 +521,7 @@ function OccCard({
   )
 }
 
-function KarpathyCell({ occ }: { occ: Occupation }) {
+function KarpathyCell({ occ, tip = true }: { occ: Occupation; tip?: boolean }) {
   const band = aiBandFromScore(occ.karpathyExposure)
   const aiBlurb =
     occ.karpathyRationale ||
@@ -519,12 +536,18 @@ function KarpathyCell({ occ }: { occ: Occupation }) {
         </span>
         <div className="text-xs text-muted mt-0.5">{band}</div>
       </div>
-      <InfoTip label="AI risk">{aiBlurb}</InfoTip>
+      {tip ? <InfoTip label="AI risk">{aiBlurb}</InfoTip> : null}
     </div>
   )
 }
 
-function EloundouCell({ score }: { score?: EloundouScore }) {
+function EloundouCell({
+  score,
+  tip = true,
+}: {
+  score?: EloundouScore
+  tip?: boolean
+}) {
   if (!score || score.gptBeta == null) {
     return <span className="text-muted">—</span>
   }
@@ -541,7 +564,7 @@ function EloundouCell({ score }: { score?: EloundouScore }) {
             {score.band ?? '—'}
           </div>
         </div>
-        <InfoTip label="Eloundou β">{ELOUNDOU_COPY}</InfoTip>
+        {tip ? <InfoTip label="Eloundou β">{ELOUNDOU_COPY}</InfoTip> : null}
       </div>
       <div className="text-[10px] text-muted font-mono mt-1 flex flex-wrap items-center gap-x-1">
         <span>α {formatShare(score.gptAlpha)}</span>

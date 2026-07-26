@@ -61,14 +61,14 @@ export function Layout({ children }: { children: ReactNode }) {
               without tools, γ = with tools; β blends both.
             </p>
           </div>
-          <div className="flex flex-wrap gap-x-4 gap-y-2 text-muted text-xs">
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted text-xs">
             {letterUrl && (
-              <a className="hover:text-ink underline" href={letterUrl}>
+              <a className="hover:text-ink underline inline-flex items-center min-h-11 py-2" href={letterUrl}>
                 The Letter
               </a>
             )}
             <a
-              className="hover:text-ink underline"
+              className="hover:text-ink underline inline-flex items-center min-h-11 py-2"
               href="https://www.bls.gov/oes/"
               target="_blank"
               rel="noopener noreferrer"
@@ -76,7 +76,7 @@ export function Layout({ children }: { children: ReactNode }) {
               BLS OEWS
             </a>
             <a
-              className="hover:text-ink underline"
+              className="hover:text-ink underline inline-flex items-center min-h-11 py-2"
               href="https://www.bls.gov/emp/"
               target="_blank"
               rel="noopener noreferrer"
@@ -84,7 +84,7 @@ export function Layout({ children }: { children: ReactNode }) {
               BLS Projections
             </a>
             <a
-              className="hover:text-ink underline"
+              className="hover:text-ink underline inline-flex items-center min-h-11 py-2"
               href="https://github.com/openai/GPTs-are-GPTs"
               target="_blank"
               rel="noopener noreferrer"
@@ -92,7 +92,7 @@ export function Layout({ children }: { children: ReactNode }) {
               GPTs-are-GPTs
             </a>
             <a
-              className="hover:text-ink underline"
+              className="hover:text-ink underline inline-flex items-center min-h-11 py-2"
               href="https://www.onetcenter.org/"
               target="_blank"
               rel="noopener noreferrer"

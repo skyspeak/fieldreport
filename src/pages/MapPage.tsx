@@ -32,6 +32,21 @@ const FIPS_TO_ABBR: Record<string, string> = {
   '54': 'WV', '55': 'WI', '56': 'WY',
 }
 
+const NAME_TO_ABBR: Record<string, string> = {
+  Alabama: 'AL', Alaska: 'AK', Arizona: 'AZ', Arkansas: 'AR', California: 'CA',
+  Colorado: 'CO', Connecticut: 'CT', Delaware: 'DE', 'District of Columbia': 'DC',
+  Florida: 'FL', Georgia: 'GA', Hawaii: 'HI', Idaho: 'ID', Illinois: 'IL',
+  Indiana: 'IN', Iowa: 'IA', Kansas: 'KS', Kentucky: 'KY', Louisiana: 'LA',
+  Maine: 'ME', Maryland: 'MD', Massachusetts: 'MA', Michigan: 'MI', Minnesota: 'MN',
+  Mississippi: 'MS', Missouri: 'MO', Montana: 'MT', Nebraska: 'NE', Nevada: 'NV',
+  'New Hampshire': 'NH', 'New Jersey': 'NJ', 'New Mexico': 'NM', 'New York': 'NY',
+  'North Carolina': 'NC', 'North Dakota': 'ND', Ohio: 'OH', Oklahoma: 'OK',
+  Oregon: 'OR', Pennsylvania: 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
+  'South Dakota': 'SD', Tennessee: 'TN', Texas: 'TX', Utah: 'UT', Vermont: 'VT',
+  Virginia: 'VA', Washington: 'WA', 'West Virginia': 'WV', Wisconsin: 'WI',
+  Wyoming: 'WY',
+}
+
 export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
   const { socCode = '' } = useParams()
   const [searchParams] = useSearchParams()
@@ -62,7 +77,9 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
   useEffect(() => {
     let cancelled = false
     ;(async () => {
-      const res = await fetch(assetUrl('us-states-topo.json'))
+      const res = await fetch(assetUrl('us-states-topo.json'), {
+        cache: import.meta.env.DEV ? 'no-cache' : 'force-cache',
+      })
       const raw = (await res.json()) as Topology<{ states: GeometryCollection }>
       const obj = raw.objects.states ?? Object.values(raw.objects)[0]
       const fc = feature(raw, obj) as unknown as FeatureCollection<Geometry, StateProps>
@@ -128,6 +145,12 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
       .sort((a, b) => b.value - a.value)
   }, [values, stateData, socCode])
 
+  const rankByAbbr = useMemo(() => {
+    const map = new Map<string, number>()
+    ranked.forEach((r, i) => map.set(r.abbr, i + 1))
+    return map
+  }, [ranked])
+
   const activeAbbr = selected ?? hover
   const active = activeAbbr
     ? {
@@ -136,7 +159,7 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
         employment: stateData?.[activeAbbr]?.occupations[socCode]?.employment ?? 0,
         salary: stateData?.[activeAbbr]?.occupations[socCode]?.medianSalary ?? 0,
         value: values[activeAbbr] ?? 0,
-        rank: ranked.findIndex((r) => r.abbr === activeAbbr) + 1,
+        rank: rankByAbbr.get(activeAbbr) ?? 0,
       }
     : null
 
@@ -148,8 +171,11 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-12">
         <DocumentMeta title="Occupation not found" />
-        <Link to={backToResults} className="text-sm text-muted hover:text-ink mb-6 inline-block">
-          {backLabel}
+        <Link
+          to={backToResults}
+          className="text-sm text-muted hover:text-ink mb-4 sm:mb-6 inline-flex items-center min-h-11 py-2 max-w-full"
+        >
+          <span className="truncate">{backLabel}</span>
         </Link>
         <h1 className="font-serif text-3xl text-ink">Occupation not found</h1>
       </div>
@@ -168,11 +194,14 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
         title={occupation.title}
         description={`State map for ${occupation.title} with BLS wages, AI Risk, and Eloundou β.`}
       />
-      <Link to={backToResults} className="text-sm text-muted hover:text-ink mb-6 inline-block">
-        {backLabel}
+      <Link
+        to={backToResults}
+        className="text-sm text-muted hover:text-ink mb-4 sm:mb-6 inline-flex items-center min-h-11 py-2 max-w-full"
+      >
+        <span className="truncate">{backLabel}</span>
       </Link>
 
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="mb-6 sm:mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-xs uppercase tracking-wider text-muted font-mono mb-2">
             SOC {occupation.soc}
@@ -180,10 +209,17 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
           <h1 className="font-serif text-2xl sm:text-4xl text-ink tracking-tight text-balance">
             {occupation.title}
           </h1>
-          <p className="text-muted mt-3 max-w-xl text-sm sm:text-base">
-            Pick a state below for employment and salary. On larger screens, you can also
-            use the map. Color by employment, median salary, or jobs × AI exposure (redder =
-            more at risk).
+          <p className="text-muted mt-3 max-w-xl text-sm sm:text-base leading-relaxed">
+            Pick a state for employment and salary
+            <span className="hidden lg:inline">
+              {' '}
+              — tap the map or use the list. Color by employment, median salary, or jobs × AI
+              exposure (redder = more at risk)
+            </span>
+            <span className="lg:hidden">
+              . Color by employment, median salary, or jobs × AI exposure
+            </span>
+            .
           </p>
         </div>
         <div className="shrink-0 w-full sm:w-auto sm:pt-6">
@@ -194,7 +230,7 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 text-sm w-full mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:flex lg:flex-wrap gap-2.5 sm:gap-4 text-sm w-full mb-6">
         <Metric label="Entry Salary" value={formatSalary(occupation.entrySalary)} />
         <Metric label="Median Salary" value={formatSalary(occupation.medianSalary)} />
         <Metric label="Total Employment" value={formatNumber(occupation.totalEmployment)} />
@@ -214,7 +250,7 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2 mb-6 text-sm">
-        <span className="text-muted">Color by:</span>
+        <span className="text-muted shrink-0">Color by:</span>
         {(
           [
             ['employment', 'Employment'],
@@ -226,7 +262,7 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
             key={key}
             type="button"
             onClick={() => setColorBy(key)}
-            className={`rounded-lg px-3 py-1.5 transition-colors min-h-11 sm:min-h-0 ${
+            className={`rounded-lg px-3 py-2.5 sm:py-1.5 transition-colors min-h-11 sm:min-h-0 ${
               colorBy === key
                 ? 'bg-primary text-white'
                 : 'text-muted hover:text-ink bg-white border border-border'
@@ -256,32 +292,38 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
         </select>
 
         <ul className="rounded-xl border border-border bg-white divide-y divide-border max-h-[min(24rem,50vh)] overflow-auto">
-          {ranked.map((r, i) => {
-            const isActive = selected === r.abbr
-            return (
-              <li key={r.abbr}>
-                <button
-                  type="button"
-                  onClick={() => setSelected(r.abbr)}
-                  className={`w-full text-left px-4 py-3.5 min-h-12 flex items-center justify-between gap-3 transition-colors ${
-                    isActive ? 'bg-primary/10' : 'hover:bg-surface'
-                  }`}
-                >
-                  <span className="min-w-0">
-                    <span className="text-xs font-mono text-muted mr-2">#{i + 1}</span>
-                    <span className="font-medium text-ink">{r.name}</span>
-                  </span>
-                  <span className="shrink-0 font-mono text-sm text-ink/80 tabular-nums">
-                    {colorBy === 'salary'
-                      ? formatSalary(r.salary)
-                      : colorBy === 'aiImpact'
-                        ? formatNumber(r.value)
-                        : formatNumber(r.employment)}
-                  </span>
-                </button>
-              </li>
-            )
-          })}
+          {ranked.length === 0 ? (
+            <li className="px-4 py-6 text-sm text-muted text-center">
+              {!stateData ? 'Loading state data…' : 'No state data for this occupation.'}
+            </li>
+          ) : (
+            ranked.map((r, i) => {
+              const isActive = selected === r.abbr
+              return (
+                <li key={r.abbr}>
+                  <button
+                    type="button"
+                    onClick={() => setSelected(r.abbr)}
+                    className={`w-full text-left px-4 py-3.5 min-h-12 flex items-center justify-between gap-3 transition-colors ${
+                      isActive ? 'bg-primary/10' : 'hover:bg-surface'
+                    }`}
+                  >
+                    <span className="min-w-0">
+                      <span className="text-xs font-mono text-muted mr-2">#{i + 1}</span>
+                      <span className="font-medium text-ink">{r.name}</span>
+                    </span>
+                    <span className="shrink-0 font-mono text-sm text-ink/80 tabular-nums">
+                      {colorBy === 'salary'
+                        ? formatSalary(r.salary)
+                        : colorBy === 'aiImpact'
+                          ? formatNumber(r.value)
+                          : formatNumber(r.employment)}
+                    </span>
+                  </button>
+                </li>
+              )
+            })
+          )}
         </ul>
 
         {active && (
@@ -414,11 +456,11 @@ function Metric({
 }) {
   return (
     <div className="bg-white border border-border rounded-xl px-3 sm:px-4 py-3 min-w-0 sm:min-w-[120px] flex-1 sm:flex-none">
-      <div className="text-[10px] sm:text-xs text-muted uppercase tracking-wider leading-tight inline-flex items-center">
-        {label}
+      <div className="text-[10px] sm:text-xs text-muted uppercase tracking-wider leading-tight inline-flex items-center min-w-0">
+        <span className="truncate">{label}</span>
         {tip && <InfoTip label={label}>{tip}</InfoTip>}
       </div>
-      <div className="font-mono text-ink mt-1 text-sm sm:text-base tabular-nums break-all">
+      <div className="font-mono text-ink mt-1 text-sm sm:text-base tabular-nums break-words">
         {value}
       </div>
     </div>
@@ -460,19 +502,5 @@ function Legend({ colorBy, values }: { colorBy: MapColorBy; values: number[] }) 
 
 function guessAbbr(name?: string): string {
   if (!name) return ''
-  const entries = Object.entries({
-    Alabama: 'AL', Alaska: 'AK', Arizona: 'AZ', Arkansas: 'AR', California: 'CA',
-    Colorado: 'CO', Connecticut: 'CT', Delaware: 'DE', 'District of Columbia': 'DC',
-    Florida: 'FL', Georgia: 'GA', Hawaii: 'HI', Idaho: 'ID', Illinois: 'IL',
-    Indiana: 'IN', Iowa: 'IA', Kansas: 'KS', Kentucky: 'KY', Louisiana: 'LA',
-    Maine: 'ME', Maryland: 'MD', Massachusetts: 'MA', Michigan: 'MI', Minnesota: 'MN',
-    Mississippi: 'MS', Missouri: 'MO', Montana: 'MT', Nebraska: 'NE', Nevada: 'NV',
-    'New Hampshire': 'NH', 'New Jersey': 'NJ', 'New Mexico': 'NM', 'New York': 'NY',
-    'North Carolina': 'NC', 'North Dakota': 'ND', Ohio: 'OH', Oklahoma: 'OK',
-    Oregon: 'OR', Pennsylvania: 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
-    'South Dakota': 'SD', Tennessee: 'TN', Texas: 'TX', Utah: 'UT', Vermont: 'VT',
-    Virginia: 'VA', Washington: 'WA', 'West Virginia': 'WV', Wisconsin: 'WI',
-    Wyoming: 'WY',
-  })
-  return entries.find(([n]) => n === name)?.[1] ?? ''
+  return NAME_TO_ABBR[name] ?? ''
 }

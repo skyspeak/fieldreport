@@ -255,17 +255,7 @@ export function searchMajors(
   }
 
   const expansions = expandQuery(q)
-  const fuse = new Fuse(majors, {
-    keys: [
-      { name: 'displayName', weight: 0.75 },
-      { name: 'category', weight: 0.15 },
-      { name: 'cip', weight: 0.1 },
-    ],
-    threshold: 0.45,
-    ignoreLocation: true,
-    includeScore: true,
-  })
-
+  const fuse = getFuse(majors)
   const seen = new Map<string, { major: SearchableMajor; fuseScore: number }>()
 
   for (const phrase of expansions) {
@@ -287,6 +277,9 @@ export function searchMajors(
     }
   }
 
+  const n = normalizeQuery(q)
+  const shortAlias = n.length <= 3 && n in ALIASES
+
   return [...seen.values()]
     .map(({ major, fuseScore }) => ({
       major,
@@ -294,12 +287,30 @@ export function searchMajors(
     }))
     .filter(({ major }) => {
       // Ultra-short alias queries ("cs") should not surface fuzzy junk like Mathematics
-      const n = normalizeQuery(q)
-      if (n.length > 3 || !(n in ALIASES)) return true
+      if (!shortAlias) return true
       const name = normalizeQuery(major.displayName)
       return expansions.some((phrase) => phrase.length > 2 && name.includes(phrase))
     })
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
     .map((x) => x.major)
+}
+
+/** Reuse Fuse across keystrokes for the same majors list (search-as-you-type). */
+let fuseCache: { majors: SearchableMajor[]; fuse: Fuse<SearchableMajor> } | null = null
+
+function getFuse(majors: SearchableMajor[]): Fuse<SearchableMajor> {
+  if (fuseCache?.majors === majors) return fuseCache.fuse
+  const fuse = new Fuse(majors, {
+    keys: [
+      { name: 'displayName', weight: 0.75 },
+      { name: 'category', weight: 0.15 },
+      { name: 'cip', weight: 0.1 },
+    ],
+    threshold: 0.45,
+    ignoreLocation: true,
+    includeScore: true,
+  })
+  fuseCache = { majors, fuse }
+  return fuse
 }

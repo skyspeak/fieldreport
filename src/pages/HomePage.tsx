@@ -39,12 +39,13 @@ export function HomePage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
         )}
       </div>
 
-      <div className="mt-12 sm:mt-20 grid grid-cols-3 gap-3 sm:gap-10 max-w-lg mx-auto text-center">
+      <div className="mt-12 sm:mt-20 grid grid-cols-3 gap-2 sm:gap-10 max-w-lg mx-auto text-center">
         <Stat value={formatNumber(occupations.length || 811)} label="Occupations" />
         <Stat value={formatNumber(majors.length || 1920)} label="Majors" />
         <Stat
           value={`${eloundouMeta?.coverage.pct ?? '—'}%`}
-          label="With Eloundou data"
+          label="Eloundou data"
+          labelLong="With Eloundou data"
           tip="Share of occupations in this app that match an Eloundou et al. LLM-exposure score — not a risk level for any one major."
         />
       </div>
@@ -55,10 +56,12 @@ export function HomePage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
 function Stat({
   value,
   label,
+  labelLong,
   tip,
 }: {
   value: string
   label: string
+  labelLong?: string
   tip?: string
 }) {
   return (
@@ -66,9 +69,18 @@ function Stat({
       <div className="font-mono text-xl sm:text-3xl text-ink tracking-tight tabular-nums">
         {value}
       </div>
-      <div className="text-[10px] sm:text-sm text-muted mt-1 uppercase tracking-wider leading-tight inline-flex items-center justify-center gap-0.5">
-        {label}
-        {tip ? <InfoTip label={label}>{tip}</InfoTip> : null}
+      <div className="mt-1 text-[10px] sm:text-sm text-muted uppercase tracking-wider leading-tight">
+        <span className="inline-flex items-center justify-center gap-0 max-w-full">
+          {labelLong ? (
+            <>
+              <span className="sm:hidden">{label}</span>
+              <span className="hidden sm:inline">{labelLong}</span>
+            </>
+          ) : (
+            <span>{label}</span>
+          )}
+          {tip ? <InfoTip label={labelLong ?? label}>{tip}</InfoTip> : null}
+        </span>
       </div>
     </div>
   )

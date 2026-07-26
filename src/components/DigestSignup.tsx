@@ -90,7 +90,7 @@ export function DigestSignup({
           {base && (
             <a
               href={base}
-              className="mt-4 inline-flex rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white hover:bg-primary-bright transition-colors"
+              className="mt-4 inline-flex w-full sm:w-auto justify-center rounded-xl bg-primary px-4 py-3 text-sm font-medium text-white hover:bg-primary-bright transition-colors min-h-11"
             >
               Open The Letter →
             </a>
@@ -110,12 +110,12 @@ export function DigestSignup({
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@school.edu"
             disabled={status === 'sending'}
-            className="flex-1 rounded-xl border border-border-bright bg-white px-4 py-3 text-base text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full min-w-0 flex-1 rounded-xl border border-border-bright bg-white px-4 py-3.5 sm:py-3 text-base text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <button
             type="submit"
             disabled={status === 'sending'}
-            className="shrink-0 rounded-xl bg-primary px-5 py-3 font-medium text-white hover:bg-primary-bright disabled:opacity-50 transition-colors"
+            className="w-full sm:w-auto shrink-0 rounded-xl bg-primary px-5 py-3.5 sm:py-3 font-medium text-white hover:bg-primary-bright disabled:opacity-50 transition-colors min-h-11"
           >
             {status === 'sending' ? 'Sending…' : 'Send my first letter'}
           </button>
