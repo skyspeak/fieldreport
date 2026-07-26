@@ -149,6 +149,7 @@ function scoreMajor(major: SearchableMajor, rawQuery: string, fuseScore: number 
   const q = normalizeQuery(rawQuery)
   const name = normalizeQuery(major.displayName)
   const expansions = expandQuery(rawQuery)
+  const aliasExpansions = new Set(expansions.slice(1))
 
   let score = 0
 
@@ -158,10 +159,24 @@ function scoreMajor(major: SearchableMajor, rawQuery: string, fuseScore: number 
 
   for (const phrase of expansions) {
     if (!phrase) continue
-    if (name === phrase || name === `${phrase} general`) score += 55
-    else if (name.startsWith(phrase)) score += 40
-    else if (name.includes(`, ${phrase}`) || name.includes(` ${phrase}`)) score += 28
-    else if (name.includes(phrase)) score += 18
+    // Tiny tokens ("cs") match inside unrelated words ("mathematics") — require word-ish hits.
+    if (phrase.length <= 2) {
+      if (new RegExp(`(?:^|[^a-z])${phrase}(?:[^a-z]|$)`).test(name) || name.startsWith(phrase)) {
+        score += aliasExpansions.has(phrase) ? 8 : 20
+      }
+      continue
+    }
+    // Alias expansions (e.g. premed → "biochemistry") should not beat the intended
+    // flagship via an exact-name jackpot — only the raw query gets full credit.
+    const isAliasPhrase = aliasExpansions.has(phrase)
+    const exact = 55
+    const prefix = isAliasPhrase ? 22 : 40
+    const word = isAliasPhrase ? 14 : 28
+    const substr = isAliasPhrase ? 8 : 18
+    if (!isAliasPhrase && (name === phrase || name === `${phrase} general`)) score += exact
+    else if (name.startsWith(phrase)) score += prefix
+    else if (name.includes(`, ${phrase}`) || name.includes(` ${phrase}`)) score += word
+    else if (name.includes(phrase)) score += substr
   }
 
   // Prefer the generic flagship form over Teacher Ed / Admin / niche compounds
@@ -196,17 +211,24 @@ function scoreMajor(major: SearchableMajor, rawQuery: string, fuseScore: number 
       if (/teacher education|architectural history|history of medicine/i.test(name)) score -= 30
     }
     if (q === 'premed' || q === 'pre-med' || q === 'pre med') {
-      if (/biology\/biological sciences,\s*general/i.test(name)) score += 55
-      else if (/biomedical sciences,\s*general|chemistry,\s*general|^biochemistry$/i.test(name)) {
-        score += 40
-      } else {
-        score -= 15
-      }
+      if (/biology\/biological sciences,\s*general/i.test(name)) score += 120
+      else if (/biomedical sciences,\s*general/i.test(name)) score += 70
+      else if (/chemistry,\s*general/i.test(name)) score += 45
+      else if (/^biochemistry$/i.test(name)) score += 30
+      else if (/biochem|chemistry|biology|pre-?med/i.test(name)) score += 5
+      else score -= 25
     }
   }
 
   // Flagship boost only when the name actually relates to the query
-  const textHit = expansions.some((phrase) => phrase && name.includes(phrase.split(' ')[0]!))
+  const textHit = expansions.some((phrase) => {
+    if (!phrase) return false
+    const token = phrase.split(' ')[0]!
+    if (token.length <= 2) {
+      return new RegExp(`(?:^|[^a-z])${token}(?:[^a-z]|$)`).test(name)
+    }
+    return name.includes(token)
+  })
   if (textHit || (fuseScore != null && fuseScore < 0.35)) {
     score += FLAGSHIP_BOOST[major.cip] ?? 0
   }
@@ -270,6 +292,13 @@ export function searchMajors(
       major,
       score: scoreMajor(major, q, fuseScore),
     }))
+    .filter(({ major }) => {
+      // Ultra-short alias queries ("cs") should not surface fuzzy junk like Mathematics
+      const n = normalizeQuery(q)
+      if (n.length > 3 || !(n in ALIASES)) return true
+      const name = normalizeQuery(major.displayName)
+      return expansions.some((phrase) => phrase.length > 2 && name.includes(phrase))
+    })
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
     .map((x) => x.major)
