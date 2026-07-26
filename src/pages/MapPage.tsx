@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useParams, useSearchParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { geoAlbersUsa, geoPath } from 'd3-geo'
 import { scaleSequential } from 'd3-scale'
 import { feature } from 'topojson-client'
 import type { Topology, GeometryCollection } from 'topojson-specification'
 import type { FeatureCollection, Geometry } from 'geojson'
 import { useData } from '../data/DataContext'
+import { BackLink } from '../components/BackLink'
 import { DigestSignup } from '../components/DigestSignup'
 import { DocumentMeta } from '../components/DocumentMeta'
 import { InfoTip } from '../components/InfoTip'
@@ -13,7 +14,8 @@ import { ShareSheet } from '../components/ShareSheet'
 import { formatNumber, formatSalary, formatShare } from '../lib/format'
 import { AI_BAND_COPY, ELOUNDOU_COPY, aiBandFromScore } from '../lib/labels'
 import { assetUrl } from '../lib/assetUrl'
-import { isRealMajor, majorDisplayName } from '../lib/majorName'
+import { isRealMajor } from '../lib/majorName'
+import { useAppPaths } from '../lib/useAppPaths'
 import type { MapColorBy } from '../types'
 
 interface StateProps {
@@ -47,24 +49,23 @@ const NAME_TO_ABBR: Record<string, string> = {
   Wyoming: 'WY',
 }
 
-export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
+export function MapPage() {
   const { socCode = '' } = useParams()
   const [searchParams] = useSearchParams()
   const { majors, occupationsBySoc, eloundouBySoc, stateData, loading, loadStateData } =
     useData()
+  const { home, resultsBase } = useAppPaths()
   const [colorBy, setColorBy] = useState<MapColorBy>('employment')
   const [selected, setSelected] = useState<string | null>(null)
   const [topo, setTopo] = useState<FeatureCollection<Geometry, StateProps> | null>(null)
   const [hover, setHover] = useState<string | null>(null)
-  const home = routePrefix || '/'
-  const resultsBase = `${routePrefix}/results`
 
   const fromCip = searchParams.get('from') ?? ''
   const fromMajor =
     fromCip && isRealMajor(fromCip) ? majors.find((m) => m.cip === fromCip) : undefined
   const backToResults = fromMajor ? `${resultsBase}/${fromMajor.cip}` : home
   const backLabel = fromMajor
-    ? `← Back to ${majorDisplayName(fromMajor.name)}`
+    ? `← Back to ${fromMajor.name}`
     : '← Back to search'
 
   const occupation = occupationsBySoc.get(socCode)
@@ -171,12 +172,7 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-12">
         <DocumentMeta title="Occupation not found" />
-        <Link
-          to={backToResults}
-          className="text-sm text-muted hover:text-ink mb-4 sm:mb-6 inline-flex items-center min-h-11 py-2 max-w-full"
-        >
-          <span className="truncate">{backLabel}</span>
-        </Link>
+        <BackLink to={backToResults}>{backLabel}</BackLink>
         <h1 className="font-serif text-3xl text-ink">Occupation not found</h1>
       </div>
     )
@@ -194,12 +190,7 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
         title={occupation.title}
         description={`State map for ${occupation.title} with BLS wages, AI Risk, and Eloundou β.`}
       />
-      <Link
-        to={backToResults}
-        className="text-sm text-muted hover:text-ink mb-4 sm:mb-6 inline-flex items-center min-h-11 py-2 max-w-full"
-      >
-        <span className="truncate">{backLabel}</span>
-      </Link>
+      <BackLink to={backToResults}>{backLabel}</BackLink>
 
       <div className="mb-6 sm:mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
@@ -249,7 +240,7 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 mb-6 text-sm">
+      <div className="flex flex-nowrap sm:flex-wrap items-center gap-2 mb-6 text-sm overflow-x-auto overscroll-x-contain pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-none">
         <span className="text-muted shrink-0">Color by:</span>
         {(
           [
@@ -262,7 +253,7 @@ export function MapPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
             key={key}
             type="button"
             onClick={() => setColorBy(key)}
-            className={`rounded-lg px-3 py-2.5 sm:py-1.5 transition-colors min-h-11 sm:min-h-0 ${
+            className={`shrink-0 rounded-lg px-3 py-2.5 sm:py-1.5 transition-colors min-h-11 sm:min-h-0 whitespace-nowrap ${
               colorBy === key
                 ? 'bg-primary text-white'
                 : 'text-muted hover:text-ink bg-white border border-border'
@@ -456,7 +447,7 @@ function Metric({
 }) {
   return (
     <div className="bg-white border border-border rounded-xl px-3 sm:px-4 py-3 min-w-0 sm:min-w-[120px] flex-1 sm:flex-none">
-      <div className="text-[10px] sm:text-xs text-muted uppercase tracking-wider leading-tight inline-flex items-center min-w-0">
+      <div className="text-xs text-muted uppercase tracking-wider leading-snug inline-flex items-center min-w-0 max-w-full">
         <span className="truncate">{label}</span>
         {tip && <InfoTip label={label}>{tip}</InfoTip>}
       </div>
@@ -492,7 +483,7 @@ function Legend({ colorBy, values }: { colorBy: MapColorBy; values: number[] }) 
                 : 'linear-gradient(90deg, #283250, #dc7846)',
         }}
       />
-      <span className="font-mono text-[11px] sm:text-xs tabular-nums">
+      <span className="font-mono text-xs tabular-nums">
         {colorBy === 'salary' ? formatSalary(min) : formatNumber(min)} –{' '}
         {colorBy === 'salary' ? formatSalary(max) : formatNumber(max)}
       </span>

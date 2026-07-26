@@ -11,19 +11,8 @@ export interface Occupation {
   medianSalary: number
   totalEmployment: number
   openPositions: number
-  annualGraduates: number | null
   graduatesPerOpening: number | null
   competitionLevel: CompetitionLevel | null
-  yoyEmploymentChange: number | null
-  yoySalaryChange: number | null
-  projectedGrowthRate: number | null
-  aiDisruptionScore: number | null
-  aiDisruptionLabel: string | null
-  indeedPostingsIndex: number | null
-  indeedYoy: number | null
-  indeedSector: string | null
-  indeedAsOf: string | null
-  description: string
   karpathyExposure: number | null
   karpathyRationale: string | null
 }

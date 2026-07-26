@@ -1,6 +1,5 @@
 import Fuse from 'fuse.js'
 import type { Major } from '../types'
-import { isRealMajor, majorDisplayName } from './majorName'
 
 /** Common abbreviations / nicknames → phrases to match against major names. */
 const ALIASES: Record<string, string[]> = {
@@ -122,14 +121,6 @@ const FLAGSHIP_BOOST: Record<string, number> = {
   '51.0000': 20, // Health Services/Allied Health/Health Sciences, General
 }
 
-export type SearchableMajor = Major & { displayName: string }
-
-export function toSearchable(majors: Major[]): SearchableMajor[] {
-  return majors
-    .filter((m) => isRealMajor(m.cip))
-    .map((m) => ({ ...m, displayName: majorDisplayName(m.name) }))
-}
-
 function normalizeQuery(q: string): string {
   return q
     .toLowerCase()
@@ -145,9 +136,9 @@ function expandQuery(q: string): string[] {
   return [n, ...extras]
 }
 
-function scoreMajor(major: SearchableMajor, rawQuery: string, fuseScore: number | undefined): number {
+function scoreMajor(major: Major, rawQuery: string, fuseScore: number | undefined): number {
   const q = normalizeQuery(rawQuery)
-  const name = normalizeQuery(major.displayName)
+  const name = normalizeQuery(major.name)
   const expansions = expandQuery(rawQuery)
   const aliasExpansions = new Set(expansions.slice(1))
 
@@ -180,8 +171,8 @@ function scoreMajor(major: SearchableMajor, rawQuery: string, fuseScore: number 
   }
 
   // Prefer the generic flagship form over Teacher Ed / Admin / niche compounds
-  if (/,\s*general$/i.test(major.displayName)) score += 18
-  if (/\bgeneral\b/i.test(major.displayName) && !/other$/i.test(major.displayName)) score += 8
+  if (/,\s*general$/i.test(major.name)) score += 18
+  if (/\bgeneral\b/i.test(major.name) && !/other$/i.test(major.name)) score += 8
 
   // Niche penalties when the query is a common short token
   if (q.length <= 12) {
@@ -196,18 +187,18 @@ function scoreMajor(major: SearchableMajor, rawQuery: string, fuseScore: number 
     }
     if (q === 'econ' || q === 'economics') {
       if (/agricultural|home economics|consumer economics|pharmacoeconomics/i.test(name)) score -= 40
-      if (/^economics/i.test(major.displayName)) score += 25
+      if (/^economics/i.test(major.name)) score += 25
     }
     if (q === 'nursing' || q === 'rn') {
       if (/registered nursing/i.test(name)) score += 35
       else score -= 20
     }
     if (q === 'psychology' || q === 'psych') {
-      if (/^psychology,\s*general/i.test(major.displayName)) score += 35
+      if (/^psychology,\s*general/i.test(major.name)) score += 35
       if (/geropsychology|psychoanalysis|psychopharmacology/i.test(name)) score -= 30
     }
     if (q === 'history') {
-      if (/^history,\s*general/i.test(major.displayName)) score += 35
+      if (/^history,\s*general/i.test(major.name)) score += 35
       if (/teacher education|architectural history|history of medicine/i.test(name)) score -= 30
     }
     if (q === 'premed' || q === 'pre-med' || q === 'pre med') {
@@ -234,21 +225,22 @@ function scoreMajor(major: SearchableMajor, rawQuery: string, fuseScore: number 
   }
 
   // Shorter catalog names tend to be the flagship
-  score -= Math.min(major.displayName.length, 80) * 0.05
+  score -= Math.min(major.name.length, 80) * 0.05
 
   return score
 }
 
+/** Majors should already be filtered (no NO MATCH) with display names cleaned. */
 export function searchMajors(
-  majors: SearchableMajor[],
+  majors: Major[],
   query: string,
   limit = 10,
-): SearchableMajor[] {
+): Major[] {
   const q = query.trim()
   if (!q) {
     // Empty query: show flagship-ish defaults, not alphabetical CIP order
     return [...majors]
-      .map((m) => ({ m, s: (FLAGSHIP_BOOST[m.cip] ?? 0) - m.displayName.length * 0.01 }))
+      .map((m) => ({ m, s: (FLAGSHIP_BOOST[m.cip] ?? 0) - m.name.length * 0.01 }))
       .sort((a, b) => b.s - a.s)
       .slice(0, 8)
       .map((x) => x.m)
@@ -256,7 +248,7 @@ export function searchMajors(
 
   const expansions = expandQuery(q)
   const fuse = getFuse(majors)
-  const seen = new Map<string, { major: SearchableMajor; fuseScore: number }>()
+  const seen = new Map<string, { major: Major; fuseScore: number }>()
 
   for (const phrase of expansions) {
     for (const hit of fuse.search(phrase, { limit: 30 })) {
@@ -288,7 +280,7 @@ export function searchMajors(
     .filter(({ major }) => {
       // Ultra-short alias queries ("cs") should not surface fuzzy junk like Mathematics
       if (!shortAlias) return true
-      const name = normalizeQuery(major.displayName)
+      const name = normalizeQuery(major.name)
       return expansions.some((phrase) => phrase.length > 2 && name.includes(phrase))
     })
     .sort((a, b) => b.score - a.score)
@@ -297,13 +289,13 @@ export function searchMajors(
 }
 
 /** Reuse Fuse across keystrokes for the same majors list (search-as-you-type). */
-let fuseCache: { majors: SearchableMajor[]; fuse: Fuse<SearchableMajor> } | null = null
+let fuseCache: { majors: Major[]; fuse: Fuse<Major> } | null = null
 
-function getFuse(majors: SearchableMajor[]): Fuse<SearchableMajor> {
+function getFuse(majors: Major[]): Fuse<Major> {
   if (fuseCache?.majors === majors) return fuseCache.fuse
   const fuse = new Fuse(majors, {
     keys: [
-      { name: 'displayName', weight: 0.75 },
+      { name: 'name', weight: 0.75 },
       { name: 'category', weight: 0.15 },
       { name: 'cip', weight: 0.1 },
     ],

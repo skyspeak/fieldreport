@@ -1,35 +1,37 @@
-import { Link, useLocation } from 'react-router-dom'
 import type { ReactNode } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { BrandMark } from './BrandMark'
 import { MajorSearch } from './MajorSearch'
 import { useData } from '../data/DataContext'
+import { useAppPaths } from '../lib/useAppPaths'
 
 export function Layout({ children }: { children: ReactNode }) {
   const { pathname } = useLocation()
+  const { home, resultsBase } = useAppPaths()
   const { majors, loading } = useData()
-  const isV2 = pathname.startsWith('/v2')
-  const home = isV2 ? '/v2' : '/'
   const isHome = pathname === '/' || pathname === '/v2'
-  const resultsBase = isV2 ? '/v2/results' : '/results'
   const showGlobalSearch = !isHome && !loading && majors.length > 0
   const letterUrl = (import.meta.env.VITE_LETTER_URL as string | undefined)?.replace(/\/$/, '')
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden">
-      <header className="border-b border-border bg-white/80 backdrop-blur-sm sticky top-0 z-30">
+    <div className="min-h-screen flex flex-col overflow-x-clip">
+      <header className="border-b border-border bg-white/80 backdrop-blur-sm sticky top-0 z-30 pt-[env(safe-area-inset-top)]">
         <div
           className={`mx-auto max-w-7xl px-4 sm:px-6 py-3 sm:py-4 ${
             showGlobalSearch
-              ? 'flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6'
+              ? 'flex flex-row items-center gap-3 sm:gap-6'
               : 'flex items-center gap-3 sm:gap-6'
           }`}
         >
-          <Link to={home} className="no-underline shrink-0 self-start sm:self-auto">
+          <Link
+            to={home}
+            className="no-underline shrink-0 inline-flex items-center min-h-11"
+          >
             <BrandMark size="sm" compact={showGlobalSearch} />
           </Link>
 
           {showGlobalSearch ? (
-            <div className="w-full min-w-0 sm:flex-1 sm:max-w-xl sm:ml-auto">
+            <div className="w-full min-w-0 flex-1 sm:max-w-xl sm:ml-auto">
               <MajorSearch
                 majors={majors}
                 size="md"
@@ -47,7 +49,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
       <main className="flex-1 min-w-0">{children}</main>
 
-      <footer className="border-t border-border mt-auto bg-white">
+      <footer className="border-t border-border mt-auto bg-white pb-[env(safe-area-inset-bottom)]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 flex flex-col sm:flex-row gap-4 sm:items-end sm:justify-between text-sm">
           <div className="min-w-0">
             <p className="font-serif text-ink/70">

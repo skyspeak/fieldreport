@@ -1,38 +1,81 @@
-import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react'
+import { createPortal } from 'react-dom'
+
+type Coords = { top: number; left: number; width: number; ready: boolean }
 
 /** Click/tap-friendly explainer (native title tooltips don't work on touch). */
 export function InfoTip({ label, children }: { label: string; children: ReactNode }) {
   const [open, setOpen] = useState(false)
-  const [place, setPlace] = useState<{ right: boolean; above: boolean }>({
-    right: false,
-    above: false,
+  const [coords, setCoords] = useState<Coords>({
+    top: 0,
+    left: 0,
+    width: 288,
+    ready: false,
   })
   const rootRef = useRef<HTMLSpanElement>(null)
+  const tipRef = useRef<HTMLSpanElement>(null)
   const tipId = useId()
 
   useLayoutEffect(() => {
-    if (!open || !rootRef.current) return
-    const rect = rootRef.current.getBoundingClientRect()
-    const tipW = Math.min(288, window.innerWidth - 16)
-    const tipH = 140
-    setPlace({
-      right: rect.left > window.innerWidth - tipW - 8,
-      above: window.innerHeight - rect.bottom < tipH && rect.top > tipH,
-    })
+    if (!open) return
+
+    function place() {
+      const btn = rootRef.current
+      const tip = tipRef.current
+      if (!btn || !tip) return
+      const rect = btn.getBoundingClientRect()
+      const tipWidth = Math.min(288, window.innerWidth - 16)
+      const tipHeight = tip.offsetHeight
+      const pad = 8
+
+      let left = rect.left
+      if (left + tipWidth > window.innerWidth - pad) {
+        left = window.innerWidth - tipWidth - pad
+      }
+      if (left < pad) left = pad
+
+      let top = rect.bottom + 8
+      if (top + tipHeight > window.innerHeight - pad && rect.top > tipHeight + pad) {
+        top = rect.top - tipHeight - 8
+      }
+
+      setCoords({ top, left, width: tipWidth, ready: true })
+    }
+
+    place()
+    window.addEventListener('resize', place)
+    window.addEventListener('scroll', place, true)
+    return () => {
+      window.removeEventListener('resize', place)
+      window.removeEventListener('scroll', place, true)
+    }
+  }, [open, children])
+
+  useEffect(() => {
+    if (!open) setCoords((c) => ({ ...c, ready: false }))
   }, [open])
 
   useEffect(() => {
     if (!open) return
-    function onDoc(e: PointerEvent) {
-      if (!rootRef.current?.contains(e.target as Node)) setOpen(false)
+    function onDoc(e: MouseEvent) {
+      const t = e.target as Node
+      if (rootRef.current?.contains(t) || tipRef.current?.contains(t)) return
+      setOpen(false)
     }
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') setOpen(false)
     }
-    document.addEventListener('pointerdown', onDoc)
+    document.addEventListener('mousedown', onDoc)
     document.addEventListener('keydown', onKey)
     return () => {
-      document.removeEventListener('pointerdown', onDoc)
+      document.removeEventListener('mousedown', onDoc)
       document.removeEventListener('keydown', onKey)
     }
   }, [open])
@@ -45,25 +88,31 @@ export function InfoTip({ label, children }: { label: string; children: ReactNod
         aria-controls={tipId}
         aria-label={`About ${label}`}
         onClick={() => setOpen((v) => !v)}
-        className="-my-2 -mr-1 ml-0 inline-flex h-11 w-11 items-center justify-center rounded-full text-[11px] font-mono text-muted hover:text-ink transition-colors"
+        className="-my-2 -mx-1 inline-flex h-11 w-11 items-center justify-center rounded-full text-[11px] font-mono text-muted hover:text-ink transition-colors"
       >
         <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-border hover:border-border-bright">
           ?
         </span>
       </button>
-      {open && (
-        <span
-          id={tipId}
-          role="note"
-          className={[
-            'absolute z-40 w-[min(18rem,calc(100vw-2rem))] rounded-xl border border-border-bright bg-white p-3 text-xs text-ink/80 leading-relaxed shadow-xl font-normal normal-case tracking-normal',
-            place.above ? 'bottom-full mb-2 top-auto' : 'top-full mt-2',
-            place.right ? 'right-0 left-auto' : 'left-0',
-          ].join(' ')}
-        >
-          {children}
-        </span>
-      )}
+      {open &&
+        createPortal(
+          <span
+            ref={tipRef}
+            id={tipId}
+            role="note"
+            style={{
+              position: 'fixed',
+              top: coords.top,
+              left: coords.left,
+              width: coords.width,
+              visibility: coords.ready ? 'visible' : 'hidden',
+            }}
+            className="z-[60] rounded-xl border border-border-bright bg-white p-3 text-xs text-ink/80 leading-relaxed shadow-xl font-normal normal-case tracking-normal"
+          >
+            {children}
+          </span>,
+          document.body,
+        )}
     </span>
   )
 }

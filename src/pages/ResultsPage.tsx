@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useData } from '../data/DataContext'
+import { BackLink } from '../components/BackLink'
 import { DigestSignup } from '../components/DigestSignup'
 import { DocumentMeta } from '../components/DocumentMeta'
 import { InfoTip } from '../components/InfoTip'
@@ -15,9 +16,9 @@ import {
   ELOUNDOU_GAMMA_COPY,
   aiBandFromScore,
 } from '../lib/labels'
-import { isRealMajor, majorDisplayName } from '../lib/majorName'
+import { isRealMajor } from '../lib/majorName'
+import { useAppPaths } from '../lib/useAppPaths'
 import type {
-  CompetitionLevel,
   EloundouScore,
   Occupation,
   SortDirection,
@@ -28,11 +29,10 @@ function isCatchAllOccupation(occ: Occupation): boolean {
   return /,\s*All Other$/i.test(occ.title)
 }
 
-export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) {
+export function ResultsPage() {
   const { cipCode = '' } = useParams()
   const { majors, occupationsBySoc, crosswalk, eloundouBySoc, loading } = useData()
-  const home = routePrefix || '/'
-  const mapBase = `${routePrefix}/map`
+  const { home, mapBase } = useAppPaths()
 
   const [sortField, setSortField] = useState<SortField>('entrySalary')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
@@ -92,12 +92,7 @@ export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) 
     return (
       <div className="mx-auto max-w-7xl px-4 py-12">
         <DocumentMeta title="Major not found" />
-        <Link
-          to={home}
-          className="text-sm text-muted hover:text-ink mb-4 sm:mb-6 inline-flex items-center min-h-11 py-2"
-        >
-          ← Back
-        </Link>
+        <BackLink to={home}>← Back</BackLink>
         <h1 className="font-serif text-3xl text-ink">Major not found</h1>
         <p className="text-muted mt-2 max-w-lg leading-relaxed">
           That link doesn’t match a U.S. field of study in our catalog. Try searching for
@@ -113,7 +108,7 @@ export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) 
     )
   }
 
-  const displayName = majorDisplayName(major.name)
+  const displayName = major.name
   const all = [...relevant, ...other]
   const mapFrom = `?from=${encodeURIComponent(major.cip)}`
 
@@ -123,12 +118,7 @@ export function ResultsPage({ routePrefix = '' }: { routePrefix?: '' | '/v2' }) 
         title={displayName}
         description={`BLS salaries, openings, AI Risk, and Eloundou β for careers linked to ${displayName}.`}
       />
-      <Link
-        to={home}
-        className="text-sm text-muted hover:text-ink mb-4 sm:mb-6 inline-flex items-center min-h-11 py-2"
-      >
-        ← Back
-      </Link>
+      <BackLink to={home}>← Back</BackLink>
 
       <div className="mb-8 sm:mb-10 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
@@ -376,7 +366,7 @@ function OccRow({
   mapFrom: string
   eloundou?: EloundouScore
 }) {
-  const competition = occ.competitionLevel as CompetitionLevel | null
+  const competition = occ.competitionLevel
   const compMeta = competition ? COMPETITION_COPY[competition] : null
 
   return (
@@ -440,7 +430,7 @@ function OccCard({
   mapFrom: string
   eloundou?: EloundouScore
 }) {
-  const competition = occ.competitionLevel as CompetitionLevel | null
+  const competition = occ.competitionLevel
   const compMeta = competition ? COMPETITION_COPY[competition] : null
 
   return (
@@ -464,7 +454,7 @@ function OccCard({
           <dd className="font-mono text-ink mt-0.5 break-words">
             {formatSalary(occ.entrySalary)}
           </dd>
-          <p className="text-[11px] text-muted mt-0.5">
+          <p className="text-xs text-muted mt-0.5">
             median {formatSalary(occ.medianSalary)}
           </p>
         </div>
@@ -485,7 +475,7 @@ function OccCard({
                 <span style={{ color: compMeta.color }} className="font-medium">
                   {compMeta.label}
                 </span>
-                <p className="text-[11px] text-muted font-mono mt-0.5">
+                <p className="text-xs text-muted font-mono mt-0.5">
                   {formatRatio(occ.graduatesPerOpening)} grads/opening
                 </p>
               </>
@@ -566,9 +556,9 @@ function EloundouCell({
         </div>
         {tip ? <InfoTip label="Eloundou β">{ELOUNDOU_COPY}</InfoTip> : null}
       </div>
-      <div className="text-[10px] text-muted font-mono mt-1 flex flex-wrap items-center gap-x-1">
+      <div className="text-xs text-muted font-mono mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1">
         <span>α {formatShare(score.gptAlpha)}</span>
-        <span>·</span>
+        <span aria-hidden>·</span>
         <span>γ {formatShare(score.gptGamma)}</span>
         <InfoTip label="α and γ">
           <p className="mb-2">{ELOUNDOU_ALPHA_COPY}</p>
@@ -578,6 +568,25 @@ function EloundouCell({
       </div>
     </div>
   )
+}
+
+function sortValue(
+  occ: Occupation,
+  field: SortField,
+  eloundouBySoc: Map<string, EloundouScore>,
+): number | null {
+  switch (field) {
+    case 'entrySalary':
+      return occ.entrySalary
+    case 'openPositions':
+      return occ.openPositions
+    case 'graduatesPerOpening':
+      return occ.graduatesPerOpening
+    case 'karpathyExposure':
+      return occ.karpathyExposure
+    case 'eloundouBeta':
+      return eloundouBySoc.get(occ.soc)?.gptBeta ?? null
+  }
 }
 
 function compareOcc(
@@ -591,17 +600,8 @@ function compareOcc(
   const bCatch = isCatchAllOccupation(b)
   if (aCatch !== bCatch) return aCatch ? 1 : -1
 
-  const av =
-    field === 'eloundouBeta'
-      ? (eloundouBySoc.get(a.soc)?.gptBeta ?? null)
-      : a[field as keyof Occupation]
-  const bv =
-    field === 'eloundouBeta'
-      ? (eloundouBySoc.get(b.soc)?.gptBeta ?? null)
-      : b[field as keyof Occupation]
-
-  const aNum = typeof av === 'number' ? av : null
-  const bNum = typeof bv === 'number' ? bv : null
+  const aNum = sortValue(a, field, eloundouBySoc)
+  const bNum = sortValue(b, field, eloundouBySoc)
   const aMissing = aNum == null || Number.isNaN(aNum)
   const bMissing = bNum == null || Number.isNaN(bNum)
   if (aMissing && bMissing) return a.title.localeCompare(b.title)

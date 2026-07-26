@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -49,7 +50,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [stateData, setStateData] = useState<StatesFile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [stateLoading, setStateLoading] = useState(false)
+
+  const stateDataRef = useRef<StatesFile | null>(null)
+  const stateLoadingRef = useRef(false)
 
   useEffect(() => {
     let cancelled = false
@@ -85,17 +88,18 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const loadStateData = useCallback(async () => {
-    if (stateData || stateLoading) return
-    setStateLoading(true)
+    if (stateDataRef.current || stateLoadingRef.current) return
+    stateLoadingRef.current = true
     try {
       const data = await fetchJson<StatesFile>(assetUrl('data/states.json'))
+      stateDataRef.current = data
       setStateData(data)
     } catch (err) {
       console.error('Failed to load state data:', err)
     } finally {
-      setStateLoading(false)
+      stateLoadingRef.current = false
     }
-  }, [stateData, stateLoading])
+  }, [])
 
   const occupationsBySoc = useMemo(() => {
     const map = new Map<string, Occupation>()

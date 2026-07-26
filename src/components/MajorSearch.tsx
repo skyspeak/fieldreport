@@ -1,8 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Major } from '../types'
-import { majorDisplayName } from '../lib/majorName'
-import { searchMajors, toSearchable } from '../lib/majorSearch'
+import { searchMajors } from '../lib/majorSearch'
 
 interface MajorSearchProps {
   majors: Major[]
@@ -29,12 +28,7 @@ export function MajorSearch({
   const inputRef = useRef<HTMLInputElement>(null)
   const activeRef = useRef(0)
 
-  const searchable = useMemo(() => toSearchable(majors), [majors])
-
-  const results = useMemo(
-    () => searchMajors(searchable, query, 10),
-    [searchable, query],
-  )
+  const results = useMemo(() => searchMajors(majors, query, 10), [majors, query])
 
   const showList = open
   const hasResults = results.length > 0
@@ -42,7 +36,11 @@ export function MajorSearch({
   const showEmpty = showList && !hasResults && !emptyQuery
 
   useEffect(() => {
-    if (autoFocus) inputRef.current?.focus()
+    if (!autoFocus) return
+    // Don't steal focus / open the keyboard on phones
+    const coarse = window.matchMedia('(pointer: coarse)').matches
+    if (coarse) return
+    inputRef.current?.focus()
   }, [autoFocus])
 
   useEffect(() => {
@@ -63,9 +61,8 @@ export function MajorSearch({
   }, [active])
 
   function select(major: Major) {
-    // Navigate first so Enter never “closes with no effect”
     navigate(`${resultsBase}/${major.cip}`)
-    setQuery(majorDisplayName(major.name))
+    setQuery(major.name)
     setOpen(false)
   }
 
@@ -104,7 +101,6 @@ export function MajorSearch({
     } else if (e.key === 'Escape') {
       setOpen(false)
     }
-    // Enter is handled by the form’s onSubmit — do not duplicate here
   }
 
   const pad =
@@ -158,11 +154,11 @@ export function MajorSearch({
         />
       </form>
 
-      {(showList && (hasResults || showEmpty)) && (
+      {showList && (
         <ul
           id={listId}
           role="listbox"
-          className="absolute z-40 mt-2 w-full max-h-[min(20rem,50vh)] overflow-auto rounded-xl border border-border-bright bg-white shadow-xl"
+          className="absolute z-40 mt-2 w-full max-h-[min(20rem,min(50vh,40dvh))] overflow-auto rounded-xl border border-border-bright bg-white shadow-xl"
         >
           {hasResults ? (
             results.map((major, i) => (
@@ -184,7 +180,7 @@ export function MajorSearch({
                   }`}
                 >
                   <div className="font-medium text-sm sm:text-base leading-snug">
-                    {major.displayName}
+                    {major.name}
                   </div>
                   <div className="text-xs text-muted mt-0.5 font-mono">
                     {major.category} · CIP {major.cip}

@@ -18,12 +18,9 @@ export default function App() {
             <Route path="/map/:socCode" element={<MapPage />} />
 
             {/* /v2 aliases keep old links working; same combined Field Report. */}
-            <Route path="/v2" element={<HomePage routePrefix="/v2" />} />
-            <Route
-              path="/v2/results/:cipCode"
-              element={<ResultsPage routePrefix="/v2" />}
-            />
-            <Route path="/v2/map/:socCode" element={<MapPage routePrefix="/v2" />} />
+            <Route path="/v2" element={<HomePage />} />
+            <Route path="/v2/results/:cipCode" element={<ResultsPage />} />
+            <Route path="/v2/map/:socCode" element={<MapPage />} />
           </Routes>
         </Layout>
       </BrowserRouter>

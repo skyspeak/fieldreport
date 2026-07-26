@@ -11,12 +11,19 @@ export function ShareSheet({ title, summary }: ShareSheetProps) {
   const [copied, setCopied] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
   const menuId = useId()
+  const copyTimerRef = useRef<number | null>(null)
 
   const url = typeof window !== 'undefined' ? window.location.href : ''
   const text = summary
     ? `${title} — ${summary}\n\n${url}`
     : `${title}\n\n${url}`
   const subject = `dear[CC] Field report: ${title}`
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current != null) window.clearTimeout(copyTimerRef.current)
+    }
+  }, [])
 
   useEffect(() => {
     if (!open) return
@@ -42,7 +49,8 @@ export function ShareSheet({ title, summary }: ShareSheetProps) {
     try {
       await navigator.clipboard.writeText(url)
       setCopied(true)
-      window.setTimeout(() => setCopied(false), 1600)
+      if (copyTimerRef.current != null) window.clearTimeout(copyTimerRef.current)
+      copyTimerRef.current = window.setTimeout(() => setCopied(false), 1600)
     } catch {
       // ignore
     }
