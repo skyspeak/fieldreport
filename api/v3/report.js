@@ -1,5 +1,6 @@
-import { aoiConfigured } from '../server/aoiClient.mjs'
-import { buildFieldReport } from '../server/buildFieldReport.mjs'
+// From api/v3/ → repo root is ../..
+import { aoiConfigured } from '../../server/aoiClient.mjs'
+import { buildFieldReport } from '../../server/buildFieldReport.mjs'
 
 /**
  * Vercel serverless: GET /api/v3/report?cip=&zip=

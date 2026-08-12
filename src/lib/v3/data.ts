@@ -15,12 +15,14 @@ export async function fetchLiveFieldReport(
   const qs = new URLSearchParams({ cip, zip })
   const res = await fetch(`/api/v3/report?${qs}`)
   const type = res.headers.get('content-type') || ''
+  const text = await res.text()
   if (!type.includes('application/json')) {
     throw new Error(
-      'Report API returned non-JSON. Is the Vite/Vercel AOI API running?',
+      text.slice(0, 200) ||
+        'Report API returned non-JSON. Check AOI credentials and the /api/v3/report deploy.',
     )
   }
-  const body = await res.json()
+  const body = JSON.parse(text) as { error?: string } & FieldReport
   if (!res.ok) {
     throw Object.assign(new Error(body?.error || 'Could not build report'), {
       status: res.status,

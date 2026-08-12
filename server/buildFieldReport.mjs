@@ -6,8 +6,28 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { aoiDsl } from './aoiClient.mjs'
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const DATA = path.join(ROOT, 'public/data')
+const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url))
+/** Repo root locally; on Vercel NFT this is usually `/var/task`. */
+const ROOT = path.resolve(MODULE_DIR, '..')
+const DATA_CANDIDATES = [
+  path.join(ROOT, 'public/data'),
+  path.join(process.cwd(), 'public/data'),
+  path.join(MODULE_DIR, '../public/data'),
+]
+
+async function resolveDataDir() {
+  for (const dir of DATA_CANDIDATES) {
+    try {
+      await readFile(path.join(dir, 'majors.json'), 'utf8')
+      return dir
+    } catch {
+      /* try next */
+    }
+  }
+  throw new Error(
+    `Could not find public/data (tried: ${DATA_CANDIDATES.join(', ')})`,
+  )
+}
 
 const BADGE_RANK = { Platinum: 2, Gold: 1 }
 
@@ -77,15 +97,24 @@ let catalogPromise = null
 async function loadCatalog() {
   if (!catalogPromise) {
     catalogPromise = (async () => {
+      const DATA = await resolveDataDir()
       const [majors, occupations, crosswalk, placesFile] = await Promise.all([
         readFile(path.join(DATA, 'majors.json'), 'utf8').then(JSON.parse),
         readFile(path.join(DATA, 'occupations.json'), 'utf8').then(JSON.parse),
         readFile(path.join(DATA, 'crosswalk.json'), 'utf8').then(JSON.parse),
-        readFile(path.join(DATA, 'v3/places.json'), 'utf8').then(JSON.parse).catch(() => ({ places: [] })),
+        readFile(path.join(DATA, 'v3/places.json'), 'utf8')
+          .then(JSON.parse)
+          .catch(() => ({ places: [] })),
       ])
       /** @type {Map<string, any>} */
       const occBySoc = new Map(occupations.map((o) => [o.soc, o]))
-      return { majors, occupations, crosswalk, places: placesFile.places || [], occBySoc }
+      return {
+        majors,
+        occupations,
+        crosswalk,
+        places: placesFile.places || [],
+        occBySoc,
+      }
     })()
   }
   return catalogPromise
