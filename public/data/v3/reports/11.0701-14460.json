@@ -1,0 +1,1887 @@
+{
+  "cip": {
+    "code": "11.0701",
+    "title": "Computer Science"
+  },
+  "place": {
+    "zip": "02108",
+    "cbsa": "14460",
+    "cbsaName": "Boston-Cambridge-Newton, MA-NH",
+    "msaSize": "Large"
+  },
+  "funnel": {
+    "totalRated": 1752,
+    "ratedInField": 1003,
+    "hiringHere": 98
+  },
+  "groups": [
+    {
+      "id": 1,
+      "displayName": "Software engineering",
+      "displayBlurb": "Build products and systems in code.",
+      "clusterIds": [
+        187,
+        891,
+        1001,
+        1000,
+        993,
+        103
+      ],
+      "vendorNames": [
+        "Software Engineers",
+        "Software Quality Assurance Analysts and Testers"
+      ],
+      "destinations": [
+        {
+          "clusterId": 51,
+          "name": "Architectural and Engineering Managers",
+          "jobLevel": "Bachelor's Degree + Experience"
+        },
+        {
+          "clusterId": 245,
+          "name": "Database Architects",
+          "jobLevel": "Bachelor's Degree + Experience"
+        },
+        {
+          "clusterId": 243,
+          "name": "Database Management Professionals",
+          "jobLevel": "Bachelor's Degree"
+        }
+      ],
+      "promotion": {
+        "internalPct": 10,
+        "externalPct": 19,
+        "verdict": "More people move up by leaving than by staying."
+      },
+      "door": {
+        "barrier": "Rising",
+        "premium": "Rising",
+        "aiFlag": "Raising the Bar",
+        "methodologyVersion": "2026-04-21",
+        "heading": "Harder to get in, better once you are",
+        "body": "Fewer employers are opening junior roles. The ones below are the ones that still are."
+      }
+    },
+    {
+      "id": 2,
+      "displayName": "Data and analytics",
+      "displayBlurb": "Turn data into decisions and models.",
+      "clusterIds": [
+        242,
+        118,
+        159,
+        243,
+        245
+      ],
+      "vendorNames": [
+        "Data Scientists",
+        "Database Architects",
+        "Database Management Professionals"
+      ],
+      "destinations": [
+        {
+          "clusterId": 187,
+          "name": "Software Engineers",
+          "jobLevel": "Bachelor's Degree"
+        }
+      ],
+      "promotion": {
+        "internalPct": 17,
+        "externalPct": 25,
+        "verdict": "More people move up by leaving than by staying."
+      },
+      "door": {
+        "barrier": "Rising",
+        "premium": "Rising",
+        "aiFlag": "Raising the Bar",
+        "methodologyVersion": "2026-04-21",
+        "heading": "Harder to get in, better once you are",
+        "body": "Fewer employers are opening junior roles. The ones below are the ones that still are."
+      }
+    },
+    {
+      "id": 3,
+      "displayName": "Security and infrastructure",
+      "displayBlurb": "Keep systems running and safe.",
+      "clusterIds": [
+        189,
+        190,
+        260,
+        718,
+        182,
+        183,
+        655,
+        191
+      ],
+      "vendorNames": [
+        "IT Systems Analysts",
+        "Computer Systems & Security Engineers"
+      ],
+      "destinations": [
+        {
+          "clusterId": 187,
+          "name": "Software Engineers",
+          "jobLevel": "Bachelor's Degree"
+        },
+        {
+          "clusterId": 118,
+          "name": "Business Intelligence Analysts",
+          "jobLevel": "Bachelor's Degree"
+        }
+      ],
+      "promotion": {
+        "internalPct": 20,
+        "externalPct": 27,
+        "verdict": "More people move up by leaving than by staying."
+      },
+      "door": {
+        "barrier": "Rising",
+        "premium": "Rising",
+        "aiFlag": "Raising the Bar",
+        "methodologyVersion": "2026-04-21",
+        "heading": "Harder to get in, better once you are",
+        "body": "Fewer employers are opening junior roles. The ones below are the ones that still are."
+      }
+    },
+    {
+      "id": 4,
+      "displayName": "Technical management and specialist",
+      "displayBlurb": "Lead projects and deep specialist tracks.",
+      "clusterIds": [
+        193,
+        510,
+        192,
+        186,
+        266,
+        440,
+        457
+      ],
+      "vendorNames": [
+        "Information Technology Project Managers"
+      ],
+      "destinations": [
+        {
+          "clusterId": 583,
+          "name": "Marketing Managers",
+          "jobLevel": "Bachelor's Degree + Experience"
+        },
+        {
+          "clusterId": 355,
+          "name": "Financial Managers",
+          "jobLevel": "Bachelor's Degree + Experience"
+        },
+        {
+          "clusterId": 51,
+          "name": "Architectural and Engineering Managers",
+          "jobLevel": "Bachelor's Degree + Experience"
+        }
+      ],
+      "promotion": {
+        "internalPct": 14,
+        "externalPct": 20,
+        "verdict": "More people move up by leaving than by staying."
+      },
+      "door": {
+        "barrier": "Rising",
+        "premium": "Falling",
+        "aiFlag": "Shrinking Fields",
+        "methodologyVersion": "2026-04-21",
+        "heading": "Narrow door, flat ceiling",
+        "body": "Harder to enter and the pay premium for experience is shrinking. Worth comparing against your other groups."
+      }
+    }
+  ],
+  "employers": [
+    {
+      "companyUid": "Accenture",
+      "companyName": "Accenture",
+      "companyUrl": null,
+      "primaryIndustry": "Professional Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2,
+        3
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Booz Allen Hamilton",
+      "companyName": "Booz Allen Hamilton",
+      "companyUrl": null,
+      "primaryIndustry": "Professional Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2,
+        3
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Deloitte",
+      "companyName": "Deloitte",
+      "companyUrl": null,
+      "primaryIndustry": "Professional Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2,
+        3
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Lockheed Martin",
+      "companyName": "Lockheed Martin",
+      "companyUrl": null,
+      "primaryIndustry": "Aerospace & Defense",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2,
+        3
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Amazon",
+      "companyName": "Amazon",
+      "companyUrl": null,
+      "primaryIndustry": "Software & Technology",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Autodesk",
+      "companyName": "Autodesk",
+      "companyUrl": null,
+      "primaryIndustry": "Software & Technology",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "CACI International",
+      "companyName": "CACI International",
+      "companyUrl": null,
+      "primaryIndustry": "Information Technology Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        3
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Capgemini",
+      "companyName": "Capgemini",
+      "companyUrl": null,
+      "primaryIndustry": "Information Technology Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Capital One",
+      "companyName": "Capital One",
+      "companyUrl": null,
+      "primaryIndustry": "Banks & Financial Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Crowe",
+      "companyName": "Crowe",
+      "companyUrl": null,
+      "primaryIndustry": "Professional Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        2,
+        3
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Ford",
+      "companyName": "Ford",
+      "companyUrl": null,
+      "primaryIndustry": "Auto Manufacturers & Parts",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "General Dynamics",
+      "companyName": "General Dynamics",
+      "companyUrl": null,
+      "primaryIndustry": "Aerospace & Defense",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        3
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Hewlett Packard Enterprise",
+      "companyName": "Hewlett Packard Enterprise",
+      "companyUrl": null,
+      "primaryIndustry": "Information Technology Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Infosys",
+      "companyName": "Infosys",
+      "companyUrl": null,
+      "primaryIndustry": "Information Technology Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "KPMG",
+      "companyName": "KPMG",
+      "companyUrl": null,
+      "primaryIndustry": "Professional Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Mastercard",
+      "companyName": "Mastercard",
+      "companyUrl": null,
+      "primaryIndustry": "Banks & Financial Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        3
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "McKinsey",
+      "companyName": "McKinsey",
+      "companyUrl": null,
+      "primaryIndustry": "Professional Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Microsoft",
+      "companyName": "Microsoft",
+      "companyUrl": null,
+      "primaryIndustry": "Software & Technology",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        3
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Oracle",
+      "companyName": "Oracle",
+      "companyUrl": null,
+      "primaryIndustry": "Software & Technology",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Pearson Education",
+      "companyName": "Pearson Education",
+      "companyUrl": null,
+      "primaryIndustry": "Entertainment & Media",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "SAIC",
+      "companyName": "SAIC",
+      "companyUrl": null,
+      "primaryIndustry": "Information Technology Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        3
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Schneider Electric",
+      "companyName": "Schneider Electric",
+      "companyUrl": null,
+      "primaryIndustry": "Manufacturing",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Spotify",
+      "companyName": "Spotify",
+      "companyUrl": null,
+      "primaryIndustry": "Entertainment & Media",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "State Street Corporation",
+      "companyName": "State Street Corporation",
+      "companyUrl": null,
+      "primaryIndustry": "Banks & Financial Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        3
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Adobe",
+      "companyName": "Adobe",
+      "companyUrl": null,
+      "primaryIndustry": "Software & Technology",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Cadence Design Systems",
+      "companyName": "Cadence Design Systems",
+      "companyUrl": null,
+      "primaryIndustry": "Software & Technology",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Cognizant Technology Solutions",
+      "companyName": "Cognizant Technology Solutions",
+      "companyUrl": null,
+      "primaryIndustry": "Information Technology Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Datadog",
+      "companyName": "Datadog",
+      "companyUrl": null,
+      "primaryIndustry": "Software & Technology",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "General Motors",
+      "companyName": "General Motors",
+      "companyUrl": null,
+      "primaryIndustry": "Auto Manufacturers & Parts",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Guidehouse",
+      "companyName": "Guidehouse",
+      "companyUrl": null,
+      "primaryIndustry": "Professional Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        2
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Honeywell International",
+      "companyName": "Honeywell International",
+      "companyUrl": null,
+      "primaryIndustry": "Manufacturing",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Intuit",
+      "companyName": "Intuit",
+      "companyUrl": null,
+      "primaryIndustry": "Software & Technology",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "MITRE Corporation",
+      "companyName": "MITRE Corporation",
+      "companyUrl": null,
+      "primaryIndustry": "Aerospace & Defense",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Qualcomm",
+      "companyName": "Qualcomm",
+      "companyUrl": null,
+      "primaryIndustry": "Electronics & Semiconductors",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "ServiceNow",
+      "companyName": "ServiceNow",
+      "companyUrl": null,
+      "primaryIndustry": "Software & Technology",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "The Hartford",
+      "companyName": "The Hartford",
+      "companyUrl": null,
+      "primaryIndustry": "Insurance",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Toast",
+      "companyName": "Toast",
+      "companyUrl": null,
+      "primaryIndustry": "Software & Technology",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Tyler Technologies",
+      "companyName": "Tyler Technologies",
+      "companyUrl": null,
+      "primaryIndustry": "Information Technology Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Johnson & Johnson",
+      "companyName": "Johnson & Johnson",
+      "companyUrl": null,
+      "primaryIndustry": "Pharmaceuticals",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": false,
+      "groupIds": [
+        1,
+        2
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Lowe's",
+      "companyName": "Lowe's",
+      "companyUrl": null,
+      "primaryIndustry": "Retail",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 2,
+      "top10": false,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "BAE Systems",
+      "companyName": "BAE Systems",
+      "companyUrl": null,
+      "primaryIndustry": "Aerospace & Defense",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        3
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "IBM",
+      "companyName": "IBM",
+      "companyUrl": null,
+      "primaryIndustry": "Information Technology Services",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "NTT DATA",
+      "companyName": "NTT DATA",
+      "companyUrl": null,
+      "primaryIndustry": "Information Technology Services",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        3
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "SS&C Technologies",
+      "companyName": "SS&C Technologies",
+      "companyUrl": null,
+      "primaryIndustry": "Information Technology Services",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1,
+        2
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Advanced Micro Devices",
+      "companyName": "Advanced Micro Devices",
+      "companyUrl": null,
+      "primaryIndustry": "Electronics & Semiconductors",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Chewy",
+      "companyName": "Chewy",
+      "companyUrl": null,
+      "primaryIndustry": "Retail",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Cisco",
+      "companyName": "Cisco",
+      "companyUrl": null,
+      "primaryIndustry": "Electronics & Semiconductors",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "CVS Health",
+      "companyName": "CVS Health",
+      "companyUrl": null,
+      "primaryIndustry": "Healthcare",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "GE Aerospace",
+      "companyName": "GE Aerospace",
+      "companyUrl": null,
+      "primaryIndustry": "Aerospace & Defense",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Geico",
+      "companyName": "Geico",
+      "companyUrl": null,
+      "primaryIndustry": "Insurance",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "General Atomics",
+      "companyName": "General Atomics",
+      "companyUrl": null,
+      "primaryIndustry": "Aerospace & Defense",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Keysight Technologies",
+      "companyName": "Keysight Technologies",
+      "companyUrl": null,
+      "primaryIndustry": "Electronics & Semiconductors",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Leidos",
+      "companyName": "Leidos",
+      "companyUrl": null,
+      "primaryIndustry": "Aerospace & Defense",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Motorola Solutions",
+      "companyName": "Motorola Solutions",
+      "companyUrl": null,
+      "primaryIndustry": "Communication & Telecom",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "NBC",
+      "companyName": "NBC",
+      "companyUrl": null,
+      "primaryIndustry": "Entertainment & Media",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Nelnet",
+      "companyName": "Nelnet",
+      "companyUrl": null,
+      "primaryIndustry": "Banks & Financial Services",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        3
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "WEX Inc.",
+      "companyName": "WEX Inc.",
+      "companyUrl": null,
+      "primaryIndustry": "Banks & Financial Services",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Cardinal Health",
+      "companyName": "Cardinal Health",
+      "companyUrl": null,
+      "primaryIndustry": "Medical Devices & Distribution",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": false,
+      "groupIds": [
+        2,
+        3
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "JPMorgan Chase",
+      "companyName": "JPMorgan Chase",
+      "companyUrl": null,
+      "primaryIndustry": "Banks & Financial Services",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 2,
+      "top10": false,
+      "groupIds": [
+        3
+      ],
+      "entryPostingTier": "high",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "American Family Insurance Group",
+      "companyName": "American Family Insurance Group",
+      "companyUrl": null,
+      "primaryIndustry": "Insurance",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1,
+        2,
+        3
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Fidelity Investments",
+      "companyName": "Fidelity Investments",
+      "companyUrl": null,
+      "primaryIndustry": "Banks & Financial Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1,
+        2,
+        3
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Liberty Mutual Insurance",
+      "companyName": "Liberty Mutual Insurance",
+      "companyUrl": null,
+      "primaryIndustry": "Insurance",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1,
+        2
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Wipro",
+      "companyName": "Wipro",
+      "companyUrl": null,
+      "primaryIndustry": "Information Technology Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1,
+        3
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Ansys",
+      "companyName": "Ansys",
+      "companyUrl": null,
+      "primaryIndustry": "Software & Technology",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Citrix",
+      "companyName": "Citrix",
+      "companyUrl": null,
+      "primaryIndustry": "Software & Technology",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Goldman Sachs",
+      "companyName": "Goldman Sachs",
+      "companyUrl": null,
+      "primaryIndustry": "Banks & Financial Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "HubSpot",
+      "companyName": "HubSpot",
+      "companyUrl": null,
+      "primaryIndustry": "Software & Technology",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "MathWorks",
+      "companyName": "MathWorks",
+      "companyUrl": null,
+      "primaryIndustry": "Software & Technology",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Medtronic",
+      "companyName": "Medtronic",
+      "companyUrl": null,
+      "primaryIndustry": "Medical Devices & Distribution",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Smartsheet",
+      "companyName": "Smartsheet",
+      "companyUrl": null,
+      "primaryIndustry": "Software & Technology",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "The Boston Consulting Group (BCG)",
+      "companyName": "The Boston Consulting Group (BCG)",
+      "companyUrl": null,
+      "primaryIndustry": "Professional Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        2
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Veeva Systems",
+      "companyName": "Veeva Systems",
+      "companyUrl": null,
+      "primaryIndustry": "Software & Technology",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Wayfair",
+      "companyName": "Wayfair",
+      "companyUrl": null,
+      "primaryIndustry": "Retail",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Zillow",
+      "companyName": "Zillow",
+      "companyUrl": null,
+      "primaryIndustry": "Real Estate",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "BlackRock",
+      "companyName": "BlackRock",
+      "companyUrl": null,
+      "primaryIndustry": "Banks & Financial Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": false,
+      "groupIds": [
+        3
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Citizens Bank",
+      "companyName": "Citizens Bank",
+      "companyUrl": null,
+      "primaryIndustry": "Banks & Financial Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": false,
+      "groupIds": [
+        3
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "FIS",
+      "companyName": "FIS",
+      "companyUrl": null,
+      "primaryIndustry": "Information Technology Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": false,
+      "groupIds": [
+        2
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Johnson Controls",
+      "companyName": "Johnson Controls",
+      "companyUrl": null,
+      "primaryIndustry": "Building & Construction",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": false,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "MassMutual",
+      "companyName": "MassMutual",
+      "companyUrl": null,
+      "primaryIndustry": "Insurance",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": false,
+      "groupIds": [
+        2
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Optum",
+      "companyName": "Optum",
+      "companyUrl": null,
+      "primaryIndustry": "Healthcare",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 1,
+      "top10": false,
+      "groupIds": [
+        3
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Pfizer",
+      "companyName": "Pfizer",
+      "companyUrl": null,
+      "primaryIndustry": "Pharmaceuticals",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": false,
+      "groupIds": [
+        2
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "RSM",
+      "companyName": "RSM",
+      "companyUrl": null,
+      "primaryIndustry": "Professional Services",
+      "badgeEarlyCareer": "Platinum",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": false,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "BNY Mellon",
+      "companyName": "BNY Mellon",
+      "companyUrl": null,
+      "primaryIndustry": "Banks & Financial Services",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        3
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Cigna",
+      "companyName": "Cigna",
+      "companyUrl": null,
+      "primaryIndustry": "Healthcare",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "CyberArk",
+      "companyName": "CyberArk",
+      "companyUrl": null,
+      "primaryIndustry": "Software & Technology",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Dell Technologies",
+      "companyName": "Dell Technologies",
+      "companyUrl": null,
+      "primaryIndustry": "Electronics & Semiconductors",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Insulet Corporation",
+      "companyName": "Insulet Corporation",
+      "companyUrl": null,
+      "primaryIndustry": "Medical Devices & Distribution",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Kratos Defense & Security Solutions",
+      "companyName": "Kratos Defense & Security Solutions",
+      "companyUrl": null,
+      "primaryIndustry": "Aerospace & Defense",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Lincoln Financial Group",
+      "companyName": "Lincoln Financial Group",
+      "companyUrl": null,
+      "primaryIndustry": "Insurance",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": null,
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        3
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Nike",
+      "companyName": "Nike",
+      "companyUrl": null,
+      "primaryIndustry": "Retail",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Nvidia",
+      "companyName": "Nvidia",
+      "companyUrl": null,
+      "primaryIndustry": "Electronics & Semiconductors",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 1,
+      "top10": true,
+      "groupIds": [
+        2
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "AIG",
+      "companyName": "AIG",
+      "companyUrl": null,
+      "primaryIndustry": "Insurance",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 1,
+      "top10": false,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "AON",
+      "companyName": "AON",
+      "companyUrl": null,
+      "primaryIndustry": "Professional Services",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 1,
+      "top10": false,
+      "groupIds": [
+        3
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Bank of America",
+      "companyName": "Bank of America",
+      "companyUrl": null,
+      "primaryIndustry": "Banks & Financial Services",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 1,
+      "top10": false,
+      "groupIds": [
+        2
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "BDO USA",
+      "companyName": "BDO USA",
+      "companyUrl": null,
+      "primaryIndustry": "Professional Services",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 1,
+      "top10": false,
+      "groupIds": [
+        3
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Farmers Insurance Exchange",
+      "companyName": "Farmers Insurance Exchange",
+      "companyUrl": null,
+      "primaryIndustry": "Insurance",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Platinum",
+      "hiringIntensity": 1,
+      "top10": false,
+      "groupIds": [
+        3
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "TD Bank",
+      "companyName": "TD Bank",
+      "companyUrl": null,
+      "primaryIndustry": "Banks & Financial Services",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 1,
+      "top10": false,
+      "groupIds": [
+        1
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    },
+    {
+      "companyUid": "Thermo Fisher Scientific",
+      "companyName": "Thermo Fisher Scientific",
+      "companyUrl": null,
+      "primaryIndustry": "Medical Devices & Distribution",
+      "badgeEarlyCareer": "Gold",
+      "badgeGrowth": "Gold",
+      "hiringIntensity": 1,
+      "top10": false,
+      "groupIds": [
+        2
+      ],
+      "entryPostingTier": "above-average",
+      "metroLabel": null
+    }
+  ],
+  "destinations": [
+    {
+      "clusterId": 51,
+      "name": "Architectural and Engineering Managers",
+      "jobLevel": "Bachelor's Degree + Experience",
+      "fromGroupId": 1,
+      "fromGroupName": "Software engineering"
+    },
+    {
+      "clusterId": 245,
+      "name": "Database Architects",
+      "jobLevel": "Bachelor's Degree + Experience",
+      "fromGroupId": 1,
+      "fromGroupName": "Software engineering"
+    },
+    {
+      "clusterId": 243,
+      "name": "Database Management Professionals",
+      "jobLevel": "Bachelor's Degree",
+      "fromGroupId": 1,
+      "fromGroupName": "Software engineering"
+    },
+    {
+      "clusterId": 187,
+      "name": "Software Engineers",
+      "jobLevel": "Bachelor's Degree",
+      "fromGroupId": 2,
+      "fromGroupName": "Data and analytics"
+    },
+    {
+      "clusterId": 187,
+      "name": "Software Engineers",
+      "jobLevel": "Bachelor's Degree",
+      "fromGroupId": 3,
+      "fromGroupName": "Security and infrastructure"
+    },
+    {
+      "clusterId": 118,
+      "name": "Business Intelligence Analysts",
+      "jobLevel": "Bachelor's Degree",
+      "fromGroupId": 3,
+      "fromGroupName": "Security and infrastructure"
+    },
+    {
+      "clusterId": 583,
+      "name": "Marketing Managers",
+      "jobLevel": "Bachelor's Degree + Experience",
+      "fromGroupId": 4,
+      "fromGroupName": "Technical management and specialist"
+    },
+    {
+      "clusterId": 355,
+      "name": "Financial Managers",
+      "jobLevel": "Bachelor's Degree + Experience",
+      "fromGroupId": 4,
+      "fromGroupName": "Technical management and specialist"
+    },
+    {
+      "clusterId": 51,
+      "name": "Architectural and Engineering Managers",
+      "jobLevel": "Bachelor's Degree + Experience",
+      "fromGroupId": 4,
+      "fromGroupName": "Technical management and specialist"
+    }
+  ],
+  "door": [
+    {
+      "groupId": 1,
+      "groupName": "Software engineering",
+      "barrier": "Rising",
+      "premium": "Rising",
+      "aiFlag": "Raising the Bar",
+      "methodologyVersion": "2026-04-21",
+      "heading": "Harder to get in, better once you are",
+      "body": "Fewer employers are opening junior roles. The ones below are the ones that still are."
+    },
+    {
+      "groupId": 2,
+      "groupName": "Data and analytics",
+      "barrier": "Rising",
+      "premium": "Rising",
+      "aiFlag": "Raising the Bar",
+      "methodologyVersion": "2026-04-21",
+      "heading": "Harder to get in, better once you are",
+      "body": "Fewer employers are opening junior roles. The ones below are the ones that still are."
+    },
+    {
+      "groupId": 3,
+      "groupName": "Security and infrastructure",
+      "barrier": "Rising",
+      "premium": "Rising",
+      "aiFlag": "Raising the Bar",
+      "methodologyVersion": "2026-04-21",
+      "heading": "Harder to get in, better once you are",
+      "body": "Fewer employers are opening junior roles. The ones below are the ones that still are."
+    },
+    {
+      "groupId": 4,
+      "groupName": "Technical management and specialist",
+      "barrier": "Rising",
+      "premium": "Falling",
+      "aiFlag": "Shrinking Fields",
+      "methodologyVersion": "2026-04-21",
+      "heading": "Narrow door, flat ceiling",
+      "body": "Harder to enter and the pay premium for experience is shrinking. Worth comparing against your other groups."
+    }
+  ],
+  "metros": [
+    {
+      "zip": "10001",
+      "cbsa": "35620",
+      "cbsaName": "New York-Newark-Jersey City, NY-NJ-PA",
+      "employersHiring": 138,
+      "isCurrent": false,
+      "score": 4.9344739331306915
+    },
+    {
+      "zip": "60601",
+      "cbsa": "16980",
+      "cbsaName": "Chicago-Naperville-Elgin, IL-IN-WI",
+      "employersHiring": 100,
+      "isCurrent": false,
+      "score": 4.61512051684126
+    },
+    {
+      "zip": "02108",
+      "cbsa": "14460",
+      "cbsaName": "Boston-Cambridge-Newton, MA-NH",
+      "employersHiring": 98,
+      "isCurrent": true,
+      "score": 4.59511985013459
+    },
+    {
+      "zip": "30301",
+      "cbsa": "12060",
+      "cbsaName": "Atlanta-Sandy Springs-Alpharetta, GA",
+      "employersHiring": 97,
+      "isCurrent": false,
+      "score": 4.584967478670572
+    },
+    {
+      "zip": "98101",
+      "cbsa": "42660",
+      "cbsaName": "Seattle-Tacoma-Bellevue, WA",
+      "employersHiring": 92,
+      "isCurrent": false,
+      "score": 4.532599493153256
+    },
+    {
+      "zip": "78701",
+      "cbsa": "12420",
+      "cbsaName": "Austin-Round Rock-Georgetown, TX",
+      "employersHiring": 82,
+      "isCurrent": false,
+      "score": 4.418840607796598
+    },
+    {
+      "zip": "94402",
+      "cbsa": "41860",
+      "cbsaName": "San Francisco-Oakland-Berkeley, CA",
+      "employersHiring": 80,
+      "isCurrent": false,
+      "score": 4.394449154672439
+    },
+    {
+      "zip": "80202",
+      "cbsa": "19740",
+      "cbsaName": "Denver-Aurora-Lakewood, CO",
+      "employersHiring": 70,
+      "isCurrent": false,
+      "score": 4.2626798770413155
+    }
+  ],
+  "coverage": {
+    "text": "This list covers companies rated for early-career hiring. A company not shown here has not been rated, which is not a judgment about it."
+  },
+  "radiusExpanded": false,
+  "source": {
+    "provider": "AOI / WYWM (aonav.ai)",
+    "builtAt": "2026-08-12T03:23:16.620Z"
+  }
+}

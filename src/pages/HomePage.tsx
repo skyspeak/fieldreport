@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useData } from '../data/DataContext'
 import { MajorSearch } from '../components/MajorSearch'
 import { BrandMark } from '../components/BrandMark'
@@ -50,6 +51,13 @@ export function HomePage() {
           tip="Share of occupations in this app that match an Eloundou et al. LLM-exposure score — not a risk level for any one major."
         />
       </div>
+
+      <p className="mt-12 text-center text-sm text-muted">
+        <Link to="/v3" className="text-primary hover:text-primary-bright">
+          Try Field Report v3
+        </Link>
+        {' — '}employers by major and metro
+      </p>
     </div>
   )
 }

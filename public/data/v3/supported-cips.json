@@ -1,0 +1,64 @@
+{
+  "cips": [
+    {
+      "code": "11.0701",
+      "title": "Computer Science",
+      "groups": [
+        {
+          "id": 1,
+          "displayName": "Software engineering",
+          "displayBlurb": "Build products and systems in code.",
+          "clusterIds": [
+            187,
+            891,
+            1001,
+            1000,
+            993,
+            103
+          ]
+        },
+        {
+          "id": 2,
+          "displayName": "Data and analytics",
+          "displayBlurb": "Turn data into decisions and models.",
+          "clusterIds": [
+            242,
+            118,
+            159,
+            243,
+            245
+          ]
+        },
+        {
+          "id": 3,
+          "displayName": "Security and infrastructure",
+          "displayBlurb": "Keep systems running and safe.",
+          "clusterIds": [
+            189,
+            190,
+            260,
+            718,
+            182,
+            183,
+            655,
+            191
+          ]
+        },
+        {
+          "id": 4,
+          "displayName": "Technical management and specialist",
+          "displayBlurb": "Lead projects and deep specialist tracks.",
+          "clusterIds": [
+            193,
+            510,
+            192,
+            186,
+            266,
+            440,
+            457
+          ]
+        }
+      ]
+    }
+  ]
+}

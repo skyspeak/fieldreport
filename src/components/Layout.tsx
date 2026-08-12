@@ -9,7 +9,9 @@ export function Layout({ children }: { children: ReactNode }) {
   const { pathname } = useLocation()
   const { home, resultsBase } = useAppPaths()
   const { majors, loading } = useData()
-  const isHome = pathname === '/' || pathname === '/v2'
+  const isHome =
+    pathname === '/' || pathname === '/v2' || pathname === '/v3'
+  const isV3 = pathname.startsWith('/v3')
   const showGlobalSearch = !isHome && !loading && majors.length > 0
   const letterUrl = (import.meta.env.VITE_LETTER_URL as string | undefined)?.replace(/\/$/, '')
 
@@ -41,7 +43,9 @@ export function Layout({ children }: { children: ReactNode }) {
             </div>
           ) : (
             <p className="hidden sm:block text-xs text-muted max-w-xs text-right leading-snug ml-auto">
-              Salaries, openings, AI Risk & Eloundou β for every U.S. major.
+              {isV3
+                ? 'Rated early-career employers by major and metro.'
+                : 'Salaries, openings, AI Risk & Eloundou β for every U.S. major.'}
             </p>
           )}
         </div>
