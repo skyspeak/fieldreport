@@ -102,9 +102,13 @@ async function loadCatalog() {
         readFile(path.join(DATA, 'majors.json'), 'utf8').then(JSON.parse),
         readFile(path.join(DATA, 'occupations.json'), 'utf8').then(JSON.parse),
         readFile(path.join(DATA, 'crosswalk.json'), 'utf8').then(JSON.parse),
-        readFile(path.join(DATA, 'v3/places.json'), 'utf8')
+        readFile(path.join(DATA, 'places.json'), 'utf8')
           .then(JSON.parse)
-          .catch(() => ({ places: [] })),
+          .catch(() =>
+            readFile(path.join(DATA, 'v3/places.json'), 'utf8')
+              .then(JSON.parse)
+              .catch(() => ({ places: [] })),
+          ),
       ])
       /** @type {Map<string, any>} */
       const occBySoc = new Map(occupations.map((o) => [o.soc, o]))

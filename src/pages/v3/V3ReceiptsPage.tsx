@@ -89,10 +89,10 @@ export function V3ReceiptsPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 sm:px-6 pt-8 sm:pt-14 pb-20">
       <DocumentMeta
-        title="How to read Field Report v3"
-        description="What Platinum entry ratings, core roles, hiring intensity, and the rest of Field Report v3 mean."
+        title="How to read Field Report"
+        description="What Platinum entry ratings, core roles, hiring intensity, and the rest of the employer layer mean."
       />
-      <BackLink to={home}>← Field Report v3</BackLink>
+      <BackLink to={home}>← Field Report</BackLink>
 
       <p className="font-mono text-xs uppercase tracking-wider text-primary">
         Receipts

@@ -2,6 +2,7 @@ import { useMemo, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import type { Employer, FieldReport } from '../../lib/v3/types'
 import { NAMED_EMPLOYERS } from '../../lib/v3/data'
+import { useAppPaths } from '../../lib/useAppPaths'
 
 const HIRING_LABEL: Record<number, string> = {
   2: 'High hiring',
@@ -16,6 +17,7 @@ type Props = {
 }
 
 export function EmployerTable({ report, resultsBase }: Props) {
+  const { receipts } = useAppPaths()
   const [coreOnly, setCoreOnly] = useState(false)
   const [platinumOnly, setPlatinumOnly] = useState(false)
   const [groupFilter, setGroupFilter] = useState<number | null>(null)
@@ -194,7 +196,7 @@ export function EmployerTable({ report, resultsBase }: Props) {
 
           <p className="mt-4 max-w-3xl text-sm text-muted">
             <Link
-              to="/v3/receipts"
+              to={receipts}
               className="text-primary hover:text-primary-bright"
             >
               What Platinum and core roles mean

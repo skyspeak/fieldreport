@@ -91,10 +91,10 @@ export function V3ZipPromptPage() {
         title={
           major
             ? `${major.name} — pick a metro`
-            : 'Pick a metro — Field Report v3'
+            : 'Pick a metro — Field Report'
         }
       />
-      <BackLink to={home}>← Field Report v3</BackLink>
+      <BackLink to={`${resultsBase}/${cipCode}`}>← Back to major</BackLink>
       <h1 className="font-serif text-3xl sm:text-4xl text-ink leading-tight">
         {major?.name || cipCode}
       </h1>
@@ -115,7 +115,7 @@ export function V3ZipPromptPage() {
           maxLength={5}
           value={zip}
           onChange={(e) => setZip(e.target.value.replace(/\D/g, '').slice(0, 5))}
-          className="flex-1 min-h-12 rounded-xl border border-border bg-white px-4 font-mono tracking-wider"
+          className="flex-1 min-h-12 rounded-xl border border-border bg-card px-4 font-mono tracking-wider"
           placeholder="94402"
         />
         <button
@@ -136,15 +136,21 @@ export function V3ZipPromptPage() {
               <button
                 type="button"
                 onClick={() => navigate(`${resultsBase}/${cipCode}/${p.zip}`)}
-                className="text-sm min-h-11 px-3 rounded-full border border-border bg-white text-muted hover:text-ink"
+                className="text-sm min-h-11 px-3 rounded-full border border-border bg-card text-muted hover:text-ink"
               >
-                {p.zip}
-                <span className="hidden sm:inline"> · {p.cbsaName.split(',')[0]}</span>
+                {p.cbsaName.split('-')[0].split(',')[0].trim()}
+                <span className="font-mono text-xs opacity-70 ml-1.5">{p.zip}</span>
               </button>
             </li>
           ))}
         </ul>
       </div>
+
+      <p className="mt-8 text-sm text-muted">
+        <Link to={home} className="underline hover:text-ink">
+          ← Field Report home
+        </Link>
+      </p>
     </div>
   )
 }
@@ -202,7 +208,7 @@ export function V3ResultsPage() {
   if (status === 'error' || !report) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16">
-        <BackLink to={`${resultsBase}/${cipCode}`}>← Change ZIP</BackLink>
+        <BackLink to={`${resultsBase}/${cipCode}/place`}>← Change metro</BackLink>
         <h1 className="font-serif text-2xl text-ink">Could not build this report</h1>
         <p className="mt-3 text-red-500">{error || 'Unknown error'}</p>
         <p className="mt-4 text-sm text-muted leading-relaxed">
@@ -221,7 +227,7 @@ export function V3ResultsPage() {
       <DocumentMeta
         title={`${majorName || report.cip.title} in ${report.place.cbsaName}`}
       />
-      <BackLink to={`${resultsBase}/${cipCode}`}>← Change ZIP</BackLink>
+      <BackLink to={`${resultsBase}/${cipCode}/place`}>← Change metro</BackLink>
 
       <header className="max-w-3xl">
         <p className="font-mono text-xs uppercase tracking-wider text-muted">
@@ -251,7 +257,7 @@ export function V3ResultsPage() {
           How to read this report — Platinum, core roles, and more
         </Link>
         <Link to={home} className="min-h-11 inline-flex items-center text-muted hover:text-ink">
-          v3 home
+          Field Report home
         </Link>
         {report.source?.builtAt ? (
           <span className="font-mono text-xs text-muted">

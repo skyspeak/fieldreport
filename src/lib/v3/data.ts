@@ -7,6 +7,10 @@ export const NAMED_EMPLOYERS =
 export const COVERAGE_NOTE =
   'This list covers companies rated for early-career hiring. A company not shown here has not been rated, which is not a judgment about it.'
 
+function placesUrl() {
+  return `${import.meta.env.BASE_URL}data/places.json`.replace(/\/{2,}/g, '/')
+}
+
 /** Live AOI-backed report for any CIP + ZIP. */
 export async function fetchLiveFieldReport(
   cip: string,
@@ -31,13 +35,13 @@ export async function fetchLiveFieldReport(
   return body as FieldReport
 }
 
-/** @deprecated static places — kept for ZIP prompt seed chips */
+/** Seed metros for Map / ZIP chips. */
 export async function loadPlaces(): Promise<PlaceRow[]> {
   try {
-    const res = await fetch(
-      `${import.meta.env.BASE_URL}data/v3/places.json`.replace(/\/{2,}/g, '/'),
-    )
+    const res = await fetch(placesUrl())
     if (!res.ok) return []
+    const type = res.headers.get('content-type') || ''
+    if (!type.includes('application/json')) return []
     const body = (await res.json()) as { places: PlaceRow[] }
     return body.places || []
   } catch {

@@ -1,0 +1,60 @@
+{
+  "places": [
+    {
+      "zip": "94402",
+      "cbsa": "41860",
+      "cbsaName": "San Francisco-Oakland-Berkeley, CA",
+      "msaSize": "Large",
+      "seed": true
+    },
+    {
+      "zip": "10001",
+      "cbsa": "35620",
+      "cbsaName": "New York-Newark-Jersey City, NY-NJ-PA",
+      "msaSize": "Large",
+      "seed": true
+    },
+    {
+      "zip": "98101",
+      "cbsa": "42660",
+      "cbsaName": "Seattle-Tacoma-Bellevue, WA",
+      "msaSize": "Large",
+      "seed": true
+    },
+    {
+      "zip": "78701",
+      "cbsa": "12420",
+      "cbsaName": "Austin-Round Rock-Georgetown, TX",
+      "msaSize": "Large",
+      "seed": true
+    },
+    {
+      "zip": "60601",
+      "cbsa": "16980",
+      "cbsaName": "Chicago-Naperville-Elgin, IL-IN-WI",
+      "msaSize": "Large",
+      "seed": true
+    },
+    {
+      "zip": "02108",
+      "cbsa": "14460",
+      "cbsaName": "Boston-Cambridge-Newton, MA-NH",
+      "msaSize": "Large",
+      "seed": true
+    },
+    {
+      "zip": "30301",
+      "cbsa": "12060",
+      "cbsaName": "Atlanta-Sandy Springs-Alpharetta, GA",
+      "msaSize": "Large",
+      "seed": true
+    },
+    {
+      "zip": "80202",
+      "cbsa": "19740",
+      "cbsaName": "Denver-Aurora-Lakewood, CO",
+      "msaSize": "Large",
+      "seed": true
+    }
+  ]
+}

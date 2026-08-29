@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { geoAlbersUsa, geoPath } from 'd3-geo'
 import { scaleSequential } from 'd3-scale'
 import { feature } from 'topojson-client'
@@ -16,6 +16,8 @@ import { AI_BAND_COPY, ELOUNDOU_COPY, aiBandFromScore } from '../lib/labels'
 import { assetUrl } from '../lib/assetUrl'
 import { isRealMajor } from '../lib/majorName'
 import { useAppPaths } from '../lib/useAppPaths'
+import { loadPlaces } from '../lib/v3/data'
+import type { PlaceRow } from '../lib/v3/types'
 import type { MapColorBy } from '../types'
 
 interface StateProps {
@@ -59,6 +61,7 @@ export function MapPage() {
   const [selected, setSelected] = useState<string | null>(null)
   const [topo, setTopo] = useState<FeatureCollection<Geometry, StateProps> | null>(null)
   const [hover, setHover] = useState<string | null>(null)
+  const [places, setPlaces] = useState<PlaceRow[]>([])
 
   const fromCip = searchParams.get('from') ?? ''
   const fromMajor =
@@ -67,6 +70,26 @@ export function MapPage() {
   const backLabel = fromMajor
     ? `← Back to ${fromMajor.name}`
     : '← Back to search'
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      const list = await loadPlaces()
+      if (!cancelled) setPlaces(list.filter((p) => p.seed !== false))
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!fromMajor) return
+    if (window.location.hash !== '#metros') return
+    const el = document.getElementById('metros')
+    if (el) {
+      requestAnimationFrame(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+    }
+  }, [fromMajor, places.length])
 
   const occupation = occupationsBySoc.get(socCode)
   const eloundou = eloundouBySoc.get(socCode)
@@ -202,14 +225,23 @@ export function MapPage() {
           </h1>
           <p className="text-muted mt-3 max-w-xl text-sm sm:text-base leading-relaxed">
             Pick a state for employment and salary
-            <span className="hidden lg:inline">
-              {' '}
-              — tap the map or use the list. Color by employment, median salary, or jobs × AI
-              exposure (redder = more at risk)
-            </span>
-            <span className="lg:hidden">
-              . Color by employment, median salary, or jobs × AI exposure
-            </span>
+            {fromMajor ? (
+              <>
+                {' '}
+                — or jump to a seed metro for who hires {fromMajor.name} there
+              </>
+            ) : (
+              <>
+                <span className="hidden lg:inline">
+                  {' '}
+                  — tap the map or use the list. Color by employment, median salary, or jobs × AI
+                  exposure (redder = more at risk)
+                </span>
+                <span className="lg:hidden">
+                  . Color by employment, median salary, or jobs × AI exposure
+                </span>
+              </>
+            )}
             .
           </p>
         </div>
@@ -378,6 +410,15 @@ export function MapPage() {
         </aside>
       </div>
 
+      {fromMajor ? (
+        <SeedMetros
+          cip={fromMajor.cip}
+          majorName={fromMajor.name}
+          places={places}
+          resultsBase={resultsBase}
+        />
+      ) : null}
+
       <DigestSignup
         industry="Career exploration"
         role={occupation.title}
@@ -385,6 +426,99 @@ export function MapPage() {
         sourceRef={`soc:${occupation.soc}`}
       />
     </div>
+  )
+}
+
+function SeedMetros({
+  cip,
+  majorName,
+  places,
+  resultsBase,
+}: {
+  cip: string
+  majorName: string
+  places: PlaceRow[]
+  resultsBase: string
+}) {
+  const navigate = useNavigate()
+  const [zip, setZip] = useState('')
+
+  function onSubmit(e: FormEvent) {
+    e.preventDefault()
+    const cleaned = zip.replace(/\D/g, '').slice(0, 5)
+    if (!/^\d{5}$/.test(cleaned)) return
+    navigate(`${resultsBase}/${cip}/${cleaned}`)
+  }
+
+  return (
+    <section
+      id="metros"
+      className="mt-10 mb-4 scroll-mt-24 rounded-xl border border-border bg-card p-5 sm:p-6"
+    >
+      <p className="font-mono text-xs uppercase tracking-wider text-primary">
+        Location · employers
+      </p>
+      <h2 className="mt-2 font-serif text-2xl sm:text-3xl text-ink leading-tight">
+        Who hires {majorName} — by metro
+      </h2>
+      <p className="mt-2 text-sm text-muted max-w-2xl leading-relaxed">
+        Seed metros with rated early-career employers from AOI / WYWM. Pick one,
+        or enter any U.S. ZIP.
+      </p>
+
+      <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+        {places.map((p) => {
+          const short = p.cbsaName.split('-')[0].split(',')[0].trim()
+          return (
+            <li key={p.zip}>
+              <Link
+                to={`${resultsBase}/${cip}/${p.zip}`}
+                className="flex flex-col min-h-14 rounded-xl border border-border bg-page px-4 py-3 hover:border-border-bright hover:text-ink transition-colors no-underline text-ink"
+              >
+                <span className="font-medium leading-snug">{short}</span>
+                <span className="text-xs text-muted mt-0.5 font-mono">
+                  {p.zip} · CBSA {p.cbsa}
+                </span>
+              </Link>
+            </li>
+          )
+        })}
+      </ul>
+
+      <form
+        onSubmit={onSubmit}
+        className="mt-6 flex flex-col sm:flex-row gap-2 sm:items-center max-w-md"
+      >
+        <label className="sr-only" htmlFor="map-zip">
+          ZIP code
+        </label>
+        <input
+          id="map-zip"
+          inputMode="numeric"
+          pattern="\d{5}"
+          maxLength={5}
+          value={zip}
+          onChange={(e) => setZip(e.target.value.replace(/\D/g, '').slice(0, 5))}
+          className="flex-1 min-h-11 rounded-xl border border-border bg-page px-4 font-mono tracking-wider text-sm"
+          placeholder="Your ZIP"
+        />
+        <button
+          type="submit"
+          className="min-h-11 px-5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-bright"
+        >
+          See employers
+        </button>
+      </form>
+
+      <p className="mt-4 text-sm text-muted">
+        <Link
+          to={`${resultsBase}/${cip}/place`}
+          className="underline underline-offset-2 hover:text-ink"
+        >
+          Full metro picker
+        </Link>
+      </p>
+    </section>
   )
 }
 
