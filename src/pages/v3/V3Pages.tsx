@@ -19,7 +19,7 @@ export function V3HomePage() {
     <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-10 sm:pt-24 pb-16 sm:pb-20">
       <DocumentMeta title="Field Report v3 — Employers" />
       <div className="text-center max-w-3xl mx-auto">
-        <BrandMark size="lg" as="h1" />
+        <BrandMark size="lg" as="h1" variant="dearcc" />
         <p className="mt-5 sm:mt-6 text-lg sm:text-2xl text-ink/70 font-light leading-snug px-1">
           Who hires your major — where you live
         </p>

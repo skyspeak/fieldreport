@@ -4,9 +4,10 @@ interface ShareSheetProps {
   title: string
   /** Optional longer blurb included in share bodies */
   summary?: string
+  quiet?: boolean
 }
 
-export function ShareSheet({ title, summary }: ShareSheetProps) {
+export function ShareSheet({ title, summary, quiet = false }: ShareSheetProps) {
   const [open, setOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
@@ -82,7 +83,11 @@ export function ShareSheet({ title, summary }: ShareSheetProps) {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls={menuId}
-        className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg border border-border bg-white px-3 py-2.5 text-sm text-ink hover:border-border-bright hover:bg-surface transition-colors min-h-11"
+        className={
+          quiet
+            ? 'inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full border border-border bg-transparent px-3 py-2 text-sm text-muted hover:text-ink hover:border-border-bright transition-colors min-h-11'
+            : 'inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-ink hover:border-border-bright hover:bg-surface transition-colors min-h-11'
+        }
       >
         <ShareIcon />
         Share
@@ -92,14 +97,14 @@ export function ShareSheet({ title, summary }: ShareSheetProps) {
         <>
           {/* Mobile: bottom sheet */}
           <div
-            className="fixed inset-0 z-50 bg-ink/40 sm:hidden"
+            className="fixed inset-0 z-50 bg-black/50 sm:hidden"
             aria-hidden
             onClick={() => setOpen(false)}
           />
           <div
             id={menuId}
             role="menu"
-            className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border border-border-bright bg-white p-3 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-2xl sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:bottom-auto sm:mt-2 sm:w-56 sm:rounded-xl sm:pb-2 sm:shadow-xl"
+            className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border border-border-bright bg-surface p-3 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-2xl sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:bottom-auto sm:mt-2 sm:w-56 sm:rounded-xl sm:pb-2 sm:shadow-xl"
           >
             <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-border-bright sm:hidden" />
             <p className="px-3 pt-1 pb-2 text-[10px] uppercase tracking-wider text-muted font-mono">

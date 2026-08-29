@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { assetUrl } from '../lib/assetUrl'
 
-const DEFAULT_TITLE = 'dear[CC] Field report'
+const DEFAULT_TITLE = 'Field Report'
 const DEFAULT_DESCRIPTION =
-  'BLS salary data, projected annual openings, AI Risk, and Eloundou β (LLM exposure) — for every U.S. major.'
+  'BLS salary data, projected annual openings, and AI-exposure scores — for every U.S. major.'
 
 function upsertMeta(attr: 'name' | 'property', key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`)

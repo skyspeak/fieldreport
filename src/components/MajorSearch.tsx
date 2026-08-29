@@ -2,6 +2,7 @@ import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type Keybo
 import { useNavigate } from 'react-router-dom'
 import type { Major } from '../types'
 import { searchMajors } from '../lib/majorSearch'
+import { useTheme } from '../lib/theme'
 
 interface MajorSearchProps {
   majors: Major[]
@@ -10,6 +11,7 @@ interface MajorSearchProps {
   /** Base path for results, e.g. `/results` or `/v2/results` */
   resultsBase?: string
   placeholder?: string
+  tone?: 'light' | 'dark'
 }
 
 export function MajorSearch({
@@ -17,9 +19,12 @@ export function MajorSearch({
   size = 'lg',
   autoFocus = false,
   resultsBase = '/results',
-  placeholder = 'Search a major — e.g. Mechanical Engineering',
+  placeholder = 'Search your major...',
+  tone,
 }: MajorSearchProps) {
   const navigate = useNavigate()
+  const { isDark } = useTheme()
+  const resolvedTone = tone ?? (isDark ? 'dark' : 'light')
   const listId = useId()
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
@@ -141,7 +146,11 @@ export function MajorSearch({
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className={`w-full rounded-xl bg-white border border-border-bright text-ink placeholder:text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm ${pad}`}
+          className={`w-full border text-ink placeholder:text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors ${pad} ${
+            resolvedTone === 'dark'
+              ? 'rounded-xl bg-surface border-border-bright shadow-none text-ink'
+              : 'rounded-full bg-card border-border-bright shadow-sm'
+          }`}
           aria-autocomplete="list"
           aria-expanded={showList}
           aria-controls={listId}
@@ -158,7 +167,9 @@ export function MajorSearch({
         <ul
           id={listId}
           role="listbox"
-          className="absolute z-40 mt-2 w-full max-h-[min(20rem,min(50vh,40dvh))] overflow-auto rounded-xl border border-border-bright bg-white shadow-xl"
+          className={`absolute z-40 mt-2 w-full max-h-[min(20rem,min(50vh,40dvh))] overflow-auto rounded-xl border border-border-bright ${
+            resolvedTone === 'dark' ? 'bg-surface shadow-2xl' : 'bg-card shadow-xl'
+          }`}
         >
           {hasResults ? (
             results.map((major, i) => (
@@ -176,7 +187,9 @@ export function MajorSearch({
                   }}
                   onClick={() => select(major)}
                   className={`w-full text-left px-4 py-3.5 sm:py-3 min-h-12 sm:min-h-0 transition-colors ${
-                    i === active ? 'bg-primary/10 text-ink' : 'text-ink/80 hover:bg-surface'
+                    i === active
+                      ? 'bg-primary/20 text-ink'
+                      : 'text-ink/80 hover:bg-surface-hover'
                   }`}
                 >
                   <div className="font-medium text-sm sm:text-base leading-snug">

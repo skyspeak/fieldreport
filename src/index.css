@@ -6,13 +6,88 @@
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   --color-ink: #141414;
+  --color-page: #ffffff;
   --color-surface: #f4f4f5;
   --color-surface-hover: #e4e4e7;
+  --color-card: #ffffff;
+  --color-inset: #ececee;
   --color-border: #e4e4e7;
   --color-border-bright: #d4d4d8;
   --color-primary: #d4552f;
   --color-primary-bright: #ec6f4c;
   --color-muted: #71717a;
+  --color-openings: #0369a1;
+  --color-accent: #22d3ee;
+  --color-positive: #10b981;
+  --color-negative: #ef4444;
+  --color-warning: #f59e0b;
+}
+
+/* Live Field Report dark shell. */
+html.report-shell {
+  color-scheme: dark;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --color-ink: #ffffff;
+  --color-page: #0a0a0a;
+  --color-surface: #18181b;
+  --color-surface-hover: #27272a;
+  --color-card: #18181b;
+  --color-inset: #18181b;
+  --color-border: #27272a;
+  --color-border-bright: #3f3f46;
+  --color-primary: #ec6f4c;
+  --color-primary-bright: #f4896a;
+  --color-muted: #71717a;
+  --color-openings: #22d3ee;
+}
+
+html.field-report {
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+html.field-report:not(.report-shell) {
+  --color-page: #f4f4f1;
+  --color-surface: #ffffff;
+  --color-surface-hover: #ecece8;
+  --color-card: #ffffff;
+  --color-inset: #ecece8;
+  --color-ink: #141414;
+  --color-openings: #0369a1;
+  --color-accent: #0891b2;
+}
+
+html.report-shell body {
+  background: #0a0a0a;
+  color: #fff;
+}
+
+html.field-report:not(.report-shell) body {
+  background: #f4f4f1;
+  background-image: none;
+  color: #141414;
+}
+
+@keyframes exhibit-bar {
+  from {
+    height: 0;
+  }
+}
+
+@keyframes exhibit-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.exhibit-bar {
+  animation: exhibit-bar 0.5s ease-out both;
+}
+
+.exhibit-fade {
+  animation: exhibit-fade 0.25s ease-out both;
 }
 
 @layer base {
@@ -30,6 +105,11 @@
       radial-gradient(ellipse 90% 55% at 50% -25%, rgba(212, 85, 47, 0.1), transparent),
       radial-gradient(ellipse 50% 40% at 100% 0%, rgba(228, 228, 231, 0.7), transparent);
     -webkit-text-size-adjust: 100%;
+  }
+
+  html.report-shell body {
+    background-image: none;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
   /* Avoid iOS zoom-on-focus for form controls under 16px */
@@ -50,6 +130,21 @@
   ::selection {
     background: color-mix(in oklab, var(--color-primary) 28%, transparent);
   }
+}
+
+html.report-shell::-webkit-scrollbar,
+html.report-shell *::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+html.report-shell::-webkit-scrollbar-track,
+html.report-shell *::-webkit-scrollbar-track {
+  background: #18181b;
+}
+html.report-shell::-webkit-scrollbar-thumb,
+html.report-shell *::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 4px;
 }
 
 @layer utilities {

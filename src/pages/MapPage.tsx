@@ -256,7 +256,7 @@ export function MapPage() {
             className={`shrink-0 rounded-lg px-3 py-2.5 sm:py-1.5 transition-colors min-h-11 sm:min-h-0 whitespace-nowrap ${
               colorBy === key
                 ? 'bg-primary text-white'
-                : 'text-muted hover:text-ink bg-white border border-border'
+                : 'text-muted hover:text-ink bg-card border border-border'
             }`}
           >
             {label}
@@ -270,7 +270,7 @@ export function MapPage() {
         </label>
         <select
           id="state-select"
-          className="w-full min-h-12 rounded-xl border border-border-bright bg-white px-4 py-3 text-base text-ink focus:outline-none focus:ring-2 focus:ring-primary mb-4"
+          className="w-full min-h-12 rounded-xl border border-border-bright bg-card px-4 py-3 text-base text-ink focus:outline-none focus:ring-2 focus:ring-primary mb-4"
           value={selected ?? ''}
           onChange={(e) => setSelected(e.target.value || null)}
         >
@@ -282,7 +282,7 @@ export function MapPage() {
           ))}
         </select>
 
-        <ul className="rounded-xl border border-border bg-white divide-y divide-border max-h-[min(24rem,50vh)] overflow-auto">
+        <ul className="rounded-xl border border-border bg-card divide-y divide-border max-h-[min(24rem,50vh)] overflow-auto">
           {ranked.length === 0 ? (
             <li className="px-4 py-6 text-sm text-muted text-center">
               {!stateData ? 'Loading state data…' : 'No state data for this occupation.'}
@@ -318,28 +318,28 @@ export function MapPage() {
         </ul>
 
         {active && (
-          <div className="mt-4 rounded-xl border border-border bg-white p-5">
+          <div className="mt-4 rounded-xl border border-border bg-card p-5">
             <StateDetail active={active} rankedCount={ranked.length} colorBy={colorBy} />
           </div>
         )}
       </div>
 
       <div className="hidden lg:grid lg:grid-cols-[1fr_280px] gap-6">
-        <div className="bg-white border border-border rounded-xl p-3 sm:p-5 overflow-hidden">
+        <div className="bg-card border border-border rounded-xl p-3 sm:p-5 overflow-hidden">
           {!stateData || !topo ? (
             <p className="text-muted py-20 text-center">Loading map data...</p>
           ) : (
             <svg viewBox="0 0 960 560" className="w-full h-auto" role="img" aria-label="US map">
               {paths.map((p) => {
                 const v = values[p.abbr] ?? 0
-                const fill = v > 0 ? colorScale(v) : '#e4e4e7'
+                const fill = v > 0 ? colorScale(v) : 'var(--color-border)'
                 const isActive = activeAbbr === p.abbr
                 return (
                   <path
                     key={p.abbr || p.name}
                     d={p.d}
                     fill={fill}
-                    stroke={isActive ? '#141414' : '#ffffff'}
+                    stroke={isActive ? 'var(--color-ink)' : 'var(--color-card)'}
                     strokeWidth={isActive ? 2 : 0.75}
                     className="cursor-pointer transition-[stroke-width] focus:outline-none focus-visible:stroke-ink"
                     role="button"
@@ -366,7 +366,7 @@ export function MapPage() {
           <Legend colorBy={colorBy} values={Object.values(values).filter((v) => v > 0)} />
         </div>
 
-        <aside className="bg-white border border-border rounded-xl p-5 h-fit">
+        <aside className="bg-card border border-border rounded-xl p-5 h-fit">
           {active ? (
             <StateDetail active={active} rankedCount={ranked.length} colorBy={colorBy} />
           ) : (
@@ -446,7 +446,7 @@ function Metric({
   tip?: string
 }) {
   return (
-    <div className="bg-white border border-border rounded-xl px-3 sm:px-4 py-3 min-w-0 sm:min-w-[120px] flex-1 sm:flex-none">
+    <div className="bg-card border border-border rounded-xl px-3 sm:px-4 py-3 min-w-0 sm:min-w-[120px] flex-1 sm:flex-none">
       <div className="text-xs text-muted uppercase tracking-wider leading-snug inline-flex items-center min-w-0 max-w-full">
         <span className="truncate">{label}</span>
         {tip && <InfoTip label={label}>{tip}</InfoTip>}

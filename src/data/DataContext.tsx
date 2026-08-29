@@ -9,6 +9,8 @@ import {
   type ReactNode,
 } from 'react'
 import type {
+  AiImpactFile,
+  AiImpactScore,
   Crosswalk,
   EloundouFile,
   EloundouScore,
@@ -26,6 +28,8 @@ interface DataContextValue {
   crosswalk: Crosswalk
   eloundouBySoc: Map<string, EloundouScore>
   eloundouMeta: Omit<EloundouFile, 'bySoc'> | null
+  aiImpactBySoc: Map<string, AiImpactScore>
+  aiImpactMeta: Omit<AiImpactFile, 'bySoc'> | null
   stateData: StatesFile | null
   loading: boolean
   error: string | null
@@ -47,6 +51,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [occupations, setOccupations] = useState<Occupation[]>([])
   const [crosswalk, setCrosswalk] = useState<Crosswalk>({})
   const [eloundouFile, setEloundouFile] = useState<EloundouFile | null>(null)
+  const [aiImpactFile, setAiImpactFile] = useState<AiImpactFile | null>(null)
   const [stateData, setStateData] = useState<StatesFile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -58,11 +63,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
     let cancelled = false
     ;(async () => {
       try {
-        const [m, o, c, e] = await Promise.all([
+        const [m, o, c, e, a] = await Promise.all([
           fetchJson<Major[]>(assetUrl('data/majors.json')),
           fetchJson<Occupation[]>(assetUrl('data/occupations.json')),
           fetchJson<Crosswalk>(assetUrl('data/crosswalk.json')),
           fetchJson<EloundouFile>(assetUrl('data/eloundou.json')),
+          fetchJson<AiImpactFile>(assetUrl('data/ai-impact.json')),
         ])
         if (cancelled) return
         setMajors(
@@ -76,6 +82,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         setOccupations(o)
         setCrosswalk(c)
         setEloundouFile(e)
+        setAiImpactFile(a)
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load data')
       } finally {
@@ -120,6 +127,19 @@ export function DataProvider({ children }: { children: ReactNode }) {
     return meta
   }, [eloundouFile])
 
+  const aiImpactBySoc = useMemo(() => {
+    const map = new Map<string, AiImpactScore>()
+    if (!aiImpactFile) return map
+    for (const [soc, score] of Object.entries(aiImpactFile.bySoc)) map.set(soc, score)
+    return map
+  }, [aiImpactFile])
+
+  const aiImpactMeta = useMemo(() => {
+    if (!aiImpactFile) return null
+    const { bySoc: _, ...meta } = aiImpactFile
+    return meta
+  }, [aiImpactFile])
+
   const value = useMemo(
     () => ({
       majors,
@@ -128,6 +148,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       crosswalk,
       eloundouBySoc,
       eloundouMeta,
+      aiImpactBySoc,
+      aiImpactMeta,
       stateData,
       loading,
       error,
@@ -140,6 +162,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       crosswalk,
       eloundouBySoc,
       eloundouMeta,
+      aiImpactBySoc,
+      aiImpactMeta,
       stateData,
       loading,
       error,

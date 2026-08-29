@@ -107,7 +107,7 @@ export function InfoTip({ label, children }: { label: string; children: ReactNod
               width: coords.width,
               visibility: coords.ready ? 'visible' : 'hidden',
             }}
-            className="z-[60] rounded-xl border border-border-bright bg-white p-3 text-xs text-ink/80 leading-relaxed shadow-xl font-normal normal-case tracking-normal"
+            className="z-[60] rounded-xl border border-border-bright bg-surface p-3 text-xs text-ink/80 leading-relaxed shadow-xl font-normal normal-case tracking-normal"
           >
             {children}
           </span>,

@@ -15,6 +15,12 @@ export interface Occupation {
   competitionLevel: CompetitionLevel | null
   karpathyExposure: number | null
   karpathyRationale: string | null
+  description?: string
+  projectedGrowthRate?: number | null
+  aiDisruptionScore?: number | null
+  aiDisruptionLabel?: string | null
+  indeedPostingsIndex?: number | null
+  indeedAsOf?: string | null
 }
 
 export type CompetitionLevel = 'Low' | 'Moderate' | 'High' | 'Very High'
@@ -39,11 +45,39 @@ export interface StateData {
 export type StatesFile = Record<string, StateData>
 
 export type SortField =
+  | 'title'
   | 'entrySalary'
   | 'openPositions'
   | 'graduatesPerOpening'
   | 'karpathyExposure'
   | 'eloundouBeta'
+  | 'entryBarrier'
+
+export type EntryBarrier = 'Rising' | 'Falling'
+
+export type AiFlag =
+  | 'Raising the Bar'
+  | 'Shrinking Fields'
+  | 'Winners Pull Away'
+  | 'Lower Potential'
+  | string
+
+export interface AiImpactScore {
+  soc: string
+  barrier: EntryBarrier
+  flag: AiFlag
+  premium: EntryBarrier | null
+  clusterId?: number | null
+}
+
+export interface AiImpactFile {
+  source: string
+  methodologyVersion: string
+  generatedAt: string
+  aggregation?: string
+  coverage: { occupations: number; matched: number; onetRows: number; socs: number }
+  bySoc: Record<string, AiImpactScore>
+}
 
 export type SortDirection = 'asc' | 'desc'
 

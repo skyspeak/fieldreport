@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { DataProvider } from './data/DataContext'
 import { Layout } from './components/Layout'
+import { ThemeProvider } from './lib/theme'
 import { HomePage } from './pages/HomePage'
 import { ResultsPage } from './pages/ResultsPage'
 import { MapPage } from './pages/MapPage'
@@ -17,27 +18,29 @@ export default function App() {
   return (
     <DataProvider>
       <BrowserRouter basename={basename}>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/results/:cipCode" element={<ResultsPage />} />
-            <Route path="/map/:socCode" element={<MapPage />} />
+        <ThemeProvider>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/results/:cipCode" element={<ResultsPage />} />
+              <Route path="/map/:socCode" element={<MapPage />} />
 
-            {/* /v2 aliases keep old links working; same combined Field Report. */}
-            <Route path="/v2" element={<HomePage />} />
-            <Route path="/v2/results/:cipCode" element={<ResultsPage />} />
-            <Route path="/v2/map/:socCode" element={<MapPage />} />
+              {/* /v2 aliases keep old links working; same combined Field Report. */}
+              <Route path="/v2" element={<HomePage />} />
+              <Route path="/v2/results/:cipCode" element={<ResultsPage />} />
+              <Route path="/v2/map/:socCode" element={<MapPage />} />
 
-            {/* /v3 employer layer (AOI / WYWM) */}
-            <Route path="/v3" element={<V3HomePage />} />
-            <Route path="/v3/receipts" element={<V3ReceiptsPage />} />
-            <Route path="/v3/results/:cipCode" element={<V3ZipPromptPage />} />
-            <Route
-              path="/v3/results/:cipCode/:zip"
-              element={<V3ResultsPage />}
-            />
-          </Routes>
-        </Layout>
+              {/* /v3 employer layer (AOI / WYWM) */}
+              <Route path="/v3" element={<V3HomePage />} />
+              <Route path="/v3/receipts" element={<V3ReceiptsPage />} />
+              <Route path="/v3/results/:cipCode" element={<V3ZipPromptPage />} />
+              <Route
+                path="/v3/results/:cipCode/:zip"
+                element={<V3ResultsPage />}
+              />
+            </Routes>
+          </Layout>
+        </ThemeProvider>
       </BrowserRouter>
     </DataProvider>
   )

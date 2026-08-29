@@ -22,3 +22,38 @@ export function formatShare(value: number | null | undefined): string {
   if (value == null || Number.isNaN(value)) return '—'
   return `${(value * 100).toFixed(0)}%`
 }
+
+/** Compact salary for prose: $85k */
+export function formatSalaryK(value: number | null | undefined): string {
+  if (value == null || Number.isNaN(value)) return '—'
+  if (Math.abs(value) >= 1000) return `$${Math.round(value / 1000)}k`
+  return formatSalary(value)
+}
+
+/** Compact count for prose: 295.8K */
+export function formatCompactCount(value: number | null | undefined): string {
+  if (value == null || Number.isNaN(value)) return '—'
+  if (Math.abs(value) >= 1_000_000) {
+    const n = value / 1_000_000
+    return `${n >= 10 ? n.toFixed(0) : n.toFixed(1)}M`
+  }
+  if (Math.abs(value) >= 1000) {
+    const n = value / 1000
+    const label = Number.isInteger(n) ? n.toFixed(0) : n.toFixed(1)
+    return `${label}K`
+  }
+  return formatNumber(value)
+}
+
+/** Signed percent for BLS projected growth: +1.4% / -0.3%. */
+export function formatGrowth(value: number | null | undefined, digits = 1): string {
+  if (value == null || Number.isNaN(value)) return '—'
+  return `${value > 0 ? '+' : ''}${value.toFixed(digits)}%`
+}
+
+/** Mockup titles: "Computer science", "Database architects". */
+export function sentenceCase(value: string): string {
+  const t = value.trim()
+  if (!t) return t
+  return t.charAt(0).toUpperCase() + t.slice(1).toLowerCase()
+}

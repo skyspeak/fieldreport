@@ -1,0 +1,1295 @@
+{
+  "source": "American Opportunity Index, Schultz Family Foundation, via AOI / Where You Work Matters",
+  "methodologyVersion": "2026-04-21",
+  "generatedAt": "2026-08-29T04:25:26Z",
+  "aggregation": "O*NET to 6-digit SOC: prefer *.00, else modal AI flag",
+  "coverage": {
+    "occupations": 809,
+    "matched": 181,
+    "onetRows": 221,
+    "socs": 183
+  },
+  "bySoc": {
+    "11-1021": {
+      "soc": "11-1021",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 435
+    },
+    "11-2011": {
+      "soc": "11-2011",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 13
+    },
+    "11-2021": {
+      "soc": "11-2021",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 583
+    },
+    "11-2032": {
+      "soc": "11-2032",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 791
+    },
+    "11-3013": {
+      "soc": "11-3013",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 860
+    },
+    "11-3021": {
+      "soc": "11-3021",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 193
+    },
+    "11-3031": {
+      "soc": "11-3031",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 355
+    },
+    "11-3051": {
+      "soc": "11-3051",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 503
+    },
+    "11-3061": {
+      "soc": "11-3061",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 796
+    },
+    "11-3111": {
+      "soc": "11-3111",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 177
+    },
+    "11-3121": {
+      "soc": "11-3121",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 493
+    },
+    "11-3131": {
+      "soc": "11-3131",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 968
+    },
+    "11-9021": {
+      "soc": "11-9021",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 198
+    },
+    "11-9033": {
+      "soc": "11-9033",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 279
+    },
+    "11-9071": {
+      "soc": "11-9071",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 427
+    },
+    "11-9081": {
+      "soc": "11-9081",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 559
+    },
+    "11-9121": {
+      "soc": "11-9121",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 653
+    },
+    "11-9131": {
+      "soc": "11-9131",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 761
+    },
+    "11-9151": {
+      "soc": "11-9151",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 886
+    },
+    "11-9161": {
+      "soc": "11-9161",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 302
+    },
+    "11-9199": {
+      "soc": "11-9199",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 435
+    },
+    "13-1011": {
+      "soc": "13-1011",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 16
+    },
+    "13-1031": {
+      "soc": "13-1031",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 154
+    },
+    "13-1032": {
+      "soc": "13-1032",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 154
+    },
+    "13-1041": {
+      "soc": "13-1041",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 233
+    },
+    "13-1051": {
+      "soc": "13-1051",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 214
+    },
+    "13-1071": {
+      "soc": "13-1071",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 494
+    },
+    "13-1075": {
+      "soc": "13-1075",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 531
+    },
+    "13-1081": {
+      "soc": "13-1081",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 563
+    },
+    "13-1082": {
+      "soc": "13-1082",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 781
+    },
+    "13-1111": {
+      "soc": "13-1111",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 576
+    },
+    "13-1121": {
+      "soc": "13-1121",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 614
+    },
+    "13-1131": {
+      "soc": "13-1131",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 418
+    },
+    "13-1141": {
+      "soc": "13-1141",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 178
+    },
+    "13-1151": {
+      "soc": "13-1151",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 969
+    },
+    "13-1161": {
+      "soc": "13-1161",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 582
+    },
+    "13-1199": {
+      "soc": "13-1199",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 117
+    },
+    "13-2011": {
+      "soc": "13-2011",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 1
+    },
+    "13-2031": {
+      "soc": "13-2031",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 112
+    },
+    "13-2051": {
+      "soc": "13-2051",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 359
+    },
+    "13-2052": {
+      "soc": "13-2052",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 721
+    },
+    "13-2053": {
+      "soc": "13-2053",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 520
+    },
+    "13-2054": {
+      "soc": "13-2054",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 357
+    },
+    "13-2071": {
+      "soc": "13-2071",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 225
+    },
+    "13-2072": {
+      "soc": "13-2072",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 225
+    },
+    "13-2081": {
+      "soc": "13-2081",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 936
+    },
+    "13-2082": {
+      "soc": "13-2082",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 937
+    },
+    "13-2099": {
+      "soc": "13-2099",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 356
+    },
+    "15-1211": {
+      "soc": "15-1211",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 189
+    },
+    "15-1212": {
+      "soc": "15-1212",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 189
+    },
+    "15-1231": {
+      "soc": "15-1231",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 183
+    },
+    "15-1232": {
+      "soc": "15-1232",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 191
+    },
+    "15-1241": {
+      "soc": "15-1241",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 182
+    },
+    "15-1242": {
+      "soc": "15-1242",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 243
+    },
+    "15-1243": {
+      "soc": "15-1243",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 245
+    },
+    "15-1244": {
+      "soc": "15-1244",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 655
+    },
+    "15-1251": {
+      "soc": "15-1251",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 187
+    },
+    "15-1252": {
+      "soc": "15-1252",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 187
+    },
+    "15-1253": {
+      "soc": "15-1253",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 891
+    },
+    "15-1254": {
+      "soc": "15-1254",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 1001
+    },
+    "15-1255": {
+      "soc": "15-1255",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 993
+    },
+    "15-1299": {
+      "soc": "15-1299",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 190
+    },
+    "15-2011": {
+      "soc": "15-2011",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 3
+    },
+    "15-2031": {
+      "soc": "15-2031",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 683
+    },
+    "15-2041": {
+      "soc": "15-2041",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 914
+    },
+    "15-2051": {
+      "soc": "15-2051",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 242
+    },
+    "17-1012": {
+      "soc": "17-1012",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 533
+    },
+    "17-2072": {
+      "soc": "17-2072",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 800
+    },
+    "17-3012": {
+      "soc": "17-3012",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 289
+    },
+    "17-3022": {
+      "soc": "17-3022",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 152
+    },
+    "19-1029": {
+      "soc": "19-1029",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 94
+    },
+    "19-2011": {
+      "soc": "19-2011",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 64
+    },
+    "19-2021": {
+      "soc": "19-2021",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 67
+    },
+    "19-2041": {
+      "soc": "19-2041",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 320
+    },
+    "19-3011": {
+      "soc": "19-3011",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 275
+    },
+    "19-3022": {
+      "soc": "19-3022",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 927
+    },
+    "19-3032": {
+      "soc": "19-3032",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 505
+    },
+    "19-3041": {
+      "soc": "19-3041",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 888
+    },
+    "19-3051": {
+      "soc": "19-3051",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 973
+    },
+    "19-3092": {
+      "soc": "19-3092",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 439
+    },
+    "19-3093": {
+      "soc": "19-3093",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 482
+    },
+    "19-3099": {
+      "soc": "19-3099",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 973
+    },
+    "19-4044": {
+      "soc": "19-4044",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 497
+    },
+    "19-4061": {
+      "soc": "19-4061",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 881
+    },
+    "21-1011": {
+      "soc": "21-1011",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 825
+    },
+    "21-1015": {
+      "soc": "21-1015",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 825
+    },
+    "21-1021": {
+      "soc": "21-1021",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 148
+    },
+    "21-1022": {
+      "soc": "21-1022",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 148
+    },
+    "21-1023": {
+      "soc": "21-1023",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 148
+    },
+    "21-1029": {
+      "soc": "21-1029",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 148
+    },
+    "21-1091": {
+      "soc": "21-1091",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 175
+    },
+    "21-1092": {
+      "soc": "21-1092",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 776
+    },
+    "21-1093": {
+      "soc": "21-1093",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 887
+    },
+    "21-1094": {
+      "soc": "21-1094",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 175
+    },
+    "21-1099": {
+      "soc": "21-1099",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 175
+    },
+    "21-2011": {
+      "soc": "21-2011",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 157
+    },
+    "21-2021": {
+      "soc": "21-2021",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 157
+    },
+    "23-1011": {
+      "soc": "23-1011",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 538
+    },
+    "23-1022": {
+      "soc": "23-1022",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 48
+    },
+    "23-2093": {
+      "soc": "23-2093",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 963
+    },
+    "25-1011": {
+      "soc": "25-1011",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 120
+    },
+    "25-1022": {
+      "soc": "25-1022",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 590
+    },
+    "25-1042": {
+      "soc": "25-1042",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 96
+    },
+    "25-1052": {
+      "soc": "25-1052",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 144
+    },
+    "25-1053": {
+      "soc": "25-1053",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 144
+    },
+    "25-1061": {
+      "soc": "25-1061",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 45
+    },
+    "25-1063": {
+      "soc": "25-1063",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 274
+    },
+    "25-1066": {
+      "soc": "25-1066",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 790
+    },
+    "25-1081": {
+      "soc": "25-1081",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 280
+    },
+    "25-1111": {
+      "soc": "25-1111",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 227
+    },
+    "25-1112": {
+      "soc": "25-1112",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 537
+    },
+    "25-1121": {
+      "soc": "25-1121",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 59
+    },
+    "25-1122": {
+      "soc": "25-1122",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 59
+    },
+    "25-1123": {
+      "soc": "25-1123",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 59
+    },
+    "25-1124": {
+      "soc": "25-1124",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 59
+    },
+    "25-1193": {
+      "soc": "25-1193",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 815
+    },
+    "25-3041": {
+      "soc": "25-3041",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 982
+    },
+    "27-1011": {
+      "soc": "27-1011",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 57
+    },
+    "27-1021": {
+      "soc": "27-1021",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 172
+    },
+    "27-1025": {
+      "soc": "27-1025",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 522
+    },
+    "27-2012": {
+      "soc": "27-2012",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 598
+    },
+    "27-3011": {
+      "soc": "27-3011",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 108
+    },
+    "27-3023": {
+      "soc": "27-3023",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 660
+    },
+    "27-3031": {
+      "soc": "27-3031",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 792
+    },
+    "27-3041": {
+      "soc": "27-3041",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 276
+    },
+    "27-3042": {
+      "soc": "27-3042",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 945
+    },
+    "27-3043": {
+      "soc": "27-3043",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 1015
+    },
+    "27-3091": {
+      "soc": "27-3091",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 523
+    },
+    "27-3092": {
+      "soc": "27-3092",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 219
+    },
+    "29-1229": {
+      "soc": "29-1229",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 772
+    },
+    "29-2051": {
+      "soc": "29-2051",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 258
+    },
+    "29-2072": {
+      "soc": "29-2072",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 607
+    },
+    "29-2099": {
+      "soc": "29-2099",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 607
+    },
+    "31-9094": {
+      "soc": "31-9094",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 610
+    },
+    "39-1014": {
+      "soc": "39-1014",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 368
+    },
+    "41-1011": {
+      "soc": "41-1011",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 378
+    },
+    "41-1012": {
+      "soc": "41-1012",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 378
+    },
+    "41-2011": {
+      "soc": "41-2011",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 137
+    },
+    "41-2021": {
+      "soc": "41-2021",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 137
+    },
+    "41-2031": {
+      "soc": "41-2031",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 137
+    },
+    "41-3011": {
+      "soc": "41-3011",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 12
+    },
+    "41-3021": {
+      "soc": "41-3021",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 519
+    },
+    "41-3031": {
+      "soc": "41-3031",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 857
+    },
+    "41-3041": {
+      "soc": "41-3041",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 519
+    },
+    "41-3091": {
+      "soc": "41-3091",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 12
+    },
+    "41-4011": {
+      "soc": "41-4011",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 849
+    },
+    "41-4012": {
+      "soc": "41-4012",
+      "barrier": "Rising",
+      "flag": "Shrinking Fields",
+      "premium": "Falling",
+      "clusterId": 12
+    },
+    "41-9031": {
+      "soc": "41-9031",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 845
+    },
+    "41-9041": {
+      "soc": "41-9041",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 949
+    },
+    "43-1011": {
+      "soc": "43-1011",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 379
+    },
+    "43-3011": {
+      "soc": "43-3011",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 87
+    },
+    "43-3021": {
+      "soc": "43-3021",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 88
+    },
+    "43-3031": {
+      "soc": "43-3031",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 105
+    },
+    "43-3051": {
+      "soc": "43-3051",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 715
+    },
+    "43-3061": {
+      "soc": "43-3061",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 777
+    },
+    "43-4011": {
+      "soc": "43-4011",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 110
+    },
+    "43-4021": {
+      "soc": "43-4021",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 213
+    },
+    "43-4031": {
+      "soc": "43-4031",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 220
+    },
+    "43-4041": {
+      "soc": "43-4041",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 224
+    },
+    "43-4051": {
+      "soc": "43-4051",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 232
+    },
+    "43-4061": {
+      "soc": "43-4061",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 300
+    },
+    "43-4071": {
+      "soc": "43-4071",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 351
+    },
+    "43-4111": {
+      "soc": "43-4111",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 524
+    },
+    "43-4131": {
+      "soc": "43-4131",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 554
+    },
+    "43-4151": {
+      "soc": "43-4151",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 691
+    },
+    "43-4161": {
+      "soc": "43-4161",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 492
+    },
+    "43-4171": {
+      "soc": "43-4171",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 813
+    },
+    "43-4181": {
+      "soc": "43-4181",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 830
+    },
+    "43-5011": {
+      "soc": "43-5011",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 133
+    },
+    "43-5031": {
+      "soc": "43-5031",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 265
+    },
+    "43-5032": {
+      "soc": "43-5032",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 265
+    },
+    "43-5061": {
+      "soc": "43-5061",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 780
+    },
+    "43-5071": {
+      "soc": "43-5071",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 874
+    },
+    "43-6011": {
+      "soc": "43-6011",
+      "barrier": "Rising",
+      "flag": "Raising the Bar",
+      "premium": "Rising",
+      "clusterId": 328
+    },
+    "43-6012": {
+      "soc": "43-6012",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 540
+    },
+    "43-6013": {
+      "soc": "43-6013",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 540
+    },
+    "43-6014": {
+      "soc": "43-6014",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 540
+    },
+    "43-9021": {
+      "soc": "43-9021",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 241
+    },
+    "43-9022": {
+      "soc": "43-9022",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 1014
+    },
+    "43-9041": {
+      "soc": "43-9041",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 518
+    },
+    "43-9081": {
+      "soc": "43-9081",
+      "barrier": "Falling",
+      "flag": "Lower Potential",
+      "premium": "Falling",
+      "clusterId": 782
+    },
+    "51-4111": {
+      "soc": "51-4111",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 185
+    },
+    "51-9162": {
+      "soc": "51-9162",
+      "barrier": "Falling",
+      "flag": "Winners Pull Away",
+      "premium": "Rising",
+      "clusterId": 185
+    }
+  }
+}

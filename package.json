@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "build:eloundou": "node scripts/build-eloundou.mjs",
+    "build:ai-impact": "node scripts/build-ai-impact.mjs",
     "build:v3": "node scripts/build-v3-aoi.mjs",
     "lint": "oxlint",
     "preview": "vite preview"

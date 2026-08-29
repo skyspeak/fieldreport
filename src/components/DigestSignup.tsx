@@ -62,7 +62,7 @@ export function DigestSignup({
   }
 
   return (
-    <section className="mt-14 border-t border-border pt-12">
+    <section id="letter" className="mt-14 border-t border-border pt-12">
       <p className="text-xs uppercase tracking-wider text-muted font-mono mb-2">Next</p>
       <h2 className="font-serif text-2xl sm:text-3xl text-ink tracking-tight">
         dear
@@ -110,7 +110,7 @@ export function DigestSignup({
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@school.edu"
             disabled={status === 'sending'}
-            className="w-full min-w-0 flex-1 rounded-xl border border-border-bright bg-white px-4 py-3.5 sm:py-3 text-base text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full min-w-0 flex-1 rounded-xl border border-border-bright bg-surface px-4 py-3.5 sm:py-3 text-base text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <button
             type="submit"
