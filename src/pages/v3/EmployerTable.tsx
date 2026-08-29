@@ -336,7 +336,7 @@ function FilterLink({
     <button
       type="button"
       onClick={onClick}
-      className={`min-h-9 transition-colors ${
+      className={`min-h-11 inline-flex items-center transition-colors ${
         active
           ? 'text-ink font-medium underline decoration-primary decoration-2 underline-offset-4'
           : 'text-muted hover:text-ink'

@@ -149,7 +149,7 @@ export function ResultsPage() {
     let cancelled = false
     ;(async () => {
       const list = await loadPlaces()
-      if (!cancelled) setPlaces(list)
+      if (!cancelled) setPlaces(list.filter((p) => p.seed))
     })()
     return () => {
       cancelled = true
@@ -250,9 +250,7 @@ export function ResultsPage() {
   }
 
   const displayName = major ? majorDisplayName(major.name) : cipCode
-  const mapFrom = major
-    ? `?from=${encodeURIComponent(major.cip)}#metros`
-    : ''
+  const mapFrom = major ? `?from=${encodeURIComponent(major.cip)}#metros` : ''
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -352,35 +350,29 @@ export function ResultsPage() {
       </div>
 
       {places.length > 0 && major ? (
-        <section className="mb-6 rounded-xl border border-border bg-surface px-4 py-4 sm:px-5">
-          <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
-            <div>
-              <p className="text-[11px] font-mono uppercase tracking-wider text-primary">
-                Seed metros
-              </p>
-              <p className="text-sm text-muted mt-0.5">
-                Rated early-career employers for this major — open a city, or use Map /
-                metros on any job row.
-              </p>
-            </div>
+        <section className="mb-5 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="flex items-center justify-between gap-3 mb-2 px-0 sm:px-0">
+            <p className="text-[11px] font-mono uppercase tracking-wider text-primary">
+              Employers near you
+            </p>
             <Link
               to={`${resultsBase}/${cipCode}/place`}
-              className="text-sm text-primary hover:text-primary-bright shrink-0 underline-offset-2 hover:underline"
+              className="text-xs text-primary hover:text-primary-bright shrink-0 min-h-11 inline-flex items-center"
             >
-              Any ZIP →
+              Any ZIP
             </Link>
           </div>
-          <ul className="mt-3 flex flex-wrap gap-2">
+          <ul className="flex gap-2 overflow-x-auto overscroll-x-contain pb-1 scrollbar-none snap-x snap-mandatory">
             {places.map((p) => {
               const short = p.cbsaName.split('-')[0].split(',')[0].trim()
               return (
-                <li key={p.zip}>
+                <li key={p.zip} className="snap-start shrink-0">
                   <Link
                     to={`${resultsBase}/${cipCode}/${p.zip}`}
-                    className="inline-flex items-center min-h-10 px-3 rounded-lg border border-border bg-page text-sm text-ink hover:border-border-bright no-underline"
+                    className="inline-flex flex-col justify-center min-h-12 min-w-[7.5rem] px-3 rounded-xl border border-border bg-surface text-ink hover:border-border-bright no-underline"
                   >
-                    {short}
-                    <span className="ml-1.5 font-mono text-[11px] text-muted">{p.zip}</span>
+                    <span className="text-sm font-medium leading-tight">{short}</span>
+                    <span className="font-mono text-[11px] text-muted mt-0.5">{p.zip}</span>
                   </Link>
                 </li>
               )
@@ -395,7 +387,6 @@ export function ResultsPage() {
         cipCode={cipCode}
         mapBase={mapBase}
         mapFrom={mapFrom}
-        places={places}
         sortField={sortField}
         sortDirection={sortDirection}
         onSort={onSort}
@@ -617,7 +608,6 @@ function OccupationTable({
   cipCode,
   mapBase,
   mapFrom,
-  places,
   sortField,
   sortDirection,
   onSort,
@@ -629,18 +619,12 @@ function OccupationTable({
   cipCode: string
   mapBase: string
   mapFrom: string
-  places: PlaceRow[]
   sortField: TableSort
   sortDirection: SortDirection
   onSort: (f: TableSort) => void
   eloundouBySoc: Map<string, EloundouScore>
   aiImpactBySoc: Map<string, AiImpactScore>
 }) {
-  const metroHint = places
-    .slice(0, 3)
-    .map((p) => p.cbsaName.split('-')[0].split(',')[0].trim())
-    .join(' · ')
-
   return (
     <>
       <div className="-mx-4 px-4 sm:mx-0 sm:px-0 mb-3 overflow-x-auto scrollbar-none">
@@ -680,7 +664,6 @@ function OccupationTable({
             cipCode={cipCode}
             mapBase={mapBase}
             mapFrom={mapFrom}
-            metroHint={metroHint}
             eloundou={eloundouBySoc.get(occ.soc)}
             impact={aiImpactBySoc.get(occ.soc)}
           />
@@ -718,7 +701,7 @@ function OccupationTable({
                 )
               })}
               <th className="px-3 py-3 text-[11px] font-semibold text-muted uppercase tracking-wider text-left">
-                Map / metros
+                Map
               </th>
             </tr>
           </thead>
@@ -763,14 +746,8 @@ function OccupationTable({
                     to={`${mapBase}/${occ.soc}${mapFrom}`}
                     className="text-ink underline underline-offset-2 hover:text-primary text-sm"
                   >
-                    States + cities
+                    Map
                   </Link>
-                  {metroHint ? (
-                    <div className="text-[11px] text-muted mt-1 leading-snug max-w-[9rem]">
-                      {metroHint}
-                      {places.length > 3 ? '…' : ''}
-                    </div>
-                  ) : null}
                 </td>
               </tr>
             ))}
@@ -791,7 +768,6 @@ function OccCard({
   cipCode,
   mapBase,
   mapFrom,
-  metroHint,
   eloundou,
   impact,
 }: {
@@ -800,7 +776,6 @@ function OccCard({
   cipCode: string
   mapBase: string
   mapFrom: string
-  metroHint?: string
   eloundou?: EloundouScore
   impact?: AiImpactScore
 }) {
@@ -813,22 +788,17 @@ function OccCard({
           <div className="font-medium text-ink leading-snug">{sentenceCase(occ.title)}</div>
           <div className="text-[11px] text-muted mt-0.5 font-mono">SOC {occ.soc}</div>
         </div>
-        <div className="flex flex-col items-end gap-1 shrink-0 text-sm font-medium">
+        <div className="flex flex-col items-end gap-0.5 shrink-0 text-sm font-medium">
           <Link
             to={`${mapBase}/${occ.soc}${mapFrom}`}
-            className="text-ink underline underline-offset-2 min-h-11 inline-flex items-center"
+            className="text-ink underline underline-offset-2 min-h-10 inline-flex items-center"
           >
-            States + cities
+            Map
           </Link>
-          {metroHint ? (
-            <span className="text-[11px] text-muted font-normal text-right max-w-[10rem] leading-snug">
-              {metroHint}…
-            </span>
-          ) : null}
           {gameplanHref(cipCode, occ.soc) ? (
             <a
               href={gameplanHref(cipCode, occ.soc)}
-              className="text-primary hover:text-primary-bright min-h-11 inline-flex items-center"
+              className="text-primary hover:text-primary-bright min-h-10 inline-flex items-center"
             >
               Gameplan →
             </a>

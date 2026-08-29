@@ -61,8 +61,9 @@ export function V3ZipPromptPage() {
   const navigate = useNavigate()
   const { resultsBase, home } = useAppPaths()
   const { majors } = useData()
-  const [zip, setZip] = useState('94402')
+  const [zip, setZip] = useState('')
   const [places, setPlaces] = useState<{ zip: string; cbsaName: string }[]>([])
+  const [zipError, setZipError] = useState(false)
 
   const major = majors.find((m) => m.cip === cipCode)
 
@@ -71,7 +72,9 @@ export function V3ZipPromptPage() {
     ;(async () => {
       const p = await loadPlaces()
       if (cancelled) return
-      setPlaces(p.map((x) => ({ zip: x.zip, cbsaName: x.cbsaName })))
+      setPlaces(
+        p.filter((x) => x.seed).map((x) => ({ zip: x.zip, cbsaName: x.cbsaName })),
+      )
     })()
     return () => {
       cancelled = true
@@ -81,7 +84,11 @@ export function V3ZipPromptPage() {
   function onSubmit(e: FormEvent) {
     e.preventDefault()
     const cleaned = zip.replace(/\D/g, '').slice(0, 5)
-    if (!/^\d{5}$/.test(cleaned)) return
+    if (!/^\d{5}$/.test(cleaned)) {
+      setZipError(true)
+      return
+    }
+    setZipError(false)
     navigate(`${resultsBase}/${cipCode}/${cleaned}`)
   }
 
@@ -111,12 +118,19 @@ export function V3ZipPromptPage() {
         <input
           id="zip"
           inputMode="numeric"
+          autoComplete="postal-code"
           pattern="\d{5}"
           maxLength={5}
           value={zip}
-          onChange={(e) => setZip(e.target.value.replace(/\D/g, '').slice(0, 5))}
-          className="flex-1 min-h-12 rounded-xl border border-border bg-card px-4 font-mono tracking-wider"
-          placeholder="94402"
+          onChange={(e) => {
+            setZip(e.target.value.replace(/\D/g, '').slice(0, 5))
+            setZipError(false)
+          }}
+          aria-invalid={zipError}
+          className={`flex-1 min-h-12 rounded-xl border bg-card px-4 font-mono tracking-wider text-base ${
+            zipError ? 'border-negative' : 'border-border'
+          }`}
+          placeholder="ZIP code"
         />
         <button
           type="submit"
@@ -125,6 +139,9 @@ export function V3ZipPromptPage() {
           See employers
         </button>
       </form>
+      {zipError ? (
+        <p className="mt-2 text-sm text-negative">Enter a 5-digit U.S. ZIP.</p>
+      ) : null}
 
       <div className="mt-8">
         <p className="text-xs uppercase tracking-wider text-muted">
@@ -174,7 +191,7 @@ export function V3ResultsPage() {
       try {
         if (!/^\d{2}\.\d{4}$/.test(cipCode) || !/^\d{5}$/.test(zip)) {
           setStatus('error')
-          setError('Invalid major or ZIP')
+          setError('Use a CIP code and a 5-digit U.S. ZIP.')
           return
         }
         const data = await fetchLiveFieldReport(cipCode, zip)
@@ -210,10 +227,9 @@ export function V3ResultsPage() {
       <div className="mx-auto max-w-3xl px-4 py-16">
         <BackLink to={`${resultsBase}/${cipCode}/place`}>← Change metro</BackLink>
         <h1 className="font-serif text-2xl text-ink">Could not build this report</h1>
-        <p className="mt-3 text-red-500">{error || 'Unknown error'}</p>
+        <p className="mt-3 text-negative">{error || 'Unknown error'}</p>
         <p className="mt-4 text-sm text-muted leading-relaxed">
-          Check that AOI_USERNAME / AOI_PASSWORD are set for the Vite server, then
-          retry. Demo that always has data:{' '}
+          Try another ZIP, or open a seed metro demo:{' '}
           <Link to={`${resultsBase}/11.0701/94402`} className="text-primary">
             Computer Science · 94402
           </Link>
@@ -223,7 +239,7 @@ export function V3ResultsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-8 sm:pt-12 pb-28">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-8 sm:pt-12 pb-8">
       <DocumentMeta
         title={`${majorName || report.cip.title} in ${report.place.cbsaName}`}
       />
@@ -249,15 +265,17 @@ export function V3ResultsPage() {
 
       <DoorSection report={report} />
 
-      <div className="mt-12 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+      <FeedbackDock cip={report.cip.code} zip={report.place.zip} />
+
+      <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
         <Link
           to={receipts}
           className="min-h-11 inline-flex items-center text-primary hover:text-primary-bright"
         >
-          How to read this report — Platinum, core roles, and more
+          How to read this report
         </Link>
         <Link to={home} className="min-h-11 inline-flex items-center text-muted hover:text-ink">
-          Field Report home
+          Home
         </Link>
         {report.source?.builtAt ? (
           <span className="font-mono text-xs text-muted">
@@ -265,8 +283,6 @@ export function V3ResultsPage() {
           </span>
         ) : null}
       </div>
-
-      <FeedbackDock cip={report.cip.code} zip={report.place.zip} />
     </div>
   )
 }
@@ -363,7 +379,7 @@ function DoorSection({ report }: { report: FieldReport }) {
       </p>
       <ul className="mt-6 space-y-5">
         {report.door.map((d) => (
-          <li key={d.groupId} className="rounded-xl border border-border bg-white/70 px-5 py-4">
+          <li key={d.groupId} className="rounded-xl border border-border bg-card px-5 py-4">
             <p className="text-xs font-mono uppercase tracking-wider text-muted">
               {d.groupName}
             </p>
@@ -395,49 +411,80 @@ const FEEDBACK = [
 
 function FeedbackDock({ cip, zip }: { cip: string; zip: string }) {
   const [sent, setSent] = useState<string | null>(null)
+  const [hidden, setHidden] = useState(() => {
+    try {
+      return sessionStorage.getItem('fr-feedback-hide') === '1'
+    } catch {
+      return false
+    }
+  })
+
+  if (hidden) return null
 
   async function send(choice: string) {
-    setSent(choice)
     const payload = { cip, zip, choice, at: new Date().toISOString() }
     try {
-      await fetch('/api/feedback', {
+      const res = await fetch('/api/feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
+      if (!res.ok) throw new Error('feedback failed')
+      setSent(choice)
     } catch {
       try {
         const prev = JSON.parse(localStorage.getItem('fr-v3-feedback') || '[]')
         prev.push(payload)
         localStorage.setItem('fr-v3-feedback', JSON.stringify(prev.slice(-50)))
+        setSent(choice)
       } catch {
         /* ignore */
       }
     }
   }
 
+  function dismiss() {
+    setHidden(true)
+    try {
+      sessionStorage.setItem('fr-feedback-hide', '1')
+    } catch {
+      /* ignore */
+    }
+  }
+
   return (
-    <div className="fixed bottom-0 inset-x-0 z-40 border-t border-border bg-white/95 backdrop-blur-sm pb-[env(safe-area-inset-bottom)]">
-      <div className="mx-auto max-w-7xl px-3 sm:px-6 py-2 flex flex-wrap gap-2 items-center justify-center sm:justify-between">
-        <p className="text-xs text-muted hidden sm:block">Quick feedback</p>
-        <div className="flex flex-wrap gap-2 justify-center">
-          {FEEDBACK.map((c) => (
-            <button
-              key={c}
-              type="button"
-              disabled={sent != null}
-              onClick={() => send(c)}
-              className={`text-xs sm:text-sm min-h-10 px-3 rounded-full border ${
-                sent === c
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : 'border-border text-muted hover:text-ink'
-              }`}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
+    <div className="mt-10 mb-4 rounded-xl border border-border bg-card px-3 py-3 sm:px-4">
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <p className="text-xs text-muted">Quick feedback</p>
+        <button
+          type="button"
+          onClick={dismiss}
+          className="text-xs text-muted hover:text-ink min-h-10 px-2"
+          aria-label="Dismiss feedback"
+        >
+          Dismiss
+        </button>
       </div>
+      <div className="flex gap-2 overflow-x-auto overscroll-x-contain scrollbar-none pb-0.5 -mx-1 px-1">
+        {FEEDBACK.map((c) => (
+          <button
+            key={c}
+            type="button"
+            disabled={sent != null}
+            onClick={() => send(c)}
+            className={`shrink-0 text-sm min-h-11 px-3 rounded-full border whitespace-nowrap ${
+              sent === c
+                ? 'border-primary bg-primary/10 text-primary'
+                : 'border-border text-muted hover:text-ink'
+            }`}
+          >
+            {c}
+          </button>
+        ))}
+      </div>
+      {sent ? (
+        <p className="mt-2 text-xs text-muted">Thanks — noted.</p>
+      ) : null}
     </div>
   )
 }
