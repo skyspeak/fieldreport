@@ -144,19 +144,21 @@ export function V3ZipPromptPage() {
       ) : null}
 
       <div className="mt-8">
-        <p className="text-xs uppercase tracking-wider text-muted">
+        <p className="text-xs uppercase tracking-wider text-muted mb-2">
           Seed metros
         </p>
-        <ul className="mt-2 flex flex-wrap gap-2">
+        <ul className="flex gap-2 overflow-x-auto overscroll-x-contain scrollbar-none snap-x snap-proximity -mx-4 px-4 pb-1">
           {places.map((p) => (
-            <li key={p.zip}>
+            <li key={p.zip} className="snap-start shrink-0">
               <button
                 type="button"
                 onClick={() => navigate(`${resultsBase}/${cipCode}/${p.zip}`)}
-                className="text-sm min-h-11 px-3 rounded-full border border-border bg-card text-muted hover:text-ink"
+                className="text-sm min-h-12 px-3 rounded-xl border border-border bg-card text-ink hover:border-border-bright inline-flex flex-col justify-center min-w-[7.25rem]"
               >
-                {p.cbsaName.split('-')[0].split(',')[0].trim()}
-                <span className="font-mono text-xs opacity-70 ml-1.5">{p.zip}</span>
+                <span className="font-medium leading-tight">
+                  {p.cbsaName.split('-')[0].split(',')[0].trim()}
+                </span>
+                <span className="font-mono text-[11px] text-muted mt-0.5">{p.zip}</span>
               </button>
             </li>
           ))}
@@ -465,7 +467,7 @@ function FeedbackDock({ cip, zip }: { cip: string; zip: string }) {
           Dismiss
         </button>
       </div>
-      <div className="flex gap-2 overflow-x-auto overscroll-x-contain scrollbar-none pb-0.5 -mx-1 px-1">
+      <div className="flex gap-2 overflow-x-auto overscroll-x-contain scrollbar-none pb-0.5 -mx-3 px-3">
         {FEEDBACK.map((c) => (
           <button
             key={c}

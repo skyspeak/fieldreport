@@ -42,9 +42,13 @@ export function InfoTip({ label, children }: { label: string; children: ReactNod
       if (left < pad) left = pad
 
       let top = rect.bottom + 8
-      if (top + tipHeight > window.innerHeight - pad && rect.top > tipHeight + pad) {
+      const vv = window.visualViewport
+      const viewBottom = vv ? vv.offsetTop + vv.height : window.innerHeight
+      const viewTop = vv ? vv.offsetTop : 0
+      if (top + tipHeight > viewBottom - pad && rect.top - viewTop > tipHeight + pad) {
         top = rect.top - tipHeight - 8
       }
+      top = Math.max(viewTop + pad, Math.min(top, viewBottom - tipHeight - pad))
 
       setCoords({ top, left, width: tipWidth, ready: true })
     }
@@ -52,9 +56,13 @@ export function InfoTip({ label, children }: { label: string; children: ReactNod
     place()
     window.addEventListener('resize', place)
     window.addEventListener('scroll', place, true)
+    window.visualViewport?.addEventListener('resize', place)
+    window.visualViewport?.addEventListener('scroll', place)
     return () => {
       window.removeEventListener('resize', place)
       window.removeEventListener('scroll', place, true)
+      window.visualViewport?.removeEventListener('resize', place)
+      window.visualViewport?.removeEventListener('scroll', place)
     }
   }, [open, children])
 
@@ -64,7 +72,7 @@ export function InfoTip({ label, children }: { label: string; children: ReactNod
 
   useEffect(() => {
     if (!open) return
-    function onDoc(e: MouseEvent) {
+    function onDoc(e: Event) {
       const t = e.target as Node
       if (rootRef.current?.contains(t) || tipRef.current?.contains(t)) return
       setOpen(false)
@@ -73,9 +81,11 @@ export function InfoTip({ label, children }: { label: string; children: ReactNod
       if (e.key === 'Escape') setOpen(false)
     }
     document.addEventListener('mousedown', onDoc)
+    document.addEventListener('touchstart', onDoc, { passive: true })
     document.addEventListener('keydown', onKey)
     return () => {
       document.removeEventListener('mousedown', onDoc)
+      document.removeEventListener('touchstart', onDoc)
       document.removeEventListener('keydown', onKey)
     }
   }, [open])
@@ -88,9 +98,13 @@ export function InfoTip({ label, children }: { label: string; children: ReactNod
         aria-controls={tipId}
         aria-label={`About ${label}`}
         onClick={() => setOpen((v) => !v)}
-        className="-my-2 -mx-1 inline-flex h-11 w-11 items-center justify-center rounded-full text-[11px] font-mono text-muted hover:text-ink transition-colors"
+        className="relative inline-flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-mono text-muted hover:text-ink transition-colors"
       >
-        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-border hover:border-border-bright">
+        <span
+          aria-hidden
+          className="absolute -inset-3 sm:-inset-2"
+        />
+        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-border hover:border-border-bright pointer-events-none">
           ?
         </span>
       </button>
@@ -107,7 +121,7 @@ export function InfoTip({ label, children }: { label: string; children: ReactNod
               width: coords.width,
               visibility: coords.ready ? 'visible' : 'hidden',
             }}
-            className="z-[60] rounded-xl border border-border-bright bg-surface p-3 text-xs text-ink/80 leading-relaxed shadow-xl font-normal normal-case tracking-normal"
+            className="z-[80] rounded-xl border border-border-bright bg-surface p-3 text-xs text-ink/80 leading-relaxed shadow-xl font-normal normal-case tracking-normal max-h-[min(55dvh,22rem)] overflow-y-auto overscroll-contain"
           >
             {children}
           </span>,

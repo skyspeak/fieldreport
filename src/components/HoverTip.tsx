@@ -56,8 +56,23 @@ export function HoverTip({
     }
   }, [pinned])
 
-  const width = typeof window !== 'undefined' ? Math.min(maxWidth, window.innerWidth - 16) : maxWidth
-  const flip = pos ? pos.x > window.innerWidth - width - 32 : false
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 390
+  const vh =
+    typeof window !== 'undefined'
+      ? (window.visualViewport?.height ?? window.innerHeight)
+      : 700
+  const width = Math.min(maxWidth, vw - 16)
+  const flip = pos ? pos.x > vw - width - 32 : false
+  const left = pos ? Math.max(8, flip ? pos.x - width - 12 : pos.x + 14) : 8
+  // Prefer below the tap; flip above if near the bottom of the visual viewport.
+  const preferBelow = pos ? pos.y + 12 : 0
+  const maxPanel = Math.min(vh * 0.55, 320)
+  const top =
+    pos == null
+      ? 0
+      : preferBelow + maxPanel > vh - 12
+        ? Math.max(12, pos.y - maxPanel - 12)
+        : preferBelow
 
   return (
     <>
@@ -81,14 +96,15 @@ export function HoverTip({
         createPortal(
           <div
             data-hover-tip
-            className="fixed z-[9999] pointer-events-none"
+            className="fixed z-[9999]"
             style={{
-              left: Math.max(8, flip ? pos.x - width - 12 : pos.x + 14),
-              top: Math.min(pos.y - 10, window.innerHeight - 140),
-              maxWidth: width,
+              left,
+              top,
+              width,
+              maxHeight: maxPanel,
             }}
           >
-            <div className="bg-surface border border-border-bright rounded-xl p-3 shadow-2xl text-sm leading-snug text-ink">
+            <div className="bg-surface border border-border-bright rounded-xl p-3 shadow-2xl text-sm leading-snug text-ink max-h-[inherit] overflow-y-auto overscroll-contain">
               {content}
             </div>
           </div>,

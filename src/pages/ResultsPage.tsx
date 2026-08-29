@@ -350,8 +350,8 @@ export function ResultsPage() {
       </div>
 
       {places.length > 0 && major ? (
-        <section className="mb-5 -mx-4 px-4 sm:mx-0 sm:px-0">
-          <div className="flex items-center justify-between gap-3 mb-2 px-0 sm:px-0">
+        <section className="mb-5 -mx-4 sm:mx-0">
+          <div className="flex items-center justify-between gap-3 mb-2 px-4 sm:px-0">
             <p className="text-[11px] font-mono uppercase tracking-wider text-primary">
               Employers near you
             </p>
@@ -362,22 +362,24 @@ export function ResultsPage() {
               Any ZIP
             </Link>
           </div>
-          <ul className="flex gap-2 overflow-x-auto overscroll-x-contain pb-1 scrollbar-none snap-x snap-mandatory">
-            {places.map((p) => {
-              const short = p.cbsaName.split('-')[0].split(',')[0].trim()
-              return (
-                <li key={p.zip} className="snap-start shrink-0">
-                  <Link
-                    to={`${resultsBase}/${cipCode}/${p.zip}`}
-                    className="inline-flex flex-col justify-center min-h-12 min-w-[7.5rem] px-3 rounded-xl border border-border bg-surface text-ink hover:border-border-bright no-underline"
-                  >
-                    <span className="text-sm font-medium leading-tight">{short}</span>
-                    <span className="font-mono text-[11px] text-muted mt-0.5">{p.zip}</span>
-                  </Link>
-                </li>
-              )
-            })}
-          </ul>
+          <div className="relative">
+            <ul className="flex gap-2 overflow-x-auto overscroll-x-contain px-4 sm:px-0 pb-1 scrollbar-none snap-x snap-proximity [mask-image:linear-gradient(90deg,#000_0%,#000_calc(100%-1.5rem),transparent)] sm:[mask-image:none]">
+              {places.map((p) => {
+                const short = p.cbsaName.split('-')[0].split(',')[0].trim()
+                return (
+                  <li key={p.zip} className="snap-start shrink-0">
+                    <Link
+                      to={`${resultsBase}/${cipCode}/${p.zip}`}
+                      className="inline-flex flex-col justify-center min-h-12 min-w-[7.25rem] px-3 rounded-xl border border-border bg-surface text-ink hover:border-border-bright no-underline"
+                    >
+                      <span className="text-sm font-medium leading-tight">{short}</span>
+                      <span className="font-mono text-[11px] text-muted mt-0.5">{p.zip}</span>
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
         </section>
       ) : null}
 
@@ -791,14 +793,14 @@ function OccCard({
         <div className="flex flex-col items-end gap-0.5 shrink-0 text-sm font-medium">
           <Link
             to={`${mapBase}/${occ.soc}${mapFrom}`}
-            className="text-ink underline underline-offset-2 min-h-10 inline-flex items-center"
+            className="text-ink underline underline-offset-2 min-h-11 inline-flex items-center"
           >
             Map
           </Link>
           {gameplanHref(cipCode, occ.soc) ? (
             <a
               href={gameplanHref(cipCode, occ.soc)}
-              className="text-primary hover:text-primary-bright min-h-10 inline-flex items-center"
+              className="text-primary hover:text-primary-bright min-h-11 inline-flex items-center"
             >
               Gameplan →
             </a>

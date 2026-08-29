@@ -127,6 +127,15 @@ html.field-report:not(.report-shell) body {
     }
   }
 
+  /* Utilities can override the base rule; force 16px on phones. */
+  @media (max-width: 639px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+
   ::selection {
     background: color-mix(in oklab, var(--color-primary) 28%, transparent);
   }

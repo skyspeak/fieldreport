@@ -123,7 +123,7 @@ export function DigestSignup({
       )}
 
       {status === 'error' && (
-        <p role="alert" className="mt-3 text-sm text-red-600">
+        <p role="alert" className="mt-3 text-sm text-negative">
           {errorMsg ?? 'Something went wrong. Try again in a minute.'}
         </p>
       )}

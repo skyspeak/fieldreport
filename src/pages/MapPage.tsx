@@ -296,7 +296,7 @@ export function MapPage() {
         </label>
         <select
           id="state-select"
-          className="w-full min-h-12 rounded-xl border border-border-bright bg-card px-4 py-3 text-base text-ink focus:outline-none focus:ring-2 focus:ring-primary mb-4"
+          className="w-full min-h-12 rounded-xl border border-border-bright bg-card px-4 py-3 text-base text-ink focus:outline-none focus:ring-2 focus:ring-primary mb-3"
           value={selected ?? ''}
           onChange={(e) => setSelected(e.target.value || null)}
         >
@@ -308,7 +308,17 @@ export function MapPage() {
           ))}
         </select>
 
-        <ul className="rounded-xl border border-border bg-card divide-y divide-border max-h-[min(24rem,50vh)] overflow-auto">
+        {active ? (
+          <div className="mb-3 rounded-xl border border-border bg-card p-4">
+            <StateDetail active={active} rankedCount={ranked.length} colorBy={colorBy} />
+          </div>
+        ) : (
+          <p className="mb-3 text-sm text-muted">
+            Pick a state for employment and median salary.
+          </p>
+        )}
+
+        <ul className="rounded-xl border border-border bg-card divide-y divide-border max-h-[min(40dvh,14rem)] overflow-auto">
           {ranked.length === 0 ? (
             <li className="px-4 py-6 text-sm text-muted text-center">
               {!stateData ? 'Loading state data…' : 'No state data for this occupation.'}
@@ -321,11 +331,11 @@ export function MapPage() {
                   <button
                     type="button"
                     onClick={() => setSelected(r.abbr)}
-                    className={`w-full text-left px-4 py-3.5 min-h-12 flex items-center justify-between gap-3 transition-colors ${
+                    className={`w-full text-left px-4 py-3 min-h-11 flex items-center justify-between gap-3 transition-colors ${
                       isActive ? 'bg-primary/10' : 'hover:bg-surface'
                     }`}
                   >
-                    <span className="min-w-0">
+                    <span className="min-w-0 truncate">
                       <span className="text-xs font-mono text-muted mr-2">#{i + 1}</span>
                       <span className="font-medium text-ink">{r.name}</span>
                     </span>
@@ -342,12 +352,6 @@ export function MapPage() {
             })
           )}
         </ul>
-
-        {active && (
-          <div className="mt-4 rounded-xl border border-border bg-card p-5">
-            <StateDetail active={active} rankedCount={ranked.length} colorBy={colorBy} />
-          </div>
-        )}
       </div>
 
       <div className="hidden lg:grid lg:grid-cols-[1fr_280px] gap-6">
@@ -495,7 +499,7 @@ function SeedMetros({
             setZipError(false)
           }}
           aria-invalid={zipError}
-          className={`flex-1 min-h-12 rounded-xl border bg-page px-4 font-mono tracking-wider text-base sm:text-sm ${
+          className={`flex-1 min-h-12 rounded-xl border bg-page px-4 font-mono tracking-wider text-base ${
             zipError ? 'border-negative' : 'border-border'
           }`}
           placeholder="ZIP"

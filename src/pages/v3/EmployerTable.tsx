@@ -59,7 +59,7 @@ export function EmployerTable({ report, resultsBase }: Props) {
   }, [filtered])
 
   const thin = report.employers.length > 0 && report.employers.length < 6
-  const metroShort = report.place.cbsaName.split(',')[0]
+  const metroShort = report.place.cbsaName.split('-')[0].split(',')[0].trim()
 
   function setParam(key: string, value: string | null) {
     const params = new URLSearchParams(window.location.search)
@@ -89,12 +89,12 @@ export function EmployerTable({ report, resultsBase }: Props) {
   }
 
   return (
-    <section id="employers" className="mt-10 scroll-mt-24">
+    <section id="employers" className="mt-10 scroll-mt-[calc(3.5rem+env(safe-area-inset-top)+0.75rem)]">
       <div className="max-w-3xl">
         <p className="font-mono text-xs uppercase tracking-wider text-primary">
           Nine Names
         </p>
-        <h2 className="mt-2 font-serif text-2xl sm:text-4xl text-ink leading-tight">
+        <h2 className="mt-2 font-serif text-2xl sm:text-4xl text-ink leading-tight text-balance">
           Who is still hiring early career in {metroShort}
         </h2>
         <p className="mt-3 text-muted leading-relaxed">
@@ -111,57 +111,59 @@ export function EmployerTable({ report, resultsBase }: Props) {
         <Stat n={stats.core} label="core roles" />
       </div>
 
-      {/* Field lens — text, not pill soup */}
-      <div className="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-2 text-sm border-b border-border pb-3">
-        <span className="text-xs uppercase tracking-wider text-muted shrink-0">
-          Show
-        </span>
-        <FilterLink
-          active={groupFilter == null && !coreOnly && !platinumOnly}
-          onClick={() => {
-            setGroupFilter(null)
-            setCoreOnly(false)
-            setPlatinumOnly(false)
-            setParam('group', null)
-            setParam('core', null)
-            setParam('platinum', null)
-          }}
-        >
-          Everyone
-        </FilterLink>
-        <FilterLink
-          active={platinumOnly}
-          onClick={() => {
-            const next = !platinumOnly
-            setPlatinumOnly(next)
-            setParam('platinum', next ? '1' : null)
-          }}
-        >
-          Platinum
-        </FilterLink>
-        <FilterLink
-          active={coreOnly}
-          onClick={() => {
-            const next = !coreOnly
-            setCoreOnly(next)
-            setParam('core', next ? '1' : null)
-          }}
-        >
-          Core roles
-        </FilterLink>
-        {report.groups.map((g) => (
+      {/* Field lens — horizontal scroll on phones */}
+      <div className="mt-8 -mx-4 px-4 sm:mx-0 sm:px-0 border-b border-border pb-3">
+        <div className="flex flex-nowrap items-center gap-x-4 gap-y-2 text-sm overflow-x-auto overscroll-x-contain scrollbar-none">
+          <span className="text-xs uppercase tracking-wider text-muted shrink-0">
+            Show
+          </span>
           <FilterLink
-            key={g.id}
-            active={groupFilter === g.id}
+            active={groupFilter == null && !coreOnly && !platinumOnly}
             onClick={() => {
-              const next = groupFilter === g.id ? null : g.id
-              setGroupFilter(next)
-              setParam('group', next != null ? String(next) : null)
+              setGroupFilter(null)
+              setCoreOnly(false)
+              setPlatinumOnly(false)
+              setParam('group', null)
+              setParam('core', null)
+              setParam('platinum', null)
             }}
           >
-            {g.displayName}
+            Everyone
           </FilterLink>
-        ))}
+          <FilterLink
+            active={platinumOnly}
+            onClick={() => {
+              const next = !platinumOnly
+              setPlatinumOnly(next)
+              setParam('platinum', next ? '1' : null)
+            }}
+          >
+            Platinum
+          </FilterLink>
+          <FilterLink
+            active={coreOnly}
+            onClick={() => {
+              const next = !coreOnly
+              setCoreOnly(next)
+              setParam('core', next ? '1' : null)
+            }}
+          >
+            Core roles
+          </FilterLink>
+          {report.groups.map((g) => (
+            <FilterLink
+              key={g.id}
+              active={groupFilter === g.id}
+              onClick={() => {
+                const next = groupFilter === g.id ? null : g.id
+                setGroupFilter(next)
+                setParam('group', next != null ? String(next) : null)
+              }}
+            >
+              <span className="max-w-[11rem] truncate">{g.displayName}</span>
+            </FilterLink>
+          ))}
+        </div>
       </div>
 
       {filtered.length === 0 ? (
@@ -183,10 +185,10 @@ export function EmployerTable({ report, resultsBase }: Props) {
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <div className="min-w-0">
-                  <div className="font-serif text-xl sm:text-2xl text-ink leading-snug tracking-tight">
+                  <div className="font-serif text-xl sm:text-2xl text-ink leading-snug tracking-tight break-words">
                     {displayName(e, i)}
                   </div>
-                  <p className="mt-1.5 text-sm text-muted leading-relaxed">
+                  <p className="mt-1.5 text-sm text-muted leading-relaxed break-words">
                     <MetaBits e={e} field={groupLabel(e.groupIds)} />
                   </p>
                 </div>
@@ -309,8 +311,17 @@ function MetaBits({ e, field }: { e: Employer; field: string }) {
     HIRING_LABEL[e.hiringIntensity] || null,
     e.top10 ? 'Core role' : null,
     field || null,
-  ].filter(Boolean)
-  return <>{bits.join(' · ')}</>
+  ].filter(Boolean) as string[]
+  return (
+    <span className="inline-flex flex-wrap gap-x-1.5 gap-y-1">
+      {bits.map((b, i) => (
+        <span key={`${b}-${i}`}>
+          {i > 0 ? <span className="text-muted/50">· </span> : null}
+          {b}
+        </span>
+      ))}
+    </span>
+  )
 }
 
 function displayName(e: Employer, index: number) {
@@ -336,7 +347,7 @@ function FilterLink({
     <button
       type="button"
       onClick={onClick}
-      className={`min-h-11 inline-flex items-center transition-colors ${
+      className={`min-h-11 shrink-0 inline-flex items-center transition-colors whitespace-nowrap ${
         active
           ? 'text-ink font-medium underline decoration-primary decoration-2 underline-offset-4'
           : 'text-muted hover:text-ink'

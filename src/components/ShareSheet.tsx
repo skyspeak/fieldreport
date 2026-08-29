@@ -104,7 +104,7 @@ export function ShareSheet({ title, summary, quiet = false }: ShareSheetProps) {
           <div
             id={menuId}
             role="menu"
-            className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border border-border-bright bg-surface p-3 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-2xl sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:bottom-auto sm:mt-2 sm:w-56 sm:rounded-xl sm:pb-2 sm:shadow-xl"
+            className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border border-border-bright bg-surface p-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-2xl sm:absolute sm:inset-auto sm:right-0 sm:top-full sm:bottom-auto sm:mt-2 sm:w-56 sm:rounded-xl sm:pb-2 sm:shadow-xl"
           >
             <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-border-bright sm:hidden" />
             <p className="px-3 pt-1 pb-2 text-[10px] uppercase tracking-wider text-muted font-mono">
