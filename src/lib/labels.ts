@@ -8,25 +8,25 @@ export const COMPETITION_COPY: Record<
     label: 'Low',
     blurb:
       'Fewer graduates enter this field than there are annual openings. Getting a job here is relatively straightforward.',
-    color: '#34d399',
+    color: 'var(--color-severity-low)',
   },
   Moderate: {
     label: 'Moderate',
     blurb:
       'Roughly 1–3 graduates compete for each opening. Solid prospects with competitive but manageable job hunting.',
-    color: '#fbbf24',
+    color: 'var(--color-severity-mid)',
   },
   High: {
     label: 'High',
     blurb:
-      "3–6 graduates per opening. You'll need to stand out — internships, skills, and networking matter a lot.",
-    color: '#fb923c',
+      "3–6 graduates per opening. You'll need to stand out: internships, skills, and networking matter a lot.",
+    color: 'var(--color-severity-high)',
   },
   'Very High': {
     label: 'Very High',
     blurb:
       'More than 6 graduates per opening. The field is significantly oversupplied. Expect a tough job market.',
-    color: '#f87171',
+    color: 'var(--color-severity-max)',
   },
 }
 
@@ -57,11 +57,30 @@ export function aiBandLive(score: number | null | undefined): string {
 }
 
 export const AI_BAND_LIVE_COLORS: Record<string, string> = {
-  Low: '#10b981',
-  Medium: '#f59e0b',
-  High: '#f97316',
-  'Very High': '#ef4444',
+  Low: 'var(--color-severity-low)',
+  Medium: 'var(--color-severity-mid)',
+  High: 'var(--color-severity-high)',
+  'Very High': 'var(--color-severity-max)',
 }
+
+/** Shared 5-step severity scale used on landing, results, and the legend. */
+export const SEVERITY_COLORS = {
+  Low: 'var(--color-severity-low)',
+  Moderate: 'var(--color-severity-mid)',
+  Medium: 'var(--color-severity-mid)',
+  High: 'var(--color-severity-high)',
+  'Very High': 'var(--color-severity-max)',
+  'Very high': 'var(--color-severity-max)',
+  'No data': 'var(--color-severity-none)',
+} as const
+
+export const SEVERITY_LEGEND = [
+  { label: 'Low', color: SEVERITY_COLORS.Low },
+  { label: 'Moderate', color: SEVERITY_COLORS.Moderate },
+  { label: 'High', color: SEVERITY_COLORS.High },
+  { label: 'Very high', color: SEVERITY_COLORS['Very high'] },
+  { label: 'No data', color: SEVERITY_COLORS['No data'] },
+] as const
 
 export const AI_BAND_LIVE_COPY: Record<string, string> = {
   Low: "Low AI exposure. The work requires physical presence, manual dexterity, or real-time human judgment that current AI can't replicate. Expect incremental tooling gains, not displacement.",
@@ -73,11 +92,11 @@ export const AI_BAND_LIVE_COPY: Record<string, string> = {
 }
 
 export const COMPETITION_DOT: Record<string, string> = {
-  Low: '#10b981',
-  Moderate: '#6366f1',
-  High: '#f59e0b',
-  'Very High': '#ef4444',
-  Unknown: '#71717a',
+  Low: 'var(--color-severity-low)',
+  Moderate: 'var(--color-severity-mid)',
+  High: 'var(--color-severity-high)',
+  'Very High': 'var(--color-severity-max)',
+  Unknown: 'var(--color-severity-none)',
 }
 
 export const ELOUNDOU_COPY =
@@ -93,10 +112,10 @@ export const ELOUNDOU_METHOD_COPY =
   'Ratings in this app are GPT-4 occupation scores (dv_rating) from OpenAI’s occ_level.csv, averaged from O*NET detailed codes up to 6-digit SOC. Human annotator scores are shown in the tooltip for comparison.'
 
 export const ELOUNDOU_BAND_COLORS: Record<string, string> = {
-  Low: '#10b981',
-  Moderate: '#f59e0b',
-  High: '#f97316',
-  'Very High': '#ef4444',
+  Low: 'var(--color-severity-low)',
+  Moderate: 'var(--color-severity-mid)',
+  High: 'var(--color-severity-high)',
+  'Very High': 'var(--color-severity-max)',
 }
 
 export const AI_FLAG_LABEL: Record<string, string> = {

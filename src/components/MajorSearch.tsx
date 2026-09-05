@@ -1,7 +1,9 @@
 import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { Major } from '../types'
+import { useData } from '../data/DataContext'
 import { searchMajors } from '../lib/majorSearch'
+import { pathForCip, traditionalEntry } from '../lib/unobviousPaths'
 import { useTheme } from '../lib/theme'
 
 interface MajorSearchProps {
@@ -19,11 +21,12 @@ export function MajorSearch({
   size = 'lg',
   autoFocus = false,
   resultsBase = '/results',
-  placeholder = 'Search your major...',
+  placeholder = 'Search your major',
   tone,
 }: MajorSearchProps) {
   const navigate = useNavigate()
   const { isDark } = useTheme()
+  const { unobviousByCip, unobviousByCip4, unobviousByCip2, crosswalk, occupationsBySoc } = useData()
   const resolvedTone = tone ?? (isDark ? 'dark' : 'light')
   const listId = useId()
   const [query, setQuery] = useState('')
@@ -35,10 +38,10 @@ export function MajorSearch({
 
   const results = useMemo(() => searchMajors(majors, query, 10), [majors, query])
 
-  const showList = open
-  const hasResults = results.length > 0
   const emptyQuery = query.trim().length === 0
-  const showEmpty = showList && !hasResults && !emptyQuery
+  const showList = open && !emptyQuery
+  const hasResults = results.length > 0
+  const showEmpty = showList && !hasResults
 
   useEffect(() => {
     if (!autoFocus) return
@@ -85,6 +88,7 @@ export function MajorSearch({
   function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'ArrowDown') {
       e.preventDefault()
+      if (emptyQuery) return
       if (!open) {
         setOpen(true)
         return
@@ -143,13 +147,13 @@ export function MajorSearch({
             setQuery(e.target.value)
             setOpen(true)
           }}
-          onFocus={() => setOpen(true)}
+          onFocus={() => {
+            if (query.trim()) setOpen(true)
+          }}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className={`w-full border text-ink placeholder:text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors ${pad} ${
-            resolvedTone === 'dark'
-              ? 'rounded-xl bg-surface border-border-bright shadow-none text-ink'
-              : 'rounded-full bg-card border-border-bright shadow-sm'
+          className={`w-full rounded-lg border-2 bg-card text-ink placeholder:text-muted/70 focus:outline-none focus:border-ink focus:ring-0 transition-colors ${pad} ${
+            resolvedTone === 'dark' ? 'border-border-bright' : 'border-ink'
           }`}
           aria-autocomplete="list"
           aria-expanded={showList}
@@ -167,12 +171,23 @@ export function MajorSearch({
         <ul
           id={listId}
           role="listbox"
-          className={`absolute z-40 mt-2 w-full max-h-[min(20rem,min(50vh,40dvh))] overflow-auto rounded-xl border border-border-bright ${
-            resolvedTone === 'dark' ? 'bg-surface shadow-2xl' : 'bg-card shadow-xl'
+          className={`absolute z-40 mt-2 w-full max-h-[min(20rem,min(50vh,40dvh))] overflow-auto rounded-lg border border-border ${
+            resolvedTone === 'dark' ? 'bg-surface' : 'bg-card'
           }`}
         >
           {hasResults ? (
-            results.map((major, i) => (
+            results.map((major, i) => {
+              const alt = pathForCip(major.cip, unobviousByCip4, unobviousByCip2, unobviousByCip)
+              const traditional = alt
+                ? traditionalEntry(
+                    alt,
+                    major.cip,
+                    major.name,
+                    crosswalk,
+                    occupationsBySoc,
+                  )
+                : undefined
+              return (
               <li
                 key={major.cip}
                 id={`${listId}-opt-${i}`}
@@ -186,21 +201,25 @@ export function MajorSearch({
                     activeRef.current = i
                   }}
                   onClick={() => select(major)}
-                  className={`w-full text-left px-4 py-3.5 sm:py-3 min-h-12 sm:min-h-0 transition-colors ${
-                    i === active
-                      ? 'bg-primary/20 text-ink'
-                      : 'text-ink/80 hover:bg-surface-hover'
+                  className={`w-full text-left px-4 py-3.5 sm:py-3 min-h-12 sm:min-h-0 rounded-md transition-colors ${
+                    i === active ? 'bg-surface-hover text-ink' : 'text-ink hover:bg-surface-hover'
                   }`}
                 >
-                  <div className="font-medium text-sm sm:text-base leading-snug">
+                  <div className="font-semibold text-sm sm:text-base leading-snug">
                     {major.name}
                   </div>
                   <div className="text-xs text-muted mt-0.5 font-mono">
                     {major.category} · CIP {major.cip}
                   </div>
+                  {alt ? (
+                    <div className="text-xs text-ink mt-1">
+                      New path · traditional: {traditional}
+                    </div>
+                  ) : null}
                 </button>
               </li>
-            ))
+              )
+            })
           ) : showEmpty ? (
             <li className="px-4 py-4 text-sm text-muted" role="presentation">
               No majors match “{query.trim()}”. Try a broader term — e.g. Biology,

@@ -2,32 +2,31 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta
       name="description"
-      content="BLS salary data, projected annual openings, and AI-exposure scores — for every U.S. major."
+      content="BLS salary data, projected annual openings, and AI-exposure scores for every U.S. major."
     />
     <meta property="og:site_name" content="Field Report" />
     <meta property="og:title" content="Field Report" />
     <meta
       property="og:description"
-      content="BLS salary data, projected annual openings, and AI-exposure scores — for every U.S. major."
+      content="BLS salary data, projected annual openings, and AI-exposure scores for every U.S. major."
     />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/chinchilla.png" />
+    <meta property="og:image" content="/brand/og.png" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Field Report" />
     <meta
       name="twitter:description"
-      content="BLS salary data, projected annual openings, and AI-exposure scores — for every U.S. major."
+      content="BLS salary data, projected annual openings, and AI-exposure scores for every U.S. major."
     />
-    <meta name="twitter:image" content="/chinchilla.png" />
+    <meta name="twitter:image" content="/brand/og.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <title>Field Report</title>
@@ -39,7 +38,7 @@
           if (!isV3) {
             document.documentElement.classList.add('field-report')
             var theme = localStorage.getItem('fieldreport-theme')
-            if (theme !== 'light' && theme !== 'dark') theme = 'dark'
+            if (theme !== 'light' && theme !== 'dark') theme = 'light'
             if (theme === 'dark') {
               document.documentElement.classList.add('report-shell')
               document.documentElement.style.colorScheme = 'dark'

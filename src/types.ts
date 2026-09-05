@@ -50,7 +50,6 @@ export type SortField =
   | 'openPositions'
   | 'graduatesPerOpening'
   | 'karpathyExposure'
-  | 'eloundouBeta'
   | 'entryBarrier'
 
 export type EntryBarrier = 'Rising' | 'Falling'
@@ -79,6 +78,24 @@ export interface AiImpactFile {
   bySoc: Record<string, AiImpactScore>
 }
 
+export type WageTrendArrow = 'up' | 'down' | 'flat'
+
+export interface EntryWageTrend {
+  soc: string
+  wage2021: number
+  wage2025: number
+  nominalChg: number
+  realChg: number
+  arrow: WageTrendArrow
+}
+
+export interface EntryWageTrendFile {
+  source: string
+  years: [number, number]
+  coverage: { occupations: number; skipped: number }
+  bySoc: Record<string, EntryWageTrend>
+}
+
 export type SortDirection = 'asc' | 'desc'
 
 export type MapColorBy = 'employment' | 'salary' | 'aiImpact'
@@ -104,4 +121,37 @@ export interface EloundouFile {
   generatedAt: string
   coverage: { occupations: number; matched: number; pct: number }
   bySoc: Record<string, EloundouScore>
+}
+
+export type UnobviousFamily =
+  | 'computing'
+  | 'business'
+  | 'health'
+  | 'engineering'
+  | 'humanities'
+  | 'other'
+
+export interface UnobviousJob {
+  title: string
+  why: string
+  soc: string | null
+}
+
+export interface UnobviousPath {
+  rank: number
+  cip?: string
+  cip4?: string
+  cip2?: string
+  family: UnobviousFamily
+  major: string
+  enroll: number
+  not: string
+  jobs: UnobviousJob[]
+}
+
+export interface UnobviousPathsFile {
+  source: string
+  paths: UnobviousPath[]
+  cip2?: UnobviousPath[]
+  cip6?: UnobviousPath[]
 }

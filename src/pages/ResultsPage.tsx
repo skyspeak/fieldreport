@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useData } from '../data/DataContext'
 import { DocumentMeta } from '../components/DocumentMeta'
 import { HoverTip } from '../components/HoverTip'
 import { MajorSearch } from '../components/MajorSearch'
+import { WageSparkline } from '../components/WageSparkline'
 import {
   formatCompactCount,
   formatGrowth,
@@ -21,20 +22,22 @@ import {
   AOI_ATTRIBUTION,
   COMPETITION_COPY,
   COMPETITION_DOT,
-  ELOUNDOU_ALPHA_COPY,
-  ELOUNDOU_BAND_COLORS,
-  ELOUNDOU_COPY,
-  ELOUNDOU_GAMMA_COPY,
-  ELOUNDOU_METHOD_COPY,
   ENTRY_BARRIER_COPY,
+  SEVERITY_LEGEND,
   aiBandLive,
 } from '../lib/labels'
 import { isRealMajor, majorDisplayName } from '../lib/majorName'
+import { newPathSocs, pathForCip, traditionalEntry } from '../lib/unobviousPaths'
 import { useAppPaths } from '../lib/useAppPaths'
 import { useTheme } from '../lib/theme'
-import { loadPlaces } from '../lib/v3/data'
-import type { PlaceRow } from '../lib/v3/types'
-import type { AiImpactScore, EloundouScore, Occupation, SortDirection, SortField } from '../types'
+import type {
+  AiImpactScore,
+  EntryWageTrend,
+  Occupation,
+  SortDirection,
+  SortField,
+  UnobviousPath,
+} from '../types'
 
 type TableSort = Extract<
   SortField,
@@ -43,7 +46,6 @@ type TableSort = Extract<
   | 'openPositions'
   | 'graduatesPerOpening'
   | 'karpathyExposure'
-  | 'eloundouBeta'
   | 'entryBarrier'
 >
 
@@ -51,8 +53,7 @@ const SORT_CHIPS: { field: Exclude<TableSort, 'title'>; label: string }[] = [
   { field: 'entrySalary', label: 'Entry salary' },
   { field: 'openPositions', label: 'Openings' },
   { field: 'graduatesPerOpening', label: 'Competition' },
-  { field: 'karpathyExposure', label: 'AI Risk' },
-  { field: 'eloundouBeta', label: 'Eloundou β' },
+  { field: 'karpathyExposure', label: 'AI exposure' },
   { field: 'entryBarrier', label: 'Entry barrier' },
 ]
 
@@ -73,7 +74,7 @@ const COLUMNS: {
     field: 'openPositions',
     label: 'Openings',
     className: 'text-right',
-    why: 'Annual job openings from BLS — includes both new positions and replacements for workers who retire or change careers.',
+    why: 'Annual job openings from BLS — includes both new positions and replacements for workers who retire or change careers. The sparkline is the inflation-adjusted entry wage from 2021 to 2025.',
   },
   {
     field: 'graduatesPerOpening',
@@ -83,15 +84,9 @@ const COLUMNS: {
   },
   {
     field: 'karpathyExposure',
-    label: 'AI Risk',
+    label: 'AI exposure',
     className: 'text-left',
     why: 'Karpathy Digital AI Exposure score (0–10), LLM-scored in 2025. Hover individual rows for the full rationale.',
-  },
-  {
-    field: 'eloundouBeta',
-    label: 'Eloundou β',
-    className: 'text-left',
-    why: 'Headline LLM exposure from Eloundou et al. (2023) / OpenAI GPTs-are-GPTs. β = E1 + 0.5·E2: share of tasks GPT-4 would cut by ≥50% time, with half-credit for tool-augmented tasks.',
   },
   {
     field: 'entryBarrier',
@@ -101,15 +96,14 @@ const COLUMNS: {
   },
 ]
 
-function letterBase(): string {
-  return (import.meta.env.VITE_LETTER_URL as string | undefined)?.replace(/\/$/, '') ?? ''
-}
+const GAMEPLAN_URL = 'https://gameplan.dearcc.org/'
 
-function gameplanHref(cip: string, soc?: string): string {
-  const base = letterBase()
-  if (!base) return ''
-  const url = `${base}/plan`
-  return soc ? `${url}?soc=${encodeURIComponent(soc)}&cip=${encodeURIComponent(cip)}` : url
+function gameplanHref(roles: readonly string[]): string {
+  const list = roles.map((r) => r.trim()).filter(Boolean)
+  if (!list.length) return GAMEPLAN_URL
+  const params = new URLSearchParams()
+  params.set('roles', list.join(','))
+  return `${GAMEPLAN_URL}?${params.toString()}`
 }
 
 function MiniBar({ pct, color }: { pct: number; color: string }) {
@@ -130,36 +124,67 @@ function competitionFill(ratio: number | null): number {
 
 export function ResultsPage() {
   const { cipCode = '' } = useParams()
-  const { majors, occupations, crosswalk, eloundouBySoc, aiImpactBySoc, loading } = useData()
+  const {
+    majors,
+    occupations,
+    occupationsBySoc,
+    crosswalk,
+    eloundouBySoc,
+    aiImpactBySoc,
+    wageTrendBySoc,
+    unobviousByCip,
+    unobviousByCip4,
+    unobviousByCip2,
+    loading,
+  } = useData()
   const { home, mapBase, resultsBase } = useAppPaths()
   const { isDark } = useTheme()
 
   const [showAll, setShowAll] = useState(false)
   const [sortField, setSortField] = useState<TableSort>('entrySalary')
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
-  const [places, setPlaces] = useState<PlaceRow[]>([])
+  const [selectedSocs, setSelectedSocs] = useState<Set<string>>(() => new Set())
 
   useEffect(() => {
     setShowAll(false)
     setSortField('entrySalary')
     setSortDirection('desc')
+    setSelectedSocs(new Set())
   }, [cipCode])
-
-  useEffect(() => {
-    let cancelled = false
-    ;(async () => {
-      const list = await loadPlaces()
-      if (!cancelled) setPlaces(list.filter((p) => p.seed))
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [])
 
   const major = useMemo(() => {
     if (!isRealMajor(cipCode)) return undefined
     return majors.find((m) => m.cip === cipCode)
   }, [majors, cipCode])
+
+  const newPath = useMemo(
+    () => pathForCip(cipCode, unobviousByCip4, unobviousByCip2, unobviousByCip),
+    [cipCode, unobviousByCip, unobviousByCip4, unobviousByCip2],
+  )
+  const traditional = useMemo(() => {
+    if (!newPath) return undefined
+    return traditionalEntry(
+      newPath,
+      cipCode,
+      major?.name,
+      crosswalk,
+      occupationsBySoc,
+    )
+  }, [newPath, cipCode, major, crosswalk, occupationsBySoc])
+  const altSocs = useMemo(() => newPathSocs(newPath), [newPath])
+  const altOccs = useMemo(() => {
+    const list: Occupation[] = []
+    const seen = new Set<string>()
+    for (const job of newPath?.jobs ?? []) {
+      if (!job.soc || seen.has(job.soc)) continue
+      const occ = occupationsBySoc.get(job.soc)
+      if (occ) {
+        seen.add(job.soc)
+        list.push(occ)
+      }
+    }
+    return list
+  }, [newPath, occupationsBySoc])
 
   const { relevant, other } = useMemo(() => {
     const entry = crosswalk[cipCode]
@@ -182,16 +207,20 @@ export function ResultsPage() {
     return { relevant: rel, other: rest }
   }, [occupations, cipCode, crosswalk])
 
-  const visible = useMemo(
-    () => (showAll ? [...relevant, ...other] : relevant),
-    [showAll, relevant, other],
-  )
+  const visible = useMemo(() => {
+    const base = showAll ? [...relevant, ...other] : relevant
+    const extras = altOccs.filter((o) => !base.some((b) => b.soc === o.soc))
+    return [...extras, ...base]
+  }, [showAll, relevant, other, altOccs])
 
   const sorted = useMemo(() => {
     const list = [...visible]
     list.sort((a, b) => {
-      const av = sortValue(a, sortField, eloundouBySoc, aiImpactBySoc)
-      const bv = sortValue(b, sortField, eloundouBySoc, aiImpactBySoc)
+      const ap = altSocs.has(a.soc) ? 0 : 1
+      const bp = altSocs.has(b.soc) ? 0 : 1
+      if (ap !== bp) return ap - bp
+      const av = sortValue(a, sortField, aiImpactBySoc)
+      const bv = sortValue(b, sortField, aiImpactBySoc)
       if (typeof av === 'string' && typeof bv === 'string') {
         return sortDirection === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av)
       }
@@ -200,7 +229,34 @@ export function ResultsPage() {
       return sortDirection === 'asc' ? an - bn : bn - an
     })
     return list
-  }, [visible, sortField, sortDirection, eloundouBySoc, aiImpactBySoc])
+  }, [visible, sortField, sortDirection, aiImpactBySoc, altSocs])
+
+  const selectedRoles = useMemo(
+    () => sorted.filter((o) => selectedSocs.has(o.soc)).map((o) => sentenceCase(o.title)),
+    [sorted, selectedSocs],
+  )
+
+  function toggleSoc(soc: string) {
+    setSelectedSocs((prev) => {
+      const next = new Set(prev)
+      if (next.has(soc)) next.delete(soc)
+      else next.add(soc)
+      return next
+    })
+  }
+
+  function toggleAllVisible() {
+    setSelectedSocs((prev) => {
+      const allOn = sorted.length > 0 && sorted.every((o) => prev.has(o.soc))
+      const next = new Set(prev)
+      if (allOn) {
+        for (const o of sorted) next.delete(o.soc)
+      } else {
+        for (const o of sorted) next.add(o.soc)
+      }
+      return next
+    })
+  }
 
   const stats = useMemo(() => {
     if (!relevant.length) return null
@@ -253,13 +309,17 @@ export function ResultsPage() {
   const mapFrom = major ? `?from=${encodeURIComponent(major.cip)}#metros` : ''
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <div
+      className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 ${
+        selectedRoles.length > 0 ? 'pb-28' : ''
+      }`}
+    >
       <DocumentMeta
         title={displayName}
         description={`BLS salaries, openings, AI-exposure, and Eloundou β (LLM task exposure) for careers linked to ${displayName}.`}
       />
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
         <div className="min-w-0">
           <Link
             to={home}
@@ -267,137 +327,125 @@ export function ResultsPage() {
           >
             ← Back
           </Link>
-          <h1 className="text-xl sm:text-3xl font-bold text-ink text-balance">{displayName}</h1>
-          {major && <p className="text-sm text-muted mt-1">{major.category}</p>}
+          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-ink text-balance">
+            The job market for {displayName}
+          </h1>
+          <p className="text-sm text-muted mt-2 font-mono">
+            CIP {cipCode}
+            {major ? ` · ${major.category}` : ''}
+          </p>
         </div>
-        <div className="w-full sm:w-72 lg:w-80 shrink-0">
+        <div className="w-full sm:w-72 lg:w-80 shrink-0 sm:pt-10">
           <MajorSearch
             majors={majors}
             size="md"
             resultsBase={resultsBase}
-            placeholder="Search your major..."
+            placeholder="Search your major"
             tone={isDark ? 'dark' : 'light'}
           />
         </div>
       </div>
 
-      {stats && (
-        <TldrCard
-          majorName={displayName}
-          stats={stats}
-          gameplanTo={gameplanHref(cipCode)}
-        />
-      )}
+      {stats && <TldrCard majorName={displayName} stats={stats} />}
 
       {stats && (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
           <MetricCard
-            label="Projected Openings"
+            label="Projected openings"
             value={formatCompactCount(stats.totalOpenings)}
-            sublabel="per year, BLS 2024–34"
+            mark={stats.avgGrowth > 0 ? '▲' : stats.avgGrowth < 0 ? '▼' : undefined}
+            sublabel={`per year · employment ${formatGrowth(stats.avgGrowth)} by 2034`}
           />
           <MetricCard
-            label="Entry Salary"
+            label="Entry salary"
             value={formatSalaryK(stats.avgSalary)}
-            sublabel="BLS 25th percentile, averaged"
+            mark="→"
+            sublabel="25th percentile · BLS, averaged"
           />
           <MetricCard
             label="Competition"
             value={
-              stats.avgCompetition == null ? 'N/A' : `${stats.avgCompetition.toFixed(1)}x`
+              stats.avgCompetition == null ? 'N/A' : `${stats.avgCompetition.toFixed(1)}×`
             }
-            sublabel="grads per opening, weighted by openings"
-            positive={stats.avgCompetition != null && stats.avgCompetition < 1.5}
+            sublabel="grads per opening, weighted"
           />
           <MetricCard
             label="Eloundou β"
             value={stats.avgEloundou == null ? '—' : formatShare(stats.avgEloundou)}
-            sublabel="LLM task exposure, GPT-4 ratings"
-            positive={
-              stats.avgEloundou == null
-                ? undefined
-                : stats.avgEloundou < 0.25
-                  ? true
-                  : stats.avgEloundou >= 0.65
-                    ? false
-                    : undefined
-            }
+            sublabel="LLM task exposure, GPT-4"
           />
         </div>
       )}
 
-      <div className="flex items-stretch mb-4">
-        <div className="flex w-full sm:w-auto bg-surface border border-border rounded-lg overflow-hidden">
-          <button
-            type="button"
-            onClick={() => setShowAll(false)}
-            className={`flex-1 sm:flex-none px-4 min-h-11 text-sm font-medium whitespace-nowrap transition-colors ${
-              showAll ? 'text-muted hover:text-ink' : 'bg-primary text-white'
-            }`}
-          >
-            Relevant ({relevant.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowAll(true)}
-            className={`flex-1 sm:flex-none px-4 min-h-11 text-sm font-medium whitespace-nowrap transition-colors ${
-              showAll ? 'bg-primary text-white' : 'text-muted hover:text-ink'
-            }`}
-          >
-            All Jobs ({relevant.length + other.length})
-          </button>
-        </div>
-      </div>
-
-      {places.length > 0 && major ? (
-        <section className="mb-5 -mx-4 sm:mx-0">
-          <div className="flex items-center justify-between gap-3 mb-2 px-4 sm:px-0">
-            <p className="text-[11px] font-mono uppercase tracking-wider text-primary">
-              Employers near you
-            </p>
-            <Link
-              to={`${resultsBase}/${cipCode}/place`}
-              className="text-xs text-primary hover:text-primary-bright shrink-0 min-h-11 inline-flex items-center"
-            >
-              Any ZIP
-            </Link>
-          </div>
-          <div className="relative">
-            <ul className="flex gap-2 overflow-x-auto overscroll-x-contain px-4 sm:px-0 pb-1 scrollbar-none snap-x snap-proximity [mask-image:linear-gradient(90deg,#000_0%,#000_calc(100%-1.5rem),transparent)] sm:[mask-image:none]">
-              {places.map((p) => {
-                const short = p.cbsaName.split('-')[0].split(',')[0].trim()
-                return (
-                  <li key={p.zip} className="snap-start shrink-0">
-                    <Link
-                      to={`${resultsBase}/${cipCode}/${p.zip}`}
-                      className="inline-flex flex-col justify-center min-h-12 min-w-[7.25rem] px-3 rounded-xl border border-border bg-surface text-ink hover:border-border-bright no-underline"
-                    >
-                      <span className="text-sm font-medium leading-tight">{short}</span>
-                      <span className="font-mono text-[11px] text-muted mt-0.5">{p.zip}</span>
-                    </Link>
-                  </li>
-                )
-              })}
-            </ul>
-          </div>
-        </section>
+      {newPath ? (
+        <NewPathStrip
+          path={newPath}
+          traditional={traditional ?? newPath.not}
+          majorName={displayName}
+          occupationsBySoc={occupationsBySoc}
+          selectedSocs={selectedSocs}
+          onToggleSoc={toggleSoc}
+        />
       ) : null}
+
+      <GameplanCta title={displayName} selectedRoles={selectedRoles} />
 
       <OccupationTable
         occupations={sorted}
         relevantSocs={new Set(relevant.map((o) => o.soc))}
-        cipCode={cipCode}
+        newPathSocs={altSocs}
         mapBase={mapBase}
         mapFrom={mapFrom}
         sortField={sortField}
         sortDirection={sortDirection}
         onSort={onSort}
-        eloundouBySoc={eloundouBySoc}
         aiImpactBySoc={aiImpactBySoc}
+        wageTrendBySoc={wageTrendBySoc}
+        selectedSocs={selectedSocs}
+        onToggleSoc={toggleSoc}
+        onToggleAll={toggleAllVisible}
       />
 
-      <EvidenceBackMatter occupations={occupations} eloundouBySoc={eloundouBySoc} />
+      {!showAll && other.length > 0 ? (
+        <p className="mt-6">
+          <button
+            type="button"
+            onClick={() => setShowAll(true)}
+            className="text-sm font-medium text-ink underline underline-offset-2 hover:text-primary"
+          >
+            Browse all {relevant.length + other.length} occupations →
+          </button>
+        </p>
+      ) : showAll ? (
+        <p className="mt-6">
+          <button
+            type="button"
+            onClick={() => setShowAll(false)}
+            className="text-sm font-medium text-ink underline underline-offset-2 hover:text-primary"
+          >
+            Show linked occupations only
+          </button>
+        </p>
+      ) : null}
+
+      <SeverityLegend />
+      <ColumnDefinitions />
     </div>
+  )
+}
+
+function KeepBeta({ children }: { children: string }) {
+  if (!children.includes('β')) return children
+  const parts = children.split('β')
+  return (
+    <>
+      {parts.map((part, i) => (
+        <span key={i}>
+          {part}
+          {i < parts.length - 1 ? <span className="normal-case">β</span> : null}
+        </span>
+      ))}
+    </>
   )
 }
 
@@ -405,24 +453,25 @@ function MetricCard({
   label,
   value,
   sublabel,
-  positive,
+  mark,
 }: {
   label: string
   value: string
   sublabel?: string
-  positive?: boolean
+  mark?: string
 }) {
   return (
-    <div className="bg-surface border border-border rounded-xl p-3 sm:p-5 hover:border-border-bright transition-colors min-w-0">
+    <div className="border border-border rounded-lg p-3 sm:p-5 min-w-0">
       <div className="text-[10px] sm:text-xs text-muted font-medium uppercase tracking-wider mb-1.5 sm:mb-2 leading-tight">
-        {label}
+        <KeepBeta>{label}</KeepBeta>
       </div>
-      <div
-        className={`text-xl sm:text-3xl font-bold font-mono tabular-nums ${
-          positive === true ? 'text-positive' : positive === false ? 'text-negative' : 'text-ink'
-        }`}
-      >
-        {value}
+      <div className="flex items-baseline gap-1.5">
+        <div className="text-xl sm:text-3xl font-bold font-mono tabular-nums text-ink">{value}</div>
+        {mark ? (
+          <span className="text-sm text-muted font-mono" aria-hidden>
+            {mark}
+          </span>
+        ) : null}
       </div>
       {sublabel && <div className="text-[11px] sm:text-xs text-muted mt-1 leading-snug">{sublabel}</div>}
     </div>
@@ -440,7 +489,6 @@ function TldrStat({ className, children }: { className: string; children: ReactN
 function TldrCard({
   majorName,
   stats,
-  gameplanTo,
 }: {
   majorName: string
   stats: {
@@ -451,7 +499,6 @@ function TldrCard({
     avgCompetition: number | null
     avgEloundou: number | null
   }
-  gameplanTo: string
 }) {
   const name = majorName.replace(/,\s*general$/i, '')
   const ratio = stats.avgCompetition
@@ -465,26 +512,26 @@ function TldrCard({
     ) : ratio < 0.05 ? (
       <>
         there are far more openings than graduates (
-        <TldrStat className="text-positive">{ratio.toFixed(2)}×</TldrStat> grads per opening)
+        <TldrStat className="text-ink">{ratio.toFixed(2)}×</TldrStat> grads per opening)
       </>
     ) : ratio < 1 ? (
       <>
         demand exceeds supply, at{' '}
-        <TldrStat className="text-positive">{ratio.toFixed(1)}×</TldrStat> graduates per opening
+        <TldrStat className="text-ink">{ratio.toFixed(1)}×</TldrStat> graduates per opening
       </>
     ) : ratio < 1.5 ? (
       <>
         the market is roughly in balance, at{' '}
-        <TldrStat className="text-positive">{ratio.toFixed(1)}×</TldrStat> graduates per opening
+        <TldrStat className="text-ink">{ratio.toFixed(1)}×</TldrStat> graduates per opening
       </>
     ) : ratio < 3 ? (
       <>
         the market is competitive, at{' '}
-        <TldrStat className="text-warning">{ratio.toFixed(1)}×</TldrStat> graduates per opening
+        <TldrStat className="text-ink">{ratio.toFixed(1)}×</TldrStat> graduates per opening
       </>
     ) : (
       <>
-        supply is tight, at <TldrStat className="text-negative">{ratio.toFixed(1)}×</TldrStat>{' '}
+        supply is tight at <TldrStat className="text-ink">{ratio.toFixed(1)}×</TldrStat>{' '}
         graduates per opening
       </>
     )
@@ -493,22 +540,22 @@ function TldrCard({
     growth >= 8 ? (
       <>
         Employment is projected to grow{' '}
-        <TldrStat className="text-primary-bright">{formatGrowth(growth)}</TldrStat> by 2034
+        <TldrStat className="text-ink">{formatGrowth(growth)}</TldrStat> by 2034
       </>
     ) : growth >= 2 ? (
       <>
         Employment is projected to grow{' '}
-        <TldrStat className="text-primary-bright">{formatGrowth(growth)}</TldrStat> through 2034
+        <TldrStat className="text-ink">{formatGrowth(growth)}</TldrStat> through 2034
       </>
     ) : growth >= 0 ? (
       <>
         Employment is projected to stay roughly flat (
-        <TldrStat className="text-primary-bright">{formatGrowth(growth)}</TldrStat>)
+        <TldrStat className="text-ink">{formatGrowth(growth)}</TldrStat>)
       </>
     ) : (
       <>
         Employment is projected to decline{' '}
-        <TldrStat className="text-negative">{formatGrowth(growth)}</TldrStat> by 2034
+        <TldrStat className="text-ink">{formatGrowth(growth)}</TldrStat> by 2034
       </>
     )
 
@@ -520,16 +567,16 @@ function TldrCard({
     ) : ai <= 5.5 ? (
       <>
         Average AI exposure is moderate at{' '}
-        <TldrStat className="text-warning">{aiLabel}</TldrStat>
+        <TldrStat className="text-ink">{aiLabel}</TldrStat>
       </>
     ) : ai <= 7.5 ? (
       <>
-        Average AI exposure is high at <TldrStat className="text-warning">{aiLabel}</TldrStat>
+        Average AI exposure is high at <TldrStat className="text-ink">{aiLabel}</TldrStat>
       </>
     ) : (
       <>
         Average AI exposure is very high at{' '}
-        <TldrStat className="text-negative">{aiLabel}</TldrStat>
+        <TldrStat className="text-ink">{aiLabel}</TldrStat>
       </>
     )
 
@@ -538,12 +585,8 @@ function TldrCard({
   const eloundouBit =
     beta == null || betaLabel == null ? null : (
       <>
-        Eloundou β — the share of tasks GPT-4 would cut by at least half — is{' '}
-        <TldrStat
-          className={beta < 0.25 ? 'text-ink' : beta < 0.65 ? 'text-warning' : 'text-negative'}
-        >
-          {betaLabel}
-        </TldrStat>
+        Eloundou β, the share of tasks GPT-4 would cut by at least half, is{' '}
+        <TldrStat className="text-ink">{betaLabel}</TldrStat>
       </>
     )
 
@@ -564,28 +607,236 @@ function TldrCard({
         : 'The picture is mixed; the occupation table below is the better guide.'
 
   return (
-    <div className="mb-6 bg-surface border border-border border-l-4 border-l-primary rounded-xl p-4 sm:p-6">
-      <div className="text-[11px] font-mono uppercase tracking-[0.2em] text-primary mb-3">
-        Summary <span className="text-muted">— BLS, Karpathy, and Eloundou et al.</span>
-      </div>
-      <p className="font-serif font-light text-base sm:text-xl lg:text-2xl text-ink/90 leading-[1.7]">
+    <div className="mb-8 max-w-4xl">
+      <p className="text-base sm:text-lg text-ink leading-[1.7]">
         {name} graduates typically enter around{' '}
-        <TldrStat className="text-positive">{formatSalaryK(stats.avgSalary)}</TldrStat>. Linked
+        <TldrStat className="text-ink">{formatSalaryK(stats.avgSalary)}</TldrStat>. Linked
         occupations account for about{' '}
-        <TldrStat className="text-accent">{formatCompactCount(stats.totalOpenings)}</TldrStat>{' '}
-        openings a year; {competition}. {growthBit}. {aiBit}
-        {eloundouBit ? <>; {eloundouBit}</> : null}. {closer}
+        <TldrStat className="text-ink">{formatCompactCount(stats.totalOpenings)}</TldrStat>{' '}
+        openings a year, and {competition}. {growthBit}. {aiBit}
+        {eloundouBit ? <>, and {eloundouBit}</> : null}. {closer}
       </p>
-      {gameplanTo ? (
-        <a
-          href={gameplanTo}
-          className="inline-flex items-center justify-center gap-1.5 mt-5 bg-primary hover:bg-primary-bright text-white text-sm font-semibold rounded-lg px-4 min-h-11 w-full sm:w-auto transition-colors"
-        >
-          Build Your Gameplan
-          <span aria-hidden>→</span>
-        </a>
-      ) : null}
     </div>
+  )
+}
+
+function GameplanCta({
+  title,
+  selectedRoles,
+}: {
+  title: string
+  selectedRoles: string[]
+}) {
+  const url = typeof window !== 'undefined' ? window.location.href : ''
+  const mailHref = `mailto:?subject=${encodeURIComponent(`dearCC Field report: ${title}`)}&body=${encodeURIComponent(`${title}\n\n${url}`)}`
+  const count = selectedRoles.length
+  const planHref = count > 0 ? gameplanHref(selectedRoles) : ''
+  const inFlowRef = useRef<HTMLDivElement>(null)
+  const [docked, setDocked] = useState(false)
+
+  useEffect(() => {
+    if (count === 0) {
+      setDocked(false)
+      return
+    }
+    const el = inFlowRef.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([entry]) => setDocked(!entry.isIntersecting),
+      { rootMargin: '-72px 0px 0px 0px' },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [count])
+
+  return (
+    <section className="mb-8 max-w-3xl">
+      <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-ink text-balance">
+        Map your path into the jobs you want
+      </h2>
+      <p className="mt-3 text-base sm:text-lg text-muted leading-relaxed">
+        Choose one or more occupations below to analyze your fit and generate a
+        game plan for your job search.
+      </p>
+      <div
+        ref={inFlowRef}
+        className="mt-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5"
+      >
+        {count > 0 ? (
+          <AnalyzeFitButton href={planHref} count={count} />
+        ) : (
+          <a
+            href="#occupations"
+            className="inline-flex items-center justify-center rounded-lg bg-primary px-5 min-h-11 text-sm font-bold text-black no-underline hover:brightness-110"
+          >
+            Select target jobs →
+          </a>
+        )}
+        <a
+          href={mailHref}
+          className="text-sm text-muted underline underline-offset-2 hover:text-ink min-h-11 inline-flex items-center"
+        >
+          Not yet, just email me this report
+        </a>
+      </div>
+      {count > 0 && docked ? (
+        <div className="fixed bottom-0 inset-x-0 z-40 border-t border-border bg-page/95 backdrop-blur-sm pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
+            <AnalyzeFitButton href={planHref} count={count} />
+            <a
+              href={mailHref}
+              className="text-sm text-muted underline underline-offset-2 hover:text-ink min-h-11 inline-flex items-center"
+            >
+              Not yet, just email me this report
+            </a>
+          </div>
+        </div>
+      ) : null}
+    </section>
+  )
+}
+
+function NewPathStrip({
+  path,
+  traditional,
+  majorName,
+  occupationsBySoc,
+  selectedSocs,
+  onToggleSoc,
+}: {
+  path: UnobviousPath
+  traditional: string
+  majorName: string
+  occupationsBySoc: Map<string, Occupation>
+  selectedSocs: Set<string>
+  onToggleSoc: (soc: string) => void
+}) {
+  return (
+    <section className="mb-8 max-w-4xl">
+      <p className="text-[11px] font-mono uppercase tracking-wider text-ink">
+        <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary mr-1.5 align-middle" aria-hidden />
+        New path
+      </p>
+      <h2 className="mt-1 text-2xl sm:text-4xl font-bold tracking-tight text-ink text-balance">
+        Traditional entry: {traditional}
+      </h2>
+      <p className="mt-3 text-base sm:text-lg text-muted leading-relaxed">
+        Three other doors a {majorName} grad can walk through. Not the usual first
+        job.
+      </p>
+      <ul className="mt-5 grid gap-3 md:grid-cols-3">
+        {path.jobs.map((job) => {
+          const occ = job.soc ? occupationsBySoc.get(job.soc) : undefined
+          const selected = Boolean(job.soc && selectedSocs.has(job.soc))
+          return (
+            <li key={job.title}>
+              {occ && job.soc ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onToggleSoc(job.soc as string)
+                    document.getElementById('occupations')?.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'start',
+                    })
+                  }}
+                  className={`w-full h-full text-left rounded-lg border px-4 py-4 min-h-12 ${
+                    selected
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-ink'
+                  }`}
+                >
+                  <NewPathBadge />
+                  <p className="mt-2 font-medium text-ink leading-snug">{job.title}</p>
+                  <p className="mt-2 text-sm text-muted leading-relaxed">{job.why}</p>
+                  <p className="mt-3 font-mono text-sm tabular-nums text-ink">
+                    {formatSalaryK(occ.entrySalary)} entry
+                    <span className="text-muted">
+                      {' '}
+                      · {formatCompactCount(occ.openPositions)} openings
+                    </span>
+                  </p>
+                </button>
+              ) : (
+                <div className="h-full rounded-lg border border-border px-4 py-4">
+                  <NewPathBadge />
+                  <p className="mt-2 font-medium text-ink leading-snug">{job.title}</p>
+                  <p className="mt-2 text-sm text-muted leading-relaxed">{job.why}</p>
+                </div>
+              )}
+            </li>
+          )
+        })}
+      </ul>
+    </section>
+  )
+}
+
+function NewPathBadge() {
+  return (
+    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-ink">
+      <span className="block w-1.5 h-1.5 rounded-full bg-primary" aria-hidden />
+      New
+    </span>
+  )
+}
+
+function AnalyzeFitButton({ href, count }: { href: string; count: number }) {
+  return (
+    <a
+      href={href || undefined}
+      className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 min-h-11 text-sm font-bold text-black no-underline hover:brightness-110"
+    >
+      Analyze my fit
+      <span className="inline-flex items-center gap-1 rounded-full bg-black text-white text-xs font-bold px-2 min-h-6">
+        {count}
+        <span aria-hidden>→</span>
+      </span>
+    </a>
+  )
+}
+
+function JobCheck({
+  checked,
+  label,
+  onToggle,
+  indeterminate = false,
+}: {
+  checked: boolean
+  label: string
+  onToggle: () => void
+  indeterminate?: boolean
+}) {
+  const on = checked && !indeterminate
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={indeterminate ? 'mixed' : checked}
+      aria-label={label}
+      onClick={(e) => {
+        e.stopPropagation()
+        onToggle()
+      }}
+      className={`mt-0.5 shrink-0 w-5 h-5 rounded-[4px] border-2 inline-flex items-center justify-center ${
+        on || indeterminate ? 'bg-primary border-primary' : 'border-ink/40 bg-page hover:border-ink'
+      }`}
+    >
+      {on ? (
+        <svg className="w-3 h-3 text-black" viewBox="0 0 12 12" aria-hidden>
+          <path
+            d="M2.2 6.2 4.8 8.8 9.8 3.2"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ) : indeterminate ? (
+        <span className="block w-2.5 h-0.5 rounded-full bg-black" aria-hidden />
+      ) : null}
+    </button>
   )
 }
 
@@ -607,29 +858,52 @@ function SortChevron({ active, direction }: { active: boolean; direction: SortDi
 function OccupationTable({
   occupations,
   relevantSocs,
-  cipCode,
+  newPathSocs,
   mapBase,
   mapFrom,
   sortField,
   sortDirection,
   onSort,
-  eloundouBySoc,
   aiImpactBySoc,
+  wageTrendBySoc,
+  selectedSocs,
+  onToggleSoc,
+  onToggleAll,
 }: {
   occupations: Occupation[]
   relevantSocs: Set<string>
-  cipCode: string
+  newPathSocs: Set<string>
   mapBase: string
   mapFrom: string
   sortField: TableSort
   sortDirection: SortDirection
   onSort: (f: TableSort) => void
-  eloundouBySoc: Map<string, EloundouScore>
   aiImpactBySoc: Map<string, AiImpactScore>
+  wageTrendBySoc: Map<string, EntryWageTrend>
+  selectedSocs: Set<string>
+  onToggleSoc: (soc: string) => void
+  onToggleAll: () => void
 }) {
+  const selectedCount = occupations.filter((o) => selectedSocs.has(o.soc)).length
+  const allSelected = occupations.length > 0 && selectedCount === occupations.length
+  const someSelected = selectedCount > 0 && !allSelected
+
   return (
-    <>
-      <div className="-mx-4 px-4 sm:mx-0 sm:px-0 mb-3 overflow-x-auto scrollbar-none">
+    <div id="occupations" className="scroll-mt-20">
+      <div className="lg:hidden mb-3 flex items-center gap-3">
+        <JobCheck
+          checked={allSelected}
+          indeterminate={someSelected}
+          label={allSelected ? 'Clear occupation selection' : 'Select all occupations'}
+          onToggle={onToggleAll}
+        />
+        <span className="text-sm text-muted">
+          {selectedCount > 0
+            ? `${selectedCount} selected`
+            : 'Select the jobs you want'}
+        </span>
+      </div>
+      <div className="-mx-4 px-4 sm:mx-0 sm:px-0 mb-3 overflow-x-auto scrollbar-none lg:hidden">
         <div className="flex items-center gap-2 min-w-min pb-1">
           {SORT_CHIPS.map((chip) => {
             const active = sortField === chip.field
@@ -638,10 +912,10 @@ function OccupationTable({
                 key={chip.field}
                 type="button"
                 onClick={() => onSort(chip.field)}
-                className={`shrink-0 inline-flex items-center rounded-full px-3 min-h-11 text-sm font-medium whitespace-nowrap transition-colors ${
+                className={`shrink-0 inline-flex items-center rounded-lg border px-3 min-h-11 text-sm font-medium whitespace-nowrap transition-colors ${
                   active
-                    ? 'bg-primary text-white'
-                    : 'bg-surface border border-border text-muted hover:text-ink hover:border-border-bright'
+                    ? 'bg-ink text-page border-ink'
+                    : 'border-border text-muted hover:text-ink hover:border-ink'
                 }`}
               >
                 {chip.label}
@@ -652,28 +926,25 @@ function OccupationTable({
         </div>
       </div>
 
-      <p className="text-xs text-muted mb-4 leading-relaxed">
-        Salaries &amp; openings: BLS May 2024. Growth: BLS 2024–34. AI exposure: Karpathy/BLS OOH
-        (2025) + Frey &amp; Osborne (2013). Eloundou β: Eloundou et al. (2023). {AOI_ATTRIBUTION}.
-      </p>
-
       <div className="lg:hidden space-y-3">
         {occupations.map((occ) => (
           <OccCard
             key={occ.soc}
             occ={occ}
             isRelevant={relevantSocs.has(occ.soc)}
-            cipCode={cipCode}
+            isNewPath={newPathSocs.has(occ.soc)}
             mapBase={mapBase}
             mapFrom={mapFrom}
-            eloundou={eloundouBySoc.get(occ.soc)}
             impact={aiImpactBySoc.get(occ.soc)}
+            wageTrend={wageTrendBySoc.get(occ.soc)}
+            selected={selectedSocs.has(occ.soc)}
+            onToggle={() => onToggleSoc(occ.soc)}
           />
         ))}
       </div>
 
       <div className="hidden lg:block overflow-x-auto">
-        <table className="w-full text-sm min-w-[1080px]">
+        <table className="w-full text-sm min-w-[920px]">
           <thead>
             <tr className="border-b border-border">
               {COLUMNS.map((col) => {
@@ -695,9 +966,19 @@ function OccupationTable({
                     className={`px-3 py-3 text-[11px] font-semibold text-muted uppercase tracking-wider cursor-pointer hover:text-ink transition-colors select-none ${col.className || 'text-left'}`}
                     onClick={() => onSort(col.field)}
                   >
-                    <span className="inline-flex items-center gap-0.5">
-                      {label}
-                      <SortChevron active={sortField === col.field} direction={sortDirection} />
+                    <span className="inline-flex items-center gap-2.5">
+                      {col.field === 'title' ? (
+                        <JobCheck
+                          checked={allSelected}
+                          indeterminate={someSelected}
+                          label={allSelected ? 'Clear occupation selection' : 'Select all occupations'}
+                          onToggle={onToggleAll}
+                        />
+                      ) : null}
+                      <span className="inline-flex items-center gap-0.5">
+                        {label}
+                        <SortChevron active={sortField === col.field} direction={sortDirection} />
+                      </span>
                     </span>
                   </th>
                 )
@@ -711,13 +992,30 @@ function OccupationTable({
             {occupations.map((occ) => (
               <tr
                 key={occ.soc}
-                className={`border-b border-border/50 hover:bg-surface-hover transition-colors ${
-                  relevantSocs.has(occ.soc) ? '' : 'text-ink/70'
-                }`}
+                className={`border-b border-border/50 hover:bg-surface-hover transition-colors cursor-pointer ${
+                  selectedSocs.has(occ.soc) ? 'bg-primary/5' : ''
+                } ${relevantSocs.has(occ.soc) ? '' : 'text-ink/70'}`}
+                onClick={() => onToggleSoc(occ.soc)}
               >
                 <td className="px-3 py-3 align-top">
-                  <div className="font-medium text-ink leading-snug">{sentenceCase(occ.title)}</div>
-                  <div className="text-[11px] text-muted mt-0.5 font-mono">SOC {occ.soc}</div>
+                  <div className="flex items-start gap-3">
+                    <JobCheck
+                      checked={selectedSocs.has(occ.soc)}
+                      label={`Select ${sentenceCase(occ.title)}`}
+                      onToggle={() => onToggleSoc(occ.soc)}
+                    />
+                    <div className="min-w-0">
+                      <div className="font-medium text-ink leading-snug">
+                        {sentenceCase(occ.title)}
+                        {newPathSocs.has(occ.soc) ? (
+                          <span className="ml-2 align-middle">
+                            <NewPathBadge />
+                          </span>
+                        ) : null}
+                      </div>
+                      <div className="text-[11px] text-muted mt-0.5 font-mono">SOC {occ.soc}</div>
+                    </div>
+                  </div>
                 </td>
                 <td className="px-3 py-3 text-right align-top">
                   <div className="font-mono tabular-nums text-ink">{formatSalary(occ.entrySalary)}</div>
@@ -726,7 +1024,10 @@ function OccupationTable({
                   </div>
                 </td>
                 <td className="px-3 py-3 text-right align-top font-mono tabular-nums text-openings">
-                  {formatNumber(occ.openPositions)}
+                  <div className="flex flex-col items-end">
+                    <div>{formatNumber(occ.openPositions)}</div>
+                    <WageSparkline trend={wageTrendBySoc.get(occ.soc)} />
+                  </div>
                 </td>
                 <td className="px-3 py-3 align-top">
                   <CompetitionCell
@@ -738,14 +1039,12 @@ function OccupationTable({
                   <AiRiskCell occ={occ} />
                 </td>
                 <td className="px-3 py-3 align-top">
-                  <EloundouCell score={eloundouBySoc.get(occ.soc)} />
-                </td>
-                <td className="px-3 py-3 align-top">
                   <EntryBarrierCell impact={aiImpactBySoc.get(occ.soc)} />
                 </td>
                 <td className="px-3 py-3 align-top">
                   <Link
                     to={`${mapBase}/${occ.soc}${mapFrom}`}
+                    onClick={(e) => e.stopPropagation()}
                     className="text-ink underline underline-offset-2 hover:text-primary text-sm"
                   >
                     Map
@@ -760,51 +1059,61 @@ function OccupationTable({
       {occupations.length === 0 && (
         <div className="text-center py-12 text-muted">No occupations found</div>
       )}
-    </>
+    </div>
   )
 }
 
 function OccCard({
   occ,
   isRelevant,
-  cipCode,
+  isNewPath,
   mapBase,
   mapFrom,
-  eloundou,
   impact,
+  wageTrend,
+  selected,
+  onToggle,
 }: {
   occ: Occupation
   isRelevant: boolean
-  cipCode: string
+  isNewPath: boolean
   mapBase: string
   mapFrom: string
-  eloundou?: EloundouScore
   impact?: AiImpactScore
+  wageTrend?: EntryWageTrend
+  selected: boolean
+  onToggle: () => void
 }) {
   return (
     <div
-      className={`bg-surface border border-border rounded-xl p-4 ${isRelevant ? '' : 'border-dashed'}`}
+      className={`border rounded-lg p-4 cursor-pointer ${
+        selected ? 'border-primary bg-primary/5' : isRelevant ? 'border-border' : 'border-dashed border-border'
+      }`}
+      onClick={onToggle}
     >
       <div className="flex items-start justify-between gap-3 mb-3">
-        <div className="min-w-0">
-          <div className="font-medium text-ink leading-snug">{sentenceCase(occ.title)}</div>
-          <div className="text-[11px] text-muted mt-0.5 font-mono">SOC {occ.soc}</div>
+        <div className="flex items-start gap-3 min-w-0">
+          <JobCheck checked={selected} label={sentenceCase(occ.title)} onToggle={onToggle} />
+          <div className="min-w-0">
+            <div className="font-medium text-ink leading-snug">
+              {sentenceCase(occ.title)}
+              {isNewPath ? (
+                <span className="ml-2 align-middle">
+                  <NewPathBadge />
+                </span>
+              ) : null}
+            </div>
+            <div className="text-[11px] text-muted mt-0.5 font-mono">SOC {occ.soc}</div>
+          </div>
         </div>
         <div className="flex flex-col items-end gap-0.5 shrink-0 text-sm font-medium">
           <Link
             to={`${mapBase}/${occ.soc}${mapFrom}`}
+            onClick={(e) => e.stopPropagation()}
             className="text-ink underline underline-offset-2 min-h-11 inline-flex items-center"
           >
             Map
           </Link>
-          {gameplanHref(cipCode, occ.soc) ? (
-            <a
-              href={gameplanHref(cipCode, occ.soc)}
-              className="text-primary hover:text-primary-bright min-h-11 inline-flex items-center"
-            >
-              Gameplan →
-            </a>
-          ) : null}
         </div>
       </div>
       <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
@@ -818,18 +1127,15 @@ function OccCard({
         <div>
           <span className="text-muted text-xs">Openings</span>
           <div className="font-mono tabular-nums text-openings">{formatNumber(occ.openPositions)}</div>
+          <WageSparkline trend={wageTrend} align="start" />
         </div>
         <div>
           <span className="text-muted text-xs">Competition</span>
           <CompetitionCell level={occ.competitionLevel} ratio={occ.graduatesPerOpening} align="left" />
         </div>
         <div>
-          <span className="text-muted text-xs">AI Risk</span>
+          <span className="text-muted text-xs">AI exposure</span>
           <AiRiskCell occ={occ} align="left" />
-        </div>
-        <div>
-          <span className="text-muted text-xs">Eloundou β</span>
-          <EloundouCell score={eloundou} align="left" />
         </div>
         <div>
           <span className="text-muted text-xs">Entry barrier</span>
@@ -858,7 +1164,7 @@ function CompetitionCell({
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="inline-block w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
-            <span className="text-xs font-semibold" style={{ color }}>
+            <span className="text-xs font-semibold text-ink">
               {level || 'Unknown'} Competition
             </span>
           </div>
@@ -877,7 +1183,7 @@ function CompetitionCell({
       }
     >
       <div className={`flex flex-col gap-1 cursor-help ${align === 'left' ? 'items-start' : 'items-start'}`}>
-        <span className="text-sm font-medium leading-none" style={{ color }}>
+        <span className="text-sm font-medium leading-none text-ink">
           {level || '—'}
         </span>
         {ratio != null && (
@@ -897,8 +1203,7 @@ function AiRiskCell({ occ, align = 'start' }: { occ: Occupation; align?: 'start'
   const color = AI_BAND_LIVE_COLORS[band]
   const rationale = occ.karpathyRationale || AI_BAND_LIVE_COPY[band]
   const pct = score != null ? Math.round((score / 10) * 100) : 0
-  const barColor =
-    pct >= 80 ? '#ef4444' : pct >= 60 ? '#f59e0b' : pct >= 40 ? '#6366f1' : '#10b981'
+  const barColor = color
 
   return (
     <HoverTip
@@ -907,7 +1212,7 @@ function AiRiskCell({ occ, align = 'start' }: { occ: Occupation; align?: 'start'
         <div>
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs font-semibold text-ink">AI Exposure</span>
-            <span className="font-mono text-xs font-bold" style={{ color }}>
+            <span className="font-mono text-xs font-bold text-ink">
               {score}/10 · {band}
             </span>
           </div>
@@ -942,74 +1247,10 @@ function AiRiskCell({ occ, align = 'start' }: { occ: Occupation; align?: 'start'
         <span className="font-mono tabular-nums text-sm text-ink leading-none">
           {score != null ? `${Math.round(score)} of 10` : '—'}
         </span>
-        <span className="text-[11px] font-medium leading-tight" style={{ color }}>
+        <span className="text-[11px] font-medium leading-tight text-ink">
           {band}
         </span>
         {score != null && <MiniBar pct={pct} color={barColor} />}
-      </div>
-    </HoverTip>
-  )
-}
-
-function EloundouCell({
-  score,
-  align = 'start',
-}: {
-  score?: EloundouScore
-  align?: 'start' | 'left'
-}) {
-  if (!score || score.gptBeta == null) {
-    return <span className="text-muted">—</span>
-  }
-
-  const band = score.band ?? '—'
-  const color = ELOUNDOU_BAND_COLORS[band]
-  const pct = Math.round(score.gptBeta * 100)
-
-  return (
-    <HoverTip
-      maxWidth={340}
-      content={
-        <div>
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-semibold text-ink">Eloundou β</span>
-            <span className="font-mono text-xs font-bold" style={{ color }}>
-              {formatShare(score.gptBeta)} · {band}
-            </span>
-          </div>
-          <div className="mt-1.5 mb-2">
-            <div className="flex justify-between text-[10px] text-muted mb-0.5">
-              <span>α {formatShare(score.gptAlpha)}</span>
-              <span>γ {formatShare(score.gptGamma)}</span>
-            </div>
-            <div className="h-1.5 bg-inset rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full"
-                style={{ width: `${Math.min(100, pct)}%`, backgroundColor: color }}
-              />
-            </div>
-          </div>
-          <p className="text-xs text-muted leading-relaxed">{ELOUNDOU_COPY}</p>
-          <p className="text-xs text-muted leading-relaxed mt-2">{ELOUNDOU_ALPHA_COPY}</p>
-          <p className="text-xs text-muted leading-relaxed mt-1">{ELOUNDOU_GAMMA_COPY}</p>
-          <p className="text-[10px] text-muted mt-2">{ELOUNDOU_METHOD_COPY}</p>
-          {score.humanBeta != null && (
-            <div className="mt-2 pt-2 border-t border-border text-[10px] text-muted">
-              Human annotators: α {formatShare(score.humanAlpha)} · β{' '}
-              {formatShare(score.humanBeta)} · γ {formatShare(score.humanGamma)}
-            </div>
-          )}
-        </div>
-      }
-    >
-      <div className={`flex flex-col gap-1 cursor-help ${align === 'left' ? 'items-start' : 'items-start'}`}>
-        <span className="font-mono tabular-nums text-sm text-ink leading-none">
-          {formatShare(score.gptBeta)}
-        </span>
-        <span className="text-[11px] text-muted leading-tight">
-          α {formatShare(score.gptAlpha)} · γ {formatShare(score.gptGamma)}
-        </span>
-        <MiniBar pct={pct} color={color} />
       </div>
     </HoverTip>
   )
@@ -1027,7 +1268,6 @@ function EntryBarrierCell({ impact }: { impact?: AiImpactScore }) {
     )
   }
 
-  const rising = impact.barrier === 'Rising'
   const flag = AI_FLAG_LABEL[impact.flag] ?? impact.flag
 
   return (
@@ -1043,7 +1283,7 @@ function EntryBarrierCell({ impact }: { impact?: AiImpactScore }) {
       }
     >
       <div className="flex flex-col gap-0.5 cursor-help items-start">
-        <span className={`text-sm font-medium leading-none ${rising ? 'text-warning' : 'text-positive'}`}>
+        <span className="text-sm font-medium leading-none text-ink">
           {impact.barrier}
         </span>
         <span className="text-[11px] text-muted leading-tight">{flag}</span>
@@ -1052,140 +1292,64 @@ function EntryBarrierCell({ impact }: { impact?: AiImpactScore }) {
   )
 }
 
-const EVIDENCE_ROWS = [
+function SeverityLegend() {
+  return (
+    <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted">
+      <span className="font-medium text-ink">Severity</span>
+      {SEVERITY_LEGEND.map((item) => (
+        <span key={item.label} className="inline-flex items-center gap-1.5">
+          <span
+            className="inline-block w-2 h-2 rounded-full"
+            style={{ backgroundColor: item.color }}
+            aria-hidden
+          />
+          {item.label}
+        </span>
+      ))}
+    </div>
+  )
+}
+
+const COLUMN_DEFINITIONS = [
   {
-    source: 'Frey and Osborne',
-    vintage: '2013',
-    measures: 'Probability an occupation is computerisable',
-    question: 'Could this job be automated at all?',
+    term: 'Entry salary',
+    body: '25th percentile of all wages in the occupation (BLS), a proxy for entry pay. BLS does not split wages by experience.',
   },
   {
-    source: 'Eloundou α β γ',
-    vintage: '2023',
-    measures: 'Share of tasks exposed to LLMs, without tools and with',
-    question: 'How much of the work can a model touch?',
+    term: 'Openings',
+    body: 'Average openings expected per year through 2034, including replacement hires as people retire or change fields, not just newly created jobs (BLS). The sparkline is the occupation’s inflation-adjusted entry wage from 2021 to 2025, not openings over time.',
   },
   {
-    source: 'Karpathy / BLS OOH',
-    vintage: '2025',
-    measures: 'Composite exposure, LLM-scored vs OOH',
-    question: 'Same question, newer scoring',
+    term: 'Competition',
+    body: 'New graduates from linked majors competing for each annual opening. Under 1× means more openings than graduates.',
   },
   {
-    source: 'Where You Work Matters',
-    vintage: '2026, Gen-3',
-    measures: 'Direction of travel on entry barriers and expertise value, by experience',
-    question: 'Is it getting harder to get in, and does experience pay more than it used to?',
+    term: 'AI exposure',
+    body: 'How much of this job’s day-to-day work AI can already do or assist, scored 0 to 10 from task-level ratings (Karpathy/BLS, Eloundou et al.). High exposure means the work changes; it does not always mean fewer jobs.',
+  },
+  {
+    term: 'Entry barrier',
+    body: 'Whether breaking in without experience is getting harder or easier, from hiring-pattern analysis by Burning Glass Institute for the American Opportunity Index.',
   },
 ] as const
 
-function EvidenceBackMatter({
-  occupations,
-  eloundouBySoc,
-}: {
-  occupations: Occupation[]
-  eloundouBySoc: Map<string, EloundouScore>
-}) {
-  const example = useMemo(() => {
-    const occ =
-      occupations.find((o) => o.soc === '15-1252') ??
-      occupations.find((o) => /software developer/i.test(o.title))
-    if (!occ) return null
-    const el = eloundouBySoc.get(occ.soc)
-    return {
-      title: occ.title.toLowerCase(),
-      ai: occ.karpathyExposure,
-      beta: el?.gptBeta,
-      ratio: occ.graduatesPerOpening,
-    }
-  }, [occupations, eloundouBySoc])
-
+function ColumnDefinitions() {
   return (
     <section className="mt-12 sm:mt-16 pt-8 border-t border-border">
-      <h2 className="font-serif text-xl sm:text-2xl text-ink text-balance mb-5">
-        Where this sits alongside the evidence already on the page.
+      <h2 className="font-sans text-lg sm:text-xl font-semibold text-ink mb-5">
+        Column definitions
       </h2>
-
-      <div className="bg-surface border border-border rounded-xl overflow-hidden">
-        <div className="hidden sm:block overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border text-left">
-                <th className="px-4 py-3 text-[11px] font-semibold text-muted uppercase tracking-wider">
-                  Source
-                </th>
-                <th className="px-4 py-3 text-[11px] font-semibold text-muted uppercase tracking-wider">
-                  Vintage
-                </th>
-                <th className="px-4 py-3 text-[11px] font-semibold text-muted uppercase tracking-wider">
-                  What it measures
-                </th>
-                <th className="px-4 py-3 text-[11px] font-semibold text-muted uppercase tracking-wider">
-                  Question it answers
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {EVIDENCE_ROWS.map((row) => (
-                <tr key={row.source} className="border-b border-border/60 last:border-0">
-                  <td className="px-4 py-3 font-medium text-ink align-top whitespace-nowrap">
-                    {row.source}
-                  </td>
-                  <td className="px-4 py-3 text-muted align-top whitespace-nowrap">{row.vintage}</td>
-                  <td className="px-4 py-3 text-ink/80 align-top">{row.measures}</td>
-                  <td className="px-4 py-3 text-ink/80 align-top">{row.question}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="sm:hidden divide-y divide-border">
-          {EVIDENCE_ROWS.map((row) => (
-            <div key={row.source} className="p-4">
-              <div className="flex items-baseline justify-between gap-3 mb-2">
-                <div className="font-medium text-ink">{row.source}</div>
-                <div className="text-xs text-muted shrink-0">{row.vintage}</div>
-              </div>
-              <p className="text-sm text-ink/80 leading-relaxed">{row.measures}</p>
-              <p className="text-sm text-muted mt-1.5 leading-relaxed">{row.question}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-6 bg-surface border border-border rounded-xl p-4 sm:p-5">
-        <div className="text-[11px] font-mono uppercase tracking-[0.2em] text-primary mb-2">
-          Read against one row
-        </div>
-        <p className="text-sm sm:text-base text-ink/85 leading-relaxed">
-          {example ? (
-            <>
-              {example.title} sit at{' '}
-              {example.ai != null ? `${example.ai.toFixed(1)} of 10` : '—'} AI Risk and{' '}
-              {example.beta != null ? formatShare(example.beta) : '—'} Eloundou β
-              {example.ratio != null ? (
-                <>
-                  , with {formatRatio(example.ratio)} graduates per opening — heavily exposed, and
-                  relatively easier to hire into.
-                </>
-              ) : (
-                <> — heavily exposed on the LLM measures.</>
-              )}{' '}
-              WYWM is the only measure on this page split by experience: whether the door is
-              rising or falling, and whether the expertise premium is widening.
-            </>
-          ) : (
-            <>
-              Software developers, in the snapshot this layout was designed against, sit at 8.3 of
-              10 AI Risk and 87% Eloundou β, with 0.72 graduates per opening — heavily exposed, and
-              relatively easier to hire into. WYWM is the only measure on this page split by
-              experience: whether the door is rising or falling, and whether the expertise premium
-              is widening.
-            </>
-          )}
-        </p>
-      </div>
+      <dl className="space-y-4 max-w-3xl">
+        {COLUMN_DEFINITIONS.map((item) => (
+          <div key={item.term} className="text-sm leading-relaxed">
+            <dt className="font-semibold text-ink">{item.term}</dt>
+            <dd className="text-muted mt-0.5">{item.body}</dd>
+          </div>
+        ))}
+      </dl>
+      <p className="mt-8 text-xs text-muted leading-relaxed max-w-3xl">
+        {AOI_ATTRIBUTION}.
+      </p>
     </section>
   )
 }
@@ -1193,10 +1357,8 @@ function EvidenceBackMatter({
 function sortValue(
   occ: Occupation,
   field: TableSort,
-  eloundouBySoc: Map<string, EloundouScore>,
   aiImpactBySoc: Map<string, AiImpactScore>,
 ): string | number | null {
-  if (field === 'eloundouBeta') return eloundouBySoc.get(occ.soc)?.gptBeta ?? null
   if (field === 'entryBarrier') {
     const b = aiImpactBySoc.get(occ.soc)?.barrier
     return b === 'Rising' ? 1 : b === 'Falling' ? 0 : null

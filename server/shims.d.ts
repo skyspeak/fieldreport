@@ -7,5 +7,9 @@ declare module './server/v3Api.mjs' {
   ): Promise<void>
 }
 
+declare module './server/v4Api.mjs' {
+  export function v4ApiPlugin(): import('vite').Plugin
+}
+
 declare module '../server/aoiClient.mjs'
 declare module '../server/buildFieldReport.mjs'

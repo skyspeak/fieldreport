@@ -4,6 +4,8 @@ import tailwindcss from '@tailwindcss/vite'
 // Server ESM — typed loosely for the Vite config project
 // @ts-expect-error — no .d.ts for server/*.mjs under nodenext
 import { v3ApiPlugin } from './server/v3Api.mjs'
+// @ts-expect-error — no .d.ts for server/*.mjs under nodenext
+import { v4ApiPlugin } from './server/v4Api.mjs'
 
 export default defineConfig(({ mode }) => {
   // Expose AOI_* to the Vite Node process (API plugin), not to the browser.
@@ -14,6 +16,6 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: process.env.GITHUB_PAGES === 'true' ? '/fieldreport/' : '/',
-    plugins: [react(), tailwindcss(), v3ApiPlugin()],
+    plugins: [react(), tailwindcss(), v3ApiPlugin(), v4ApiPlugin()],
   }
 })

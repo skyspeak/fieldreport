@@ -64,14 +64,11 @@ export function DigestSignup({
   return (
     <section id="letter" className="mt-14 border-t border-border pt-12">
       <p className="text-xs uppercase tracking-wider text-muted font-mono mb-2">Next</p>
-      <h2 className="font-serif text-2xl sm:text-3xl text-ink tracking-tight">
-        dear
-        <span className="text-primary">[</span>
-        <span className="text-primary">CC</span>
-        <span className="text-primary">]</span> The Letter
+      <h2 className="font-sans text-2xl sm:text-3xl font-bold text-ink tracking-tight">
+        dearCC The Letter
       </h2>
       <p className="mt-3 text-muted max-w-xl leading-relaxed">
-        You just mapped the labor market. Get a 15-minute Sunday email — real AI news,
+        You just mapped the labor market. Get a 15-minute Sunday email: real AI news,
         picks for your path, and one thing to build.
       </p>
 
@@ -79,7 +76,7 @@ export function DigestSignup({
         <div
           role="status"
           aria-live="polite"
-          className="mt-8 max-w-lg rounded-xl border border-border bg-surface px-5 py-4 text-ink"
+          className="mt-8 max-w-lg rounded-lg border border-border px-5 py-4 text-ink"
         >
           <p className="font-medium">
             {status === 'skipped' ? "You're already on the list." : "You're in."}
@@ -90,7 +87,7 @@ export function DigestSignup({
           {base && (
             <a
               href={base}
-              className="mt-4 inline-flex w-full sm:w-auto justify-center rounded-xl bg-primary px-4 py-3 text-sm font-medium text-white hover:bg-primary-bright transition-colors min-h-11"
+              className="mt-4 inline-flex w-full sm:w-auto justify-center rounded-lg bg-ink px-4 py-3 text-sm font-bold text-page hover:bg-primary hover:text-ink transition-colors min-h-11"
             >
               Open The Letter →
             </a>
@@ -110,12 +107,12 @@ export function DigestSignup({
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@school.edu"
             disabled={status === 'sending'}
-            className="w-full min-w-0 flex-1 rounded-xl border border-border-bright bg-surface px-4 py-3.5 sm:py-3 text-base text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full min-w-0 flex-1 rounded-lg border-2 border-ink bg-card px-4 py-3.5 sm:py-3 text-base text-ink placeholder:text-muted focus:outline-none"
           />
           <button
             type="submit"
             disabled={status === 'sending'}
-            className="w-full sm:w-auto shrink-0 rounded-xl bg-primary px-5 py-3.5 sm:py-3 font-medium text-white hover:bg-primary-bright disabled:opacity-50 transition-colors min-h-11"
+            className="w-full sm:w-auto shrink-0 rounded-lg bg-ink px-5 py-3.5 sm:py-3 font-bold text-page hover:bg-primary hover:text-ink transition-colors min-h-11"
           >
             {status === 'sending' ? 'Sending…' : 'Send my first letter'}
           </button>
@@ -129,7 +126,7 @@ export function DigestSignup({
       )}
 
       {status === 'idle' && (
-        <p className="mt-3 text-xs text-muted">Powered by dear[CC] The Letter.</p>
+        <p className="mt-3 text-xs text-muted">Powered by dearCC The Letter.</p>
       )}
     </section>
   )

@@ -8,6 +8,7 @@ export type DisplayGroup = {
   displayBlurb: string
   clusterIds: number[]
   vendorNames: string[]
+  primaryOnet?: string | null
   destinations: { clusterId: number; name: string; jobLevel?: string | null }[]
   promotion: {
     internalPct: number

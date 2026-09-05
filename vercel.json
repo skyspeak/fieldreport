@@ -3,6 +3,38 @@
     "api/v3/report.js": {
       "includeFiles": "{server/**,public/data/majors.json,public/data/occupations.json,public/data/crosswalk.json,public/data/places.json,public/data/v3/**}",
       "maxDuration": 60
+    },
+    "api/v4/atlas.js": {
+      "includeFiles": "{server/**,public/data/majors.json,public/data/occupations.json,public/data/crosswalk.json,public/data/places.json,public/data/v3/**}",
+      "maxDuration": 60
+    },
+    "api/v4/report.js": {
+      "includeFiles": "{server/**,public/data/majors.json,public/data/occupations.json,public/data/crosswalk.json,public/data/places.json,public/data/v3/**}",
+      "maxDuration": 60
+    },
+    "api/v4/footprint.js": {
+      "includeFiles": "{server/**,public/data/majors.json,public/data/occupations.json,public/data/crosswalk.json,public/data/places.json,public/data/v3/**}",
+      "maxDuration": 60
+    },
+    "api/v4/compare.js": {
+      "includeFiles": "{server/**,public/data/majors.json,public/data/occupations.json,public/data/crosswalk.json,public/data/places.json,public/data/v3/**}",
+      "maxDuration": 60
+    },
+    "api/v4/pathways.js": {
+      "includeFiles": "{server/**,public/data/majors.json,public/data/occupations.json,public/data/crosswalk.json,public/data/places.json,public/data/v3/**}",
+      "maxDuration": 60
+    },
+    "api/v4/badges.js": {
+      "includeFiles": "{server/**,public/data/majors.json,public/data/occupations.json,public/data/crosswalk.json,public/data/places.json,public/data/v3/**}",
+      "maxDuration": 60
+    },
+    "api/v4/versus.js": {
+      "includeFiles": "{server/**,public/data/majors.json,public/data/occupations.json,public/data/crosswalk.json,public/data/places.json,public/data/v3/**}",
+      "maxDuration": 60
+    },
+    "api/v4/industries.js": {
+      "includeFiles": "{server/**,public/data/majors.json,public/data/occupations.json,public/data/crosswalk.json,public/data/places.json,public/data/v3/**}",
+      "maxDuration": 60
     }
   },
   "rewrites": [

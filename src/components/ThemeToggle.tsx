@@ -8,7 +8,7 @@ export function ThemeToggle() {
     <div
       role="group"
       aria-label="Color theme"
-      className="inline-flex shrink-0 rounded-full border border-border-bright p-0.5"
+      className="inline-flex shrink-0 rounded-lg border border-ink/80 p-0.5"
     >
       <ThemeOption
         label="Light"
@@ -46,8 +46,8 @@ function ThemeOption({
       aria-pressed={active}
       aria-label={`${label} mode`}
       title={`${label} mode`}
-      className={`inline-flex items-center justify-center gap-1.5 rounded-full px-2.5 sm:px-3 min-h-11 min-w-11 text-xs font-medium transition-colors ${
-        active ? 'bg-primary text-white' : 'text-muted hover:text-ink'
+      className={`inline-flex items-center justify-center gap-1.5 rounded-[6px] px-2.5 sm:px-3 min-h-9 min-w-11 text-xs font-medium transition-colors ${
+        active ? 'bg-ink text-page' : 'text-ink hover:bg-surface-hover'
       }`}
     >
       {children}

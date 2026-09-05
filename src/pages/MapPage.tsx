@@ -16,6 +16,7 @@ import { AI_BAND_COPY, ELOUNDOU_COPY, aiBandFromScore } from '../lib/labels'
 import { assetUrl } from '../lib/assetUrl'
 import { isRealMajor } from '../lib/majorName'
 import { useAppPaths } from '../lib/useAppPaths'
+import { useTheme } from '../lib/theme'
 import { loadPlaces } from '../lib/v3/data'
 import type { PlaceRow } from '../lib/v3/types'
 import type { MapColorBy } from '../types'
@@ -58,6 +59,7 @@ export function MapPage() {
   const { majors, occupationsBySoc, eloundouBySoc, stateData, loading, loadStateData } =
     useData()
   const { home, resultsBase } = useAppPaths()
+  const { isDark } = useTheme()
   const [colorBy, setColorBy] = useState<MapColorBy>('employment')
   const [selected, setSelected] = useState<string | null>(null)
   const [topo, setTopo] = useState<FeatureCollection<Geometry, StateProps> | null>(null)
@@ -133,14 +135,16 @@ export function MapPage() {
     const nums = Object.values(values).filter((v) => v > 0)
     const min = nums.length ? Math.min(...nums) : 0
     const max = nums.length ? Math.max(...nums) : 1
-    const interpolator =
-      colorBy === 'aiImpact'
-        ? (t: number) => `rgb(${Math.round(40 + t * 200)}, ${Math.round(30 + (1 - t) * 40)}, ${Math.round(40 + (1 - t) * 40)})`
-        : colorBy === 'salary'
-          ? (t: number) => `rgb(${Math.round(30 + t * 40)}, ${Math.round(80 + t * 120)}, ${Math.round(90 + t * 80)})`
-          : (t: number) => `rgb(${Math.round(40 + t * 180)}, ${Math.round(50 + t * 60)}, ${Math.round(80 + (1 - t) * 40)})`
+    const from = isDark ? [42, 42, 42] : [226, 226, 226]
+    const to = [255, 90, 61]
+    const interpolator = (t: number) => {
+      const r = Math.round(from[0] + t * (to[0] - from[0]))
+      const g = Math.round(from[1] + t * (to[1] - from[1]))
+      const b = Math.round(from[2] + t * (to[2] - from[2]))
+      return `rgb(${r}, ${g}, ${b})`
+    }
     return scaleSequential(interpolator).domain([min, max || 1])
-  }, [values, colorBy])
+  }, [values, colorBy, isDark])
 
   const paths = useMemo(() => {
     if (!topo) return []
@@ -197,7 +201,7 @@ export function MapPage() {
       <div className="mx-auto max-w-7xl px-4 py-12">
         <DocumentMeta title="Occupation not found" />
         <BackLink to={backToResults}>{backLabel}</BackLink>
-        <h1 className="font-serif text-3xl text-ink">Occupation not found</h1>
+        <h1 className="font-sans text-3xl font-bold tracking-tight text-ink">Occupation not found</h1>
       </div>
     )
   }
@@ -206,7 +210,7 @@ export function MapPage() {
   const aiTip =
     occupation.karpathyRationale ||
     AI_BAND_COPY[aiBand] ||
-    'AI Risk is a 0–10 exposure score for how much of this job LLMs can already do.'
+    'AI exposure is a 0–10 score for how much of this job LLMs can already do.'
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10 sm:py-12">
@@ -221,7 +225,7 @@ export function MapPage() {
           <p className="text-xs uppercase tracking-wider text-muted font-mono mb-2">
             SOC {occupation.soc}
           </p>
-          <h1 className="font-serif text-2xl sm:text-4xl text-ink tracking-tight text-balance">
+          <h1 className="font-sans text-2xl sm:text-4xl font-bold text-ink tracking-tight text-balance">
             {occupation.title}
           </h1>
           <p className="text-muted mt-3 max-w-xl text-sm sm:text-base leading-relaxed">
@@ -233,7 +237,7 @@ export function MapPage() {
         <div className="shrink-0 w-full sm:w-auto sm:pt-6">
           <ShareSheet
             title={occupation.title}
-            summary={`State map for ${occupation.title} with BLS wages, AI Risk, and Eloundou β — from dear[CC] Field report.`}
+            summary={`State map for ${occupation.title} with BLS wages, AI Risk, and Eloundou β, from dearCC Field report.`}
           />
         </div>
       </div>
@@ -253,7 +257,7 @@ export function MapPage() {
         <Metric label="Total Employment" value={formatNumber(occupation.totalEmployment)} />
         <Metric label="Annual Openings" value={formatNumber(occupation.openPositions)} />
         <Metric
-          label="AI Risk"
+          label="AI exposure"
           value={
             occupation.karpathyExposure != null ? `${occupation.karpathyExposure}/10` : '—'
           }
@@ -281,7 +285,7 @@ export function MapPage() {
             onClick={() => setColorBy(key)}
             className={`shrink-0 rounded-lg px-3 py-2.5 sm:py-1.5 transition-colors min-h-11 sm:min-h-0 whitespace-nowrap ${
               colorBy === key
-                ? 'bg-primary text-white'
+                ? 'bg-ink text-page'
                 : 'text-muted hover:text-ink bg-card border border-border'
             }`}
           >
@@ -451,14 +455,14 @@ function SeedMetros({
   return (
     <section
       id="metros"
-      className="mb-8 scroll-mt-28 rounded-xl border border-border bg-card p-4 sm:p-5"
+      className="mb-8 scroll-mt-28 rounded-lg border border-border p-4 sm:p-5"
     >
       <div className="flex items-baseline justify-between gap-3">
         <div className="min-w-0">
-          <p className="font-mono text-[11px] uppercase tracking-wider text-primary">
+          <p className="font-mono text-[11px] uppercase tracking-wider text-muted">
             Employers by metro
           </p>
-          <h2 className="mt-1 font-serif text-xl sm:text-2xl text-ink leading-tight text-balance">
+          <h2 className="mt-1 font-sans text-xl sm:text-2xl font-semibold text-ink leading-tight text-balance">
             Who hires {majorName}
           </h2>
         </div>
@@ -469,7 +473,7 @@ function SeedMetros({
           <li key={p.zip}>
             <Link
               to={`${resultsBase}/${cip}/${p.zip}`}
-              className="flex flex-col justify-center min-h-12 rounded-xl border border-border bg-page px-3 py-2.5 hover:border-border-bright transition-colors no-underline text-ink active:scale-[0.99]"
+              className="flex flex-col justify-center min-h-12 rounded-lg border border-border bg-page px-3 py-2.5 hover:border-ink transition-colors no-underline text-ink"
             >
               <span className="font-medium text-sm leading-snug truncate">
                 {shortMetro(p.cbsaName)}
@@ -499,14 +503,14 @@ function SeedMetros({
             setZipError(false)
           }}
           aria-invalid={zipError}
-          className={`flex-1 min-h-12 rounded-xl border bg-page px-4 font-mono tracking-wider text-base ${
-            zipError ? 'border-negative' : 'border-border'
+          className={`flex-1 min-h-12 rounded-lg border-2 bg-page px-4 font-mono tracking-wider text-base ${
+            zipError ? 'border-negative' : 'border-ink'
           }`}
           placeholder="ZIP"
         />
         <button
           type="submit"
-          className="min-h-12 px-5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-bright shrink-0"
+          className="min-h-12 px-5 rounded-lg bg-ink text-page text-sm font-medium hover:opacity-90 shrink-0"
         >
           Go
         </button>
@@ -535,7 +539,7 @@ function StateDetail({
 }) {
   return (
     <>
-      <h2 className="font-serif text-2xl text-ink">{active.name}</h2>
+      <h2 className="font-sans text-2xl font-semibold text-ink">{active.name}</h2>
       <p className="text-xs text-muted font-mono mt-1">
         #{active.rank || '—'} of {rankedCount || '—'}
       </p>
@@ -578,7 +582,17 @@ function Metric({
   return (
     <div className="bg-card border border-border rounded-xl px-3 sm:px-4 py-3 min-w-0 sm:min-w-[120px] flex-1 sm:flex-none">
       <div className="text-xs text-muted uppercase tracking-wider leading-snug inline-flex items-center min-w-0 max-w-full">
-        <span className="truncate">{label}</span>
+        <span className="truncate">
+          {label.includes('β') ? (
+            <>
+              {label.split('β')[0]}
+              <span className="normal-case">β</span>
+              {label.split('β').slice(1).join('β')}
+            </>
+          ) : (
+            label
+          )}
+        </span>
         {tip && <InfoTip label={label}>{tip}</InfoTip>}
       </div>
       <div className="font-mono text-ink mt-1 text-sm sm:text-base tabular-nums break-words">
@@ -603,14 +617,9 @@ function Legend({ colorBy, values }: { colorBy: MapColorBy; values: number[] }) 
     <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted">
       <span className="shrink-0">{label}</span>
       <div
-        className="h-2 flex-1 min-w-[6rem] max-w-48 rounded-full"
+        className="h-2 flex-1 min-w-[6rem] max-w-48 rounded-sm"
         style={{
-          background:
-            colorBy === 'aiImpact'
-              ? 'linear-gradient(90deg, #281e28, #e84628)'
-              : colorBy === 'salary'
-                ? 'linear-gradient(90deg, #1e5060, #46d0aa)'
-                : 'linear-gradient(90deg, #283250, #dc7846)',
+          background: 'linear-gradient(90deg, var(--color-border), var(--color-coral))',
         }}
       />
       <span className="font-mono text-xs tabular-nums">

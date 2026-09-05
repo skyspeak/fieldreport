@@ -18,7 +18,7 @@ export function ShareSheet({ title, summary, quiet = false }: ShareSheetProps) {
   const text = summary
     ? `${title} — ${summary}\n\n${url}`
     : `${title}\n\n${url}`
-  const subject = `dear[CC] Field report: ${title}`
+  const subject = `dearCC Field report: ${title}`
 
   useEffect(() => {
     return () => {

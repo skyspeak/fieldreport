@@ -1,0 +1,22 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+<title>CC the chinchilla, white on black</title>
+<circle cx="60" cy="60" r="60" fill="#000000"/>
+<g fill="#FFFFFF" transform="translate(18 30) scale(6)">
+  <rect x="1" y="0" width="2" height="1"/>
+  <rect x="11" y="0" width="2" height="1"/>
+  <rect x="0" y="1" width="1" height="2"/>
+  <rect x="3" y="1" width="1" height="2"/>
+  <rect x="10" y="1" width="1" height="2"/>
+  <rect x="13" y="1" width="1" height="2"/>
+  <rect x="1" y="3" width="12" height="3"/>
+  <rect x="1" y="6" width="2" height="1"/>
+  <rect x="4" y="6" width="6" height="1"/>
+  <rect x="11" y="6" width="2" height="1"/>
+  <rect x="0" y="7" width="1" height="1"/>
+  <rect x="2" y="7" width="4" height="1"/>
+  <rect x="8" y="7" width="4" height="1"/>
+  <rect x="13" y="7" width="1" height="1"/>
+  <rect x="1" y="8" width="12" height="1"/>
+  <rect x="2" y="9" width="10" height="1"/>
+</g>
+</svg>

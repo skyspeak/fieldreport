@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { aoiDsl } from './aoiClient.mjs'
+import { METROS } from './metros.mjs'
 
 const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url))
 /** Repo root locally; on Vercel NFT this is usually `/var/task`. */
@@ -69,24 +70,6 @@ const SEEDED_GROUPS = {
   ],
 }
 
-/** Major metros for ZIP fallback via city/state match. */
-const METROS = [
-  { cbsa: '41860', cbsaName: 'San Francisco-Oakland-Berkeley, CA', msaSize: 'Large', seeds: ['94402'], match: [/san francisco|oakland|berkeley|san mateo|palo alto|san jose|sunnyvale|mountain view/i] },
-  { cbsa: '35620', cbsaName: 'New York-Newark-Jersey City, NY-NJ-PA', msaSize: 'Large', seeds: ['10001'], match: [/new york|brooklyn|manhattan|newark|jersey city/i] },
-  { cbsa: '42660', cbsaName: 'Seattle-Tacoma-Bellevue, WA', msaSize: 'Large', seeds: ['98101'], match: [/seattle|bellevue|tacoma|redmond/i] },
-  { cbsa: '12420', cbsaName: 'Austin-Round Rock-Georgetown, TX', msaSize: 'Large', seeds: ['78701'], match: [/austin|round rock/i] },
-  { cbsa: '16980', cbsaName: 'Chicago-Naperville-Elgin, IL-IN-WI', msaSize: 'Large', seeds: ['60601'], match: [/chicago|naperville|evanston/i] },
-  { cbsa: '14460', cbsaName: 'Boston-Cambridge-Newton, MA-NH', msaSize: 'Large', seeds: ['02108'], match: [/boston|cambridge|somerville/i] },
-  { cbsa: '12060', cbsaName: 'Atlanta-Sandy Springs-Alpharetta, GA', msaSize: 'Large', seeds: ['30301'], match: [/atlanta|sandy springs/i] },
-  { cbsa: '19740', cbsaName: 'Denver-Aurora-Lakewood, CO', msaSize: 'Large', seeds: ['80202'], match: [/denver|aurora|boulder/i] },
-  { cbsa: '31080', cbsaName: 'Los Angeles-Long Beach-Anaheim, CA', msaSize: 'Large', seeds: ['90012'], match: [/los angeles|long beach|anaheim|pasadena|santa monica/i] },
-  { cbsa: '19100', cbsaName: 'Dallas-Fort Worth-Arlington, TX', msaSize: 'Large', seeds: ['75201'], match: [/dallas|fort worth|arlington|plano/i] },
-  { cbsa: '26420', cbsaName: 'Houston-The Woodlands-Sugar Land, TX', msaSize: 'Large', seeds: ['77002'], match: [/houston|sugar land|the woodlands/i] },
-  { cbsa: '37980', cbsaName: 'Philadelphia-Camden-Wilmington, PA-NJ-DE-MD', msaSize: 'Large', seeds: ['19103'], match: [/philadelphia|camden|wilmington/i] },
-  { cbsa: '33100', cbsaName: 'Miami-Fort Lauderdale-Pompano Beach, FL', msaSize: 'Large', seeds: ['33131'], match: [/miami|fort lauderdale|pompano/i] },
-  { cbsa: '38060', cbsaName: 'Phoenix-Mesa-Chandler, AZ', msaSize: 'Large', seeds: ['85004'], match: [/phoenix|mesa|scottsdale|tempe/i] },
-  { cbsa: '47900', cbsaName: 'Washington-Arlington-Alexandria, DC-VA-MD-WV', msaSize: 'Large', seeds: ['20001'], match: [/washington|arlington|alexandria|dc\b/i] },
-]
 
 /** @type {Map<string, { at: number, report: object }>} */
 const cache = new Map()
@@ -94,7 +77,7 @@ const CACHE_TTL_MS = 60 * 60 * 1000
 
 let catalogPromise = null
 
-async function loadCatalog() {
+export async function loadCatalog() {
   if (!catalogPromise) {
     catalogPromise = (async () => {
       const DATA = await resolveDataDir()
@@ -179,7 +162,7 @@ function humanizeClusterName(name) {
  * @param {string} zip
  * @param {any[]} places
  */
-async function resolvePlace(zip, places) {
+export async function resolvePlace(zip, places) {
   const seeded = places.find((p) => p.zip === zip)
   if (seeded) {
     return {
@@ -238,7 +221,7 @@ async function resolvePlace(zip, places) {
 /**
  * Resolve CIP → up to 4 display groups with cluster ids via crosswalk + TITLECONVERT.
  */
-async function resolveDisplayGroups(cip, catalog) {
+export async function resolveDisplayGroups(cip, catalog) {
   if (SEEDED_GROUPS[cip]) return SEEDED_GROUPS[cip]
 
   const entry = catalog.crosswalk[cip]
@@ -304,7 +287,7 @@ async function resolveDisplayGroups(cip, catalog) {
   }))
 }
 
-async function fetchEmployers(clusterId, place) {
+export async function fetchEmployers(clusterId, place) {
   const cbsaClause =
     place.scope === 'metro' && place.cbsa
       ? ` WHERE CBSA IS "${place.cbsa}" AND BADGE_EARLY_CAREER IS NOT NULL`
@@ -456,6 +439,7 @@ export async function buildFieldReport({ cip, zip }) {
       displayBlurb: g.displayBlurb,
       clusterIds: g.clusterIds,
       vendorNames: g.vendorNames,
+      primaryOnet: g.primaryOnet || null,
       destinations: dests
         .filter((d) => !g.clusterIds.includes(d.cluster_id))
         .slice(0, 3)

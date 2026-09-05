@@ -1,70 +1,78 @@
 @import "tailwindcss";
 
+/* dearCC tokens. Coral marks state, never a control fill. Inter only. */
 @theme {
-  --font-sans: "DM Sans", system-ui, sans-serif;
-  --font-serif: "Fraunces", ui-serif, Georgia, serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
 
-  --color-ink: #141414;
+  --color-coral: #ff5a3d;
+  --color-ink: #000000;
   --color-page: #ffffff;
-  --color-surface: #f4f4f5;
-  --color-surface-hover: #e4e4e7;
+  --color-paper: #f1f1f1;
+  --color-canvas: #ededed;
+  --color-surface: #f1f1f1;
+  --color-surface-hover: #ededed;
   --color-card: #ffffff;
-  --color-inset: #ececee;
-  --color-border: #e4e4e7;
-  --color-border-bright: #d4d4d8;
-  --color-primary: #d4552f;
-  --color-primary-bright: #ec6f4c;
-  --color-muted: #71717a;
-  --color-openings: #0369a1;
-  --color-accent: #22d3ee;
-  --color-positive: #10b981;
-  --color-negative: #ef4444;
-  --color-warning: #f59e0b;
+  --color-inset: #f1f1f1;
+  --color-border: #e2e2e2;
+  --color-border-bright: #d4d4d4;
+  --color-primary: #ff5a3d;
+  --color-primary-bright: #ff5a3d;
+  --color-muted: #5c5c5c;
+  --color-openings: #000000;
+  --color-accent: #ff5a3d;
+  --color-positive: #000000;
+  --color-negative: #ff5a3d;
+  --color-warning: #ff5a3d;
+  --color-placeholder: #9a9a9a;
+  --color-severity-low: #9a9a9a;
+  --color-severity-mid: #5c5c5c;
+  --color-severity-high: #000000;
+  --color-severity-max: #ff5a3d;
+  --color-severity-none: #e2e2e2;
+
+  --radius-card: 12px;
+  --radius-control: 8px;
+  --radius-chip: 6px;
 }
 
-/* Live Field Report dark shell. */
 html.report-shell {
   color-scheme: dark;
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --color-ink: #ffffff;
-  --color-page: #0a0a0a;
-  --color-surface: #18181b;
-  --color-surface-hover: #27272a;
-  --color-card: #18181b;
-  --color-inset: #18181b;
-  --color-border: #27272a;
-  --color-border-bright: #3f3f46;
-  --color-primary: #ec6f4c;
-  --color-primary-bright: #f4896a;
-  --color-muted: #71717a;
-  --color-openings: #22d3ee;
-}
-
-html.field-report {
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-}
-
-html.field-report:not(.report-shell) {
-  --color-page: #f4f4f1;
-  --color-surface: #ffffff;
-  --color-surface-hover: #ecece8;
-  --color-card: #ffffff;
-  --color-inset: #ecece8;
-  --color-ink: #141414;
-  --color-openings: #0369a1;
-  --color-accent: #0891b2;
+  --color-page: #000000;
+  --color-paper: #171717;
+  --color-canvas: #000000;
+  --color-surface: #171717;
+  --color-surface-hover: #262626;
+  --color-card: #171717;
+  --color-inset: #171717;
+  --color-border: #2a2a2a;
+  --color-border-bright: #404040;
+  --color-primary: #ff5a3d;
+  --color-primary-bright: #ff5a3d;
+  --color-muted: #a3a3a3;
+  --color-openings: #ffffff;
+  --color-accent: #ff5a3d;
+  --color-positive: #ffffff;
+  --color-negative: #ff5a3d;
+  --color-warning: #ff5a3d;
+  --color-placeholder: #9a9a9a;
+  --color-severity-low: #9a9a9a;
+  --color-severity-mid: #e2e2e2;
+  --color-severity-high: #ffffff;
+  --color-severity-max: #ff5a3d;
+  --color-severity-none: #404040;
 }
 
 html.report-shell body {
-  background: #0a0a0a;
+  background: #000000;
   color: #fff;
 }
 
 html.field-report:not(.report-shell) body {
-  background: #f4f4f1;
+  background: #ffffff;
   background-image: none;
-  color: #141414;
+  color: #000000;
 }
 
 @keyframes exhibit-bar {
@@ -93,6 +101,7 @@ html.field-report:not(.report-shell) body {
 @layer base {
   html {
     color-scheme: light;
+    -webkit-font-smoothing: antialiased;
   }
 
   body {
@@ -101,10 +110,15 @@ html.field-report:not(.report-shell) body {
     font-family: var(--font-sans);
     color: var(--color-ink);
     background: #ffffff;
-    background-image:
-      radial-gradient(ellipse 90% 55% at 50% -25%, rgba(212, 85, 47, 0.1), transparent),
-      radial-gradient(ellipse 50% 40% at 100% 0%, rgba(228, 228, 231, 0.7), transparent);
     -webkit-text-size-adjust: 100%;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-weight: 700;
+    letter-spacing: -0.028em;
+    line-height: 1.12;
   }
 
   html.report-shell body {
@@ -112,7 +126,6 @@ html.field-report:not(.report-shell) body {
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
-  /* Avoid iOS zoom-on-focus for form controls under 16px */
   input,
   select,
   textarea {
@@ -127,7 +140,6 @@ html.field-report:not(.report-shell) body {
     }
   }
 
-  /* Utilities can override the base rule; force 16px on phones. */
   @media (max-width: 639px) {
     input,
     select,
@@ -137,7 +149,7 @@ html.field-report:not(.report-shell) body {
   }
 
   ::selection {
-    background: color-mix(in oklab, var(--color-primary) 28%, transparent);
+    background: color-mix(in oklab, var(--color-coral) 28%, transparent);
   }
 }
 
@@ -148,11 +160,11 @@ html.report-shell *::-webkit-scrollbar {
 }
 html.report-shell::-webkit-scrollbar-track,
 html.report-shell *::-webkit-scrollbar-track {
-  background: #18181b;
+  background: #171717;
 }
 html.report-shell::-webkit-scrollbar-thumb,
 html.report-shell *::-webkit-scrollbar-thumb {
-  background: #3f3f46;
+  background: #404040;
   border-radius: 4px;
 }
 

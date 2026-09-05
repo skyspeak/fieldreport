@@ -94,10 +94,10 @@ export function V3ReceiptsPage() {
       />
       <BackLink to={home}>← Field Report</BackLink>
 
-      <p className="font-mono text-xs uppercase tracking-wider text-primary">
+      <p className="font-mono text-xs uppercase tracking-wider text-muted">
         Receipts
       </p>
-      <h1 className="mt-2 font-serif text-3xl sm:text-5xl text-ink leading-tight">
+      <h1 className="mt-2 font-sans font-bold tracking-tight text-3xl sm:text-5xl text-ink leading-tight">
         How to read this report
       </h1>
       <p className="mt-4 text-muted leading-relaxed text-lg">
@@ -120,7 +120,7 @@ export function V3ReceiptsPage() {
       <div className="mt-10 space-y-12">
         {SECTIONS.map((s) => (
           <section key={s.id} id={s.id} className="scroll-mt-28">
-            <h2 className="font-serif text-2xl text-ink">{s.title}</h2>
+            <h2 className="font-sans font-bold tracking-tight text-2xl text-ink">{s.title}</h2>
             <div className="mt-3 space-y-3 text-ink/80 leading-relaxed">
               {s.body.map((p) => (
                 <p key={p.slice(0, 48)}>{p}</p>
@@ -134,7 +134,7 @@ export function V3ReceiptsPage() {
         Authoritative methodology:{' '}
         <a
           href="https://whereyouworkmatters.org/"
-          className="text-primary hover:text-primary-bright"
+          className="text-ink underline underline-offset-2 hover:text-primary"
           target="_blank"
           rel="noreferrer"
         >
@@ -145,7 +145,7 @@ export function V3ReceiptsPage() {
 
       <Link
         to={home}
-        className="inline-flex mt-8 min-h-11 items-center text-primary hover:text-primary-bright"
+        className="inline-flex mt-8 min-h-11 items-center text-ink underline underline-offset-2 hover:text-primary"
       >
         Back to Field Report v3
       </Link>

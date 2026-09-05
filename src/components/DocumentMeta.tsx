@@ -3,7 +3,7 @@ import { assetUrl } from '../lib/assetUrl'
 
 const DEFAULT_TITLE = 'Field Report'
 const DEFAULT_DESCRIPTION =
-  'BLS salary data, projected annual openings, and AI-exposure scores — for every U.S. major.'
+  'BLS salary data, projected annual openings, and AI-exposure scores for every U.S. major.'
 
 function upsertMeta(attr: 'name' | 'property', key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`)
@@ -28,7 +28,7 @@ export function DocumentMeta({
     document.title = fullTitle
 
     const url = window.location.href
-    const image = new URL(assetUrl('chinchilla.png'), window.location.origin).href
+    const image = new URL(assetUrl('brand/og.png'), window.location.origin).href
     upsertMeta('name', 'description', description)
     upsertMeta('property', 'og:title', fullTitle)
     upsertMeta('property', 'og:description', description)

@@ -27,7 +27,7 @@ export function V3HomePage() {
           Rated early-career employers, five-year pathways, and whether AI is
           closing the door — powered by AOI / WYWM data.
         </p>
-        <p className="mt-3 text-xs font-mono uppercase tracking-wider text-primary">
+        <p className="mt-3 text-xs font-mono uppercase tracking-wider text-muted">
           v3 employer layer
         </p>
       </div>
@@ -102,7 +102,7 @@ export function V3ZipPromptPage() {
         }
       />
       <BackLink to={`${resultsBase}/${cipCode}`}>← Back to major</BackLink>
-      <h1 className="font-serif text-3xl sm:text-4xl text-ink leading-tight">
+      <h1 className="font-sans font-bold tracking-tight text-3xl sm:text-4xl text-ink leading-tight">
         {major?.name || cipCode}
       </h1>
       <p className="mt-3 text-muted leading-relaxed">
@@ -134,7 +134,7 @@ export function V3ZipPromptPage() {
         />
         <button
           type="submit"
-          className="min-h-12 px-6 rounded-xl bg-primary text-white font-medium hover:bg-primary-bright"
+          className="min-h-12 px-6 rounded-lg bg-ink text-white font-bold hover:bg-primary hover:text-ink"
         >
           See employers
         </button>
@@ -228,11 +228,11 @@ export function V3ResultsPage() {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16">
         <BackLink to={`${resultsBase}/${cipCode}/place`}>← Change metro</BackLink>
-        <h1 className="font-serif text-2xl text-ink">Could not build this report</h1>
+        <h1 className="font-sans font-bold tracking-tight text-2xl text-ink">Could not build this report</h1>
         <p className="mt-3 text-negative">{error || 'Unknown error'}</p>
         <p className="mt-4 text-sm text-muted leading-relaxed">
           Try another ZIP, or open a seed metro demo:{' '}
-          <Link to={`${resultsBase}/11.0701/94402`} className="text-primary">
+          <Link to={`${resultsBase}/11.0701/94402`} className="text-ink underline underline-offset-2">
             Computer Science · 94402
           </Link>
         </p>
@@ -251,7 +251,7 @@ export function V3ResultsPage() {
         <p className="font-mono text-xs uppercase tracking-wider text-muted">
           {report.cip.code} · {report.place.zip}
         </p>
-        <h1 className="mt-2 font-serif text-3xl sm:text-5xl text-ink leading-tight">
+        <h1 className="mt-2 font-sans font-bold tracking-tight text-3xl sm:text-5xl text-ink leading-tight">
           {majorName || report.cip.title}
         </h1>
         <p className="mt-3 text-lg text-ink/70">
@@ -272,7 +272,7 @@ export function V3ResultsPage() {
       <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
         <Link
           to={receipts}
-          className="min-h-11 inline-flex items-center text-primary hover:text-primary-bright"
+          className="min-h-11 inline-flex items-center text-ink underline underline-offset-2 hover:text-primary"
         >
           How to read this report
         </Link>
@@ -301,7 +301,7 @@ function Funnel({
   ]
   return (
     <section className="mt-10 max-w-3xl">
-      <h2 className="font-serif text-2xl text-ink">The funnel</h2>
+      <h2 className="font-sans font-bold tracking-tight text-2xl text-ink">The funnel</h2>
       <p className="mt-1 text-sm text-muted">
         Share this: how rated employers in your field narrow to those hiring near
         you.
@@ -337,7 +337,7 @@ function Funnel({
 function FiveYearsOut({ report }: { report: FieldReport }) {
   return (
     <section className="mt-14 max-w-3xl">
-      <h2 className="font-serif text-2xl sm:text-3xl text-ink">Five years out</h2>
+      <h2 className="font-sans font-bold tracking-tight text-2xl sm:text-3xl text-ink">Five years out</h2>
       <p className="mt-2 text-muted leading-relaxed">
         Where people in these fields move next — and whether they stay or leave
         to move up.
@@ -345,7 +345,7 @@ function FiveYearsOut({ report }: { report: FieldReport }) {
       <ul className="mt-6 space-y-6">
         {report.groups.map((g) => (
           <li key={g.id} className="border-t border-border pt-5">
-            <h3 className="font-serif text-xl text-ink">{g.displayName}</h3>
+            <h3 className="font-sans font-bold tracking-tight text-xl text-ink">{g.displayName}</h3>
             <p className="text-sm text-muted mt-1">{g.displayBlurb}</p>
             {g.promotion ? (
               <p className="mt-3 text-ink/90 leading-relaxed">
@@ -375,7 +375,7 @@ function FiveYearsOut({ report }: { report: FieldReport }) {
 function DoorSection({ report }: { report: FieldReport }) {
   return (
     <section className="mt-14 max-w-3xl">
-      <h2 className="font-serif text-2xl sm:text-3xl text-ink">The Door</h2>
+      <h2 className="font-sans font-bold tracking-tight text-2xl sm:text-3xl text-ink">The Door</h2>
       <p className="mt-2 text-muted leading-relaxed">
         Whether AI is changing entry — without calling anything risk or safe.
       </p>
@@ -385,7 +385,7 @@ function DoorSection({ report }: { report: FieldReport }) {
             <p className="text-xs font-mono uppercase tracking-wider text-muted">
               {d.groupName}
             </p>
-            <h3 className="mt-1 font-serif text-xl text-ink">
+            <h3 className="mt-1 font-sans font-bold tracking-tight text-xl text-ink">
               {d.heading || 'Mixed picture'}
             </h3>
             <p className="mt-2 text-ink/80 leading-relaxed">
@@ -393,7 +393,7 @@ function DoorSection({ report }: { report: FieldReport }) {
             </p>
             <a
               href="#employers"
-              className="inline-flex mt-3 text-sm text-primary min-h-11 items-center"
+              className="inline-flex mt-3 text-sm text-ink underline underline-offset-2 min-h-11 items-center"
             >
               See who is still hiring →
             </a>

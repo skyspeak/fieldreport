@@ -14,9 +14,19 @@ const SHORTLIST = 9
 type Props = {
   report: FieldReport
   resultsBase: string
+  named?: boolean
+  companyTo?: (e: Employer) => string | undefined
+  hideMetros?: boolean
 }
 
-export function EmployerTable({ report, resultsBase }: Props) {
+export function EmployerTable({
+  report,
+  resultsBase,
+  named,
+  companyTo,
+  hideMetros,
+}: Props) {
+  const showNames = named ?? NAMED_EMPLOYERS
   const { receipts } = useAppPaths()
   const [coreOnly, setCoreOnly] = useState(false)
   const [platinumOnly, setPlatinumOnly] = useState(false)
@@ -76,14 +86,16 @@ export function EmployerTable({ report, resultsBase }: Props) {
   if (report.employers.length === 0) {
     return (
       <section className="mt-10">
-        <h2 className="font-serif text-2xl sm:text-3xl text-ink">
+        <h2 className="font-sans font-bold tracking-tight text-2xl sm:text-3xl text-ink">
           Where this degree is hiring
         </h2>
         <p className="mt-3 text-muted max-w-2xl leading-relaxed">
           We do not have rated early-career employers for your field in this
           metro yet. Compare other metros below.
         </p>
-        <MetroList report={report} resultsBase={resultsBase} />
+        {hideMetros ? null : (
+          <MetroList report={report} resultsBase={resultsBase} />
+        )}
       </section>
     )
   }
@@ -91,10 +103,10 @@ export function EmployerTable({ report, resultsBase }: Props) {
   return (
     <section id="employers" className="mt-10 scroll-mt-[calc(3.5rem+env(safe-area-inset-top)+0.75rem)]">
       <div className="max-w-3xl">
-        <p className="font-mono text-xs uppercase tracking-wider text-primary">
+        <p className="font-mono text-xs uppercase tracking-wider text-muted">
           Nine Names
         </p>
-        <h2 className="mt-2 font-serif text-2xl sm:text-4xl text-ink leading-tight text-balance">
+        <h2 className="mt-2 font-sans font-bold tracking-tight text-2xl sm:text-4xl text-ink leading-tight text-balance">
           Who is still hiring early career in {metroShort}
         </h2>
         <p className="mt-3 text-muted leading-relaxed">
@@ -185,8 +197,17 @@ export function EmployerTable({ report, resultsBase }: Props) {
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <div className="min-w-0">
-                  <div className="font-serif text-xl sm:text-2xl text-ink leading-snug tracking-tight break-words">
-                    {displayName(e, i)}
+                  <div className="font-sans font-bold tracking-tight text-xl sm:text-2xl text-ink leading-snug tracking-tight break-words">
+                    {companyTo && showNames ? (
+                      <Link
+                        to={companyTo(e) || '#'}
+                        className="text-ink hover:text-primary no-underline"
+                      >
+                        {displayName(e, i, showNames)}
+                      </Link>
+                    ) : (
+                      displayName(e, i, showNames)
+                    )}
                   </div>
                   <p className="mt-1.5 text-sm text-muted leading-relaxed break-words">
                     <MetaBits e={e} field={groupLabel(e.groupIds)} />
@@ -199,7 +220,7 @@ export function EmployerTable({ report, resultsBase }: Props) {
           <p className="mt-4 max-w-3xl text-sm text-muted">
             <Link
               to={receipts}
-              className="text-primary hover:text-primary-bright"
+              className="text-ink underline underline-offset-2 hover:text-primary"
             >
               What Platinum and core roles mean
             </Link>
@@ -209,7 +230,7 @@ export function EmployerTable({ report, resultsBase }: Props) {
             <button
               type="button"
               onClick={() => setShowRoster(true)}
-              className="mt-6 text-sm text-primary hover:text-primary-bright min-h-11"
+              className="mt-6 text-sm text-ink underline underline-offset-2 hover:text-primary min-h-11"
             >
               Full roster — {filtered.length} employers
             </button>
@@ -226,7 +247,7 @@ export function EmployerTable({ report, resultsBase }: Props) {
                 {byIndustry.map(([industry, list]) => (
                   <div key={industry}>
                     <div className="flex items-baseline justify-between gap-3 border-b border-border pb-2">
-                      <h4 className="font-serif text-lg text-ink">{industry}</h4>
+                      <h4 className="font-sans font-bold tracking-tight text-lg text-ink">{industry}</h4>
                       <span className="font-mono text-xs text-muted tabular-nums">
                         {list.length}
                       </span>
@@ -238,12 +259,10 @@ export function EmployerTable({ report, resultsBase }: Props) {
                           className="break-inside-avoid py-1.5 text-sm text-ink/85 flex items-baseline gap-2"
                         >
                           <span className="min-w-0 truncate">
-                            {NAMED_EMPLOYERS
-                              ? e.companyName
-                              : redactName(e)}
+                            {showNames ? e.companyName : redactName(e)}
                           </span>
                           {e.badgeEarlyCareer === 'Platinum' ? (
-                            <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-primary">
+                            <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-muted">
                               Pt
                             </span>
                           ) : null}
@@ -274,11 +293,11 @@ export function EmployerTable({ report, resultsBase }: Props) {
         </p>
       ) : null}
 
-      <p className="mt-8 text-sm text-ink/70 leading-relaxed border-l-2 border-primary/40 pl-4 max-w-2xl">
+      <p className="mt-8 text-sm text-ink/70 leading-relaxed border-l border-border pl-4 max-w-2xl">
         {report.coverage.text}
       </p>
 
-      <MetroList report={report} resultsBase={resultsBase} />
+      {hideMetros ? null : <MetroList report={report} resultsBase={resultsBase} />}
 
       <style>{`
         @keyframes frFadeUp {
@@ -324,8 +343,8 @@ function MetaBits({ e, field }: { e: Employer; field: string }) {
   )
 }
 
-function displayName(e: Employer, index: number) {
-  if (NAMED_EMPLOYERS) return e.companyName
+function displayName(e: Employer, index: number, named: boolean) {
+  if (named) return e.companyName
   const industry = e.primaryIndustry || 'Employer'
   return `${industry} employer ${String.fromCharCode(65 + (index % 26))}`
 }
@@ -369,7 +388,7 @@ function MetroList({
   if (!metros.length) return null
   return (
     <div className="mt-12 max-w-3xl">
-      <h3 className="font-serif text-xl text-ink">Other metros</h3>
+      <h3 className="font-sans font-bold tracking-tight text-xl text-ink">Other metros</h3>
       <p className="mt-1 text-sm text-muted">
         Where else this degree has rated early-career hiring.
       </p>
